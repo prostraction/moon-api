@@ -24,7 +24,8 @@ func (s *Server) moonPhaseCurrentV1(c *fiber.Ctx) error {
 	/*if err != nil {
 		log.Println(err)
 	}*/
-	tGiven := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second(), 0, loc)
+	tGiven := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second(), 0, time.Local)
+	tGiven = tGiven.In(loc)
 	precision := strToInt(c.Query("precision", "2"), 2, 0, 20)
 
 	latStr := c.Query("latitude", "no-value")
@@ -47,7 +48,8 @@ func (s *Server) moonPhaseTimestampV1(c *fiber.Ctx) error {
 		t = time.Now().Unix()
 	}
 	tm := time.Unix(t, 0)
-	tGiven := time.Date(tm.Year(), tm.Month(), tm.Day(), tm.Hour(), tm.Minute(), tm.Second(), 0, loc)
+	tGiven := time.Date(tm.Year(), tm.Month(), tm.Day(), tm.Hour(), tm.Minute(), tm.Second(), 0, time.Local)
+	tGiven = tGiven.In(loc)
 
 	precision := strToInt(c.Query("precision", "2"), 2, 0, 20)
 
@@ -87,7 +89,8 @@ func (s *Server) moonPhaseDatetV1(c *fiber.Ctx) error {
 	lonStr := c.Query("longitude", "no-value")
 	locationCords := parseCoords(latStr, lonStr)
 
-	tGiven := time.Date(year, jt.GetMonth(month), day, hour, minute, second, 0, loc)
+	tGiven := time.Date(year, jt.GetMonth(month), day, hour, minute, second, 0, time.Local)
+	tGiven = tGiven.In(loc)
 	return s.moonPhaseV1(c, tGiven, precision, locationCords)
 }
 
