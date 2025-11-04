@@ -53,3 +53,9 @@ type Coordinates struct {
 	Longitude float64
 	IsValid   bool
 }
+
+type JulianTimeResp struct {
+	CivilDate          string
+	CivilDateTimestamp int64
+	JulianDate         float64
+}

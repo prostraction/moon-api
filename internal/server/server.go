@@ -81,8 +81,13 @@ func (s *Server) NewRouter() *fiber.App {
 	//app.Get("/v1/nextMoonRise")
 
 	// jtime methods:
-	//app.Get("/v1/toJulianTime")
-	//app.Get("/v1/fromJulianTime")
+	app.Get("/v1/toJulianTimeByDate", s.toJulianTimeByDateV1)
+	app.Get("/v1/toJulianTimeByTimestamp", s.toJulianTimeByTimestampV1)
+	app.Get("/v1/fromJulianTime", s.fromJulianTimeV1)
+
+	app.Get("/api/v1/toJulianTimeByDate", s.toJulianTimeByDateV1)
+	app.Get("/api/v1/toJulianTimeByTimestamp", s.toJulianTimeByTimestampV1)
+	app.Get("/api/v1/fromJulianTime", s.fromJulianTimeV1)
 
 	// some kind of faq
 	//app.Get("/v1")

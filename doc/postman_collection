@@ -52,32 +52,32 @@
 								{
 									"key": "year",
 									"value": "2025",
-									"description": "Format: YYYY Allowed range: [1, 9999]"
+									"description": "Format: YYYY Allowed range: [1, 9999]. Current, if not specified"
 								},
 								{
 									"key": "month",
 									"value": "01",
-									"description": "Format: M or MM. Allowed range: [1, 12]"
+									"description": "Format: M or MM. Allowed range: [1, 12]. Current, if not specified"
 								},
 								{
 									"key": "day",
 									"value": "01",
-									"description": "Format: D or DD. Allowed range: [1, 31]"
+									"description": "Format: D or DD. Allowed range: [1, 31]. Current, if not specified"
 								},
 								{
 									"key": "hour",
 									"value": "01",
-									"description": "Format: h or hh. Allowed range: [0, 23]"
+									"description": "Format: h or hh. Allowed range: [0, 23]. Current, if not specified"
 								},
 								{
 									"key": "minute",
 									"value": "01",
-									"description": "Format: m or mm. Allowed range: [0, 59]"
+									"description": "Format: m or mm. Allowed range: [0, 59]. Current, if not specified"
 								},
 								{
 									"key": "second",
 									"value": "01",
-									"description": "Format: s or ss. Allowed range: [0, 59]"
+									"description": "Format: s or ss. Allowed range: [0, 59]. Current, if not specified"
 								}
 							]
 						},
@@ -127,32 +127,32 @@
 										{
 											"key": "year",
 											"value": "2025",
-											"description": "Format: YYYY Allowed range: [1, 9999]"
+											"description": "Format: YYYY Allowed range: [1, 9999]. Current, if not specified"
 										},
 										{
 											"key": "month",
 											"value": "01",
-											"description": "Format: M or MM. Allowed range: [1, 12]"
+											"description": "Format: M or MM. Allowed range: [1, 12]. Current, if not specified"
 										},
 										{
 											"key": "day",
 											"value": "01",
-											"description": "Format: D or DD. Allowed range: [1, 31]"
+											"description": "Format: D or DD. Allowed range: [1, 31]. Current, if not specified"
 										},
 										{
 											"key": "hour",
 											"value": "01",
-											"description": "Format: h or hh. Allowed range: [0, 23]"
+											"description": "Format: h or hh. Allowed range: [0, 23]. Current, if not specified"
 										},
 										{
 											"key": "minute",
 											"value": "01",
-											"description": "Format: m or mm. Allowed range: [0, 59]"
+											"description": "Format: m or mm. Allowed range: [0, 59]. Current, if not specified"
 										},
 										{
 											"key": "second",
 											"value": "01",
-											"description": "Format: s or ss. Allowed range: [0, 59]"
+											"description": "Format: s or ss. Allowed range: [0, 59]. Current, if not specified"
 										}
 									]
 								}
@@ -360,7 +360,7 @@
 								{
 									"key": "timestamp",
 									"value": "1758045697",
-									"description": "Timestamp for calculations"
+									"description": "Timestamp for calculations. Current, if not specified"
 								}
 							]
 						},
@@ -410,7 +410,7 @@
 										{
 											"key": "timestamp",
 											"value": "1758045697",
-											"description": "Timestamp for calculations"
+											"description": "Timestamp for calculations. Current, if not specified"
 										}
 									]
 								}
@@ -430,7 +430,6 @@
 								{
 									"key": "Content-Type",
 									"value": "application/json",
-									"name": "Content-Type",
 									"description": "",
 									"type": "text"
 								},
@@ -480,7 +479,7 @@
 								{
 									"key": "year",
 									"value": "2025",
-									"description": "Year for request: YYYY"
+									"description": "Year for request: YYYY. Current, if not specified"
 								}
 							]
 						},
@@ -510,7 +509,7 @@
 										{
 											"key": "year",
 											"value": "2025",
-											"description": "Year for request: YYYY"
+											"description": "Year for request: YYYY. Current, if not specified"
 										}
 									]
 								}
@@ -530,7 +529,6 @@
 								{
 									"key": "Content-Type",
 									"value": "application/json",
-									"name": "Content-Type",
 									"description": "",
 									"type": "text"
 								},
@@ -636,7 +634,6 @@
 								{
 									"key": "Content-Type",
 									"value": "application/json",
-									"name": "Content-Type",
 									"description": "",
 									"type": "text"
 								},
@@ -655,6 +652,346 @@
 							],
 							"cookie": [],
 							"body": "[\n    {\n        \"NewMoon\": \"2024-12-31T03:27:49+05:00\",\n        \"FirstQuarter\": \"2025-01-07T04:34:13+05:00\",\n        \"FullMoon\": \"2025-01-14T03:27:44+05:00\",\n        \"LastQuarter\": \"2025-01-22T01:42:58+05:00\"\n    },\n    {\n        \"NewMoon\": \"2025-01-29T17:37:18+05:00\",\n        \"FirstQuarter\": \"2025-02-05T12:39:54+05:00\",\n        \"FullMoon\": \"2025-02-12T18:54:26+05:00\",\n        \"LastQuarter\": \"2025-02-20T22:54:12+05:00\"\n    },\n    {\n        \"NewMoon\": \"2025-02-28T05:46:43+05:00\",\n        \"FirstQuarter\": \"2025-03-06T21:17:10+05:00\",\n        \"FullMoon\": \"2025-03-14T11:55:56+05:00\",\n        \"LastQuarter\": \"2025-03-22T17:09:32+05:00\"\n    },\n    {\n        \"NewMoon\": \"2025-03-29T16:00:07+05:00\",\n        \"FirstQuarter\": \"2025-04-05T07:05:24+05:00\",\n        \"FullMoon\": \"2025-04-13T05:23:56+05:00\",\n        \"LastQuarter\": \"2025-04-21T07:24:10+05:00\"\n    },\n    {\n        \"NewMoon\": \"2025-04-28T00:33:22+05:00\",\n        \"FirstQuarter\": \"2025-05-04T18:40:59+05:00\",\n        \"FullMoon\": \"2025-05-12T21:58:06+05:00\",\n        \"LastQuarter\": \"2025-05-20T17:38:39+05:00\"\n    },\n    {\n        \"NewMoon\": \"2025-05-27T08:04:25+05:00\",\n        \"FirstQuarter\": \"2025-06-03T08:18:31+05:00\",\n        \"FullMoon\": \"2025-06-11T12:46:06+05:00\",\n        \"LastQuarter\": \"2025-06-19T00:39:04+05:00\"\n    },\n    {\n        \"NewMoon\": \"2025-06-25T15:33:30+05:00\",\n        \"FirstQuarter\": \"2025-07-02T23:55:45+05:00\",\n        \"FullMoon\": \"2025-07-11T01:38:54+05:00\",\n        \"LastQuarter\": \"2025-07-18T05:42:32+05:00\"\n    },\n    {\n        \"NewMoon\": \"2025-07-25T00:12:27+05:00\",\n        \"FirstQuarter\": \"2025-08-01T17:07:25+05:00\",\n        \"FullMoon\": \"2025-08-09T12:57:07+05:00\",\n        \"LastQuarter\": \"2025-08-16T10:14:41+05:00\"\n    },\n    {\n        \"NewMoon\": \"2025-08-23T11:07:06+05:00\",\n        \"FirstQuarter\": \"2025-08-31T11:05:52+05:00\",\n        \"FullMoon\": \"2025-09-07T23:10:41+05:00\",\n        \"LastQuarter\": \"2025-09-14T15:47:01+05:00\"\n    },\n    {\n        \"NewMoon\": \"2025-09-22T00:54:36+05:00\",\n        \"FirstQuarter\": \"2025-09-30T04:51:14+05:00\",\n        \"FullMoon\": \"2025-10-07T08:48:57+05:00\",\n        \"LastQuarter\": \"2025-10-13T23:39:48+05:00\"\n    },\n    {\n        \"NewMoon\": \"2025-10-21T17:25:58+05:00\",\n        \"FirstQuarter\": \"2025-10-29T21:21:02+05:00\",\n        \"FullMoon\": \"2025-11-05T18:20:26+05:00\",\n        \"LastQuarter\": \"2025-11-12T10:55:00+05:00\"\n    },\n    {\n        \"NewMoon\": \"2025-11-20T11:48:16+05:00\",\n        \"FirstQuarter\": \"2025-11-28T11:44:00+05:00\",\n        \"FullMoon\": \"2025-12-05T04:15:18+05:00\",\n        \"LastQuarter\": \"2025-12-12T02:04:31+05:00\"\n    },\n    {\n        \"NewMoon\": \"2025-12-20T06:44:25+05:00\",\n        \"FirstQuarter\": \"2025-12-27T23:35:58+05:00\",\n        \"FullMoon\": \"2026-01-03T15:04:15+05:00\",\n        \"LastQuarter\": \"2026-01-10T20:51:36+05:00\"\n    }\n]"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Julian Time",
+			"item": [
+				{
+					"name": "Get Julian Time by specified/current date",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/toJulianTimeByDate?utc=5&precision=5&year=2025&month=01&day=01&hour=01&minute=01&second=01&",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"toJulianTimeByDate"
+							],
+							"query": [
+								{
+									"key": "utc",
+									"value": "5",
+									"description": "UTC in format UTC+7, UTC+09:30, -3"
+								},
+								{
+									"key": "precision",
+									"value": "5",
+									"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+								},
+								{
+									"key": "year",
+									"value": "2025",
+									"description": "Format: YYYY Allowed range: [1, 9999]. Current, if not specified"
+								},
+								{
+									"key": "month",
+									"value": "01",
+									"description": "Format: M or MM. Allowed range: [1, 12]. Current, if not specified"
+								},
+								{
+									"key": "day",
+									"value": "01",
+									"description": "Format: D or DD. Allowed range: [1, 31]. Current, if not specified"
+								},
+								{
+									"key": "hour",
+									"value": "01",
+									"description": "Format: h or hh. Allowed range: [0, 23]. Current, if not specified"
+								},
+								{
+									"key": "minute",
+									"value": "01",
+									"description": "Format: m or mm. Allowed range: [0, 59] Current, if not specified"
+								},
+								{
+									"key": "second",
+									"value": "01",
+									"description": "Format: s or ss. Allowed range: [0, 59]. Current, if not specified"
+								},
+								{
+									"key": "",
+									"value": null,
+									"description": "Format: YYYY Allowed range: [1, 9999]. Current, if not specified"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "toJulianTimeByDate",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/toJulianTimeByDate?precision=5&year=2025&month=01&day=01&hour=01&minute=01&second=01",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"toJulianTimeByDate"
+									],
+									"query": [
+										{
+											"key": "precision",
+											"value": "5",
+											"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+										},
+										{
+											"key": "year",
+											"value": "2025",
+											"description": "Format: YYYY Allowed range: [1, 9999]. Current, if not specified"
+										},
+										{
+											"key": "month",
+											"value": "01",
+											"description": "Format: M or MM. Allowed range: [1, 12]. Current, if not specified"
+										},
+										{
+											"key": "day",
+											"value": "01",
+											"description": "Format: D or DD. Allowed range: [1, 31]. Current, if not specified"
+										},
+										{
+											"key": "hour",
+											"value": "01",
+											"description": "Format: h or hh. Allowed range: [0, 23]. Current, if not specified"
+										},
+										{
+											"key": "minute",
+											"value": "01",
+											"description": "Format: m or mm. Allowed range: [0, 59] Current, if not specified"
+										},
+										{
+											"key": "second",
+											"value": "01",
+											"description": "Format: s or ss. Allowed range: [0, 59]. Current, if not specified"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Fiber"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 04 Nov 2025 15:16:26 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "104"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"CivilDate\": \"2025-01-01 01:01:01 +0000 UTC\",\n    \"CivilDateTimestamp\": 1735693261,\n    \"JulianDate\": 2460676.54237\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Julian Time by timestamp",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/toJulianTimeByTimestamp?precision=5",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"toJulianTimeByTimestamp"
+							],
+							"query": [
+								{
+									"key": "precision",
+									"value": "5",
+									"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "toJulianTimeByTimestamp",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/toJulianTimeByTimestamp?precision=10&timestamp=1735693261",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"toJulianTimeByTimestamp"
+									],
+									"query": [
+										{
+											"key": "precision",
+											"value": "10",
+											"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+										},
+										{
+											"key": "timestamp",
+											"value": "1735693261",
+											"description": "Timestamp for calculations. Current, if not specified"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Fiber"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 04 Nov 2025 15:23:01 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "109"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"CivilDate\": \"2025-01-01 01:01:01 +0000 UTC\",\n    \"CivilDateTimestamp\": 1735693261,\n    \"JulianDate\": 2460676.5423726854\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Civil Time by Julian Time",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/v1/fromJulianTime?precision=5&jtime=2460676.5423726854",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"fromJulianTime"
+							],
+							"query": [
+								{
+									"key": "precision",
+									"value": "5",
+									"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+								},
+								{
+									"key": "jtime",
+									"value": "2460676.5423726854",
+									"description": "Julian Time to convert (float64)"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "fromJulianTime",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/v1/fromJulianTime?precision=5&jtime=2460676.5423726854",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"fromJulianTime"
+									],
+									"query": [
+										{
+											"key": "precision",
+											"value": "5",
+											"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+										},
+										{
+											"key": "jtime",
+											"value": "2460676.5423726854",
+											"description": "Julian Time to convert (float64)"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Fiber"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 04 Nov 2025 15:17:41 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "104"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"CivilDate\": \"2025-01-01 01:01:01 +0000 UTC\",\n    \"CivilDateTimestamp\": 1735693261,\n    \"JulianDate\": 2460676.54237\n}"
 						}
 					]
 				}
