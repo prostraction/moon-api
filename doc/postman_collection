@@ -15,7 +15,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/v1/moonPhaseDate?utc=UTC+5&lang=ru&precision=5&latitude=51.1655&longitude=71.4272&year=2025&month=01&day=01&hour=01&minute=01&second=01&timeFormat=timestamp",
+							"raw": "{{baseUrl}}/v1/moonPhaseDate?utc=UTC+5&lang=ru&precision=5&latitude=51.1655&longitude=71.4272&year=2025&month=01&day=01&hour=01&minute=01&second=01&timeFormat=2006-01-02 15:04",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -81,7 +81,7 @@
 								},
 								{
 									"key": "timeFormat",
-									"value": "timestamp",
+									"value": "2006-01-02 15:04",
 									"description": "Supports: \"ISO\" (default), \"timestamp\" any Go time format directives (without UTC), for example: \"Mon, 02 Jan 2006 15:04:05\""
 								}
 							]
@@ -993,7 +993,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/v1/moonPositionMonthly?utc=UTC+5&latitude=51.1655&longitude=71.4272&year=2023&month=3&precision=5",
+							"raw": "{{baseUrl}}/v1/moonPositionMonthly?utc=UTC+5&latitude=51.1655&longitude=71.4272&year=2023&month=3&precision=5&timeFormat=2006-01-02 15:04",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1031,6 +1031,11 @@
 									"key": "precision",
 									"value": "5",
 									"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+								},
+								{
+									"key": "timeFormat",
+									"value": "2006-01-02 15:04",
+									"description": "Supports: \"ISO\" (default), \"timestamp\" any Go time format directives (without UTC), for example: \"Mon, 02 Jan 2006 15:04:05\""
 								}
 							]
 						}
