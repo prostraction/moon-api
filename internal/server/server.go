@@ -102,5 +102,5 @@ func (s *Server) NewRouter() *fiber.App {
 }
 
 func (s *Server) versionV1(c *fiber.Ctx) error {
-	return c.JSON("1.2.0rc2")
+	return c.JSON("1.2.0rc3")
 }
