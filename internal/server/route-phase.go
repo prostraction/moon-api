@@ -71,7 +71,11 @@ func (s *Server) moonPhaseDatetV1(c *fiber.Ctx) error {
 	err := IsValidDate(year, month, day)
 	if err != nil {
 		c.Status(400)
-		return c.SendString("Validation error: " + err.Error())
+		errPrintable := ErrorPrintable{
+			Status:  400,
+			Message: "Validation error: " + err.Error(),
+		}
+		return c.JSON(errPrintable)
 	}
 
 	hour := StrToInt(c.Query("hour", strconv.Itoa(int(tNow.Hour()))), int(tNow.Hour()), 0, 23)

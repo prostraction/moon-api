@@ -23,7 +23,11 @@ func (s *Server) toJulianTimeByDateV1(c *fiber.Ctx) error {
 	err := IsValidDate(year, month, day)
 	if err != nil {
 		c.Status(400)
-		return c.SendString("Validation error: " + err.Error())
+		errPrintable := ErrorPrintable{
+			Status:  400,
+			Message: "Validation error: " + err.Error(),
+		}
+		return c.JSON(errPrintable)
 	}
 
 	hour := StrToInt(c.Query("hour", strconv.Itoa(int(tNow.Hour()))), int(tNow.Hour()), 0, 23)
@@ -65,8 +69,11 @@ func (s *Server) fromJulianTimeV1(c *fiber.Ctx) error {
 	jtime, err := strconv.ParseFloat(jtStr, 64)
 	if err != nil {
 		c.Status(400)
-		c.JSON("missing required parameter: 'jtime' (float)")
-		return nil
+		errPrintable := ErrorPrintable{
+			Status:  400,
+			Message: "missing required parameter: 'jtime' (float)",
+		}
+		return c.JSON(errPrintable)
 	}
 
 	t := jt.FromJulianDate(jtime, loc)

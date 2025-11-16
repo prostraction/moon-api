@@ -24,8 +24,10 @@ func (s *Server) moonPositionMonthly(c *fiber.Ctx) error {
 	locationCords := parseCoords(latStr, lonStr)
 
 	if !locationCords.IsValid {
-		c.Status(400)
-		return c.JSON("latitude and longitude is required for this method.")
+		e := ErrorPrintable{}
+		e.Status = 400
+		e.Message = "latitude and longitude are required for this method."
+		return c.JSON(e)
 	}
 
 	if resp, err := s.positionCache.GetRisesMonthly(year, month, loc, precision, locationCords.Longitude, locationCords.Latitude); err == nil {

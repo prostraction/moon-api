@@ -49,12 +49,12 @@ type Parameters struct {
 
 // resp for 1 day
 type MoonPosition struct {
-	Timestamp       int64     `json:"Timestamp"`
-	TimeISO         time.Time `json:"TimeISO,omitempty"`
-	AzimuthDegrees  float64   `json:"AzimuthDegrees"`
-	AltitudeDegrees float64   `json:"AltitudeDegrees"`
-	Direction       string    `json:"Direction"`
-	DistanceKm      float64   `json:"DistanceKm"`
+	Timestamp       *int64     `json:"Timestamp,omitempty"`
+	Time            *time.Time `json:"Time"`
+	AzimuthDegrees  float64    `json:"AzimuthDegrees"`
+	AltitudeDegrees float64    `json:"AltitudeDegrees"`
+	Direction       string     `json:"Direction"`
+	DistanceKm      float64    `json:"DistanceKm"`
 }
 
 type DayData struct {
@@ -137,17 +137,17 @@ func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision i
 	}
 
 	for i := range monthResponse.Data {
-		if monthResponse.Data[i].Meridian != nil {
-			timestampToGoTime(monthResponse.Data[i].Meridian, loc)
-			monthResponse.Data[i].Meridian.TimeISO = time.Unix(monthResponse.Data[i].Meridian.Timestamp, 0)
+		if monthResponse.Data[i].Meridian != nil && monthResponse.Data[i].Meridian.Timestamp != nil {
+			monthResponse.Data[i].Meridian.Time = timestampToGoTime(monthResponse.Data[i].Meridian.Timestamp, loc)
+			monthResponse.Data[i].Meridian.Timestamp = nil
 		}
-		if monthResponse.Data[i].Moonrise != nil {
-			timestampToGoTime(monthResponse.Data[i].Moonrise, loc)
-			monthResponse.Data[i].Moonrise.TimeISO = time.Unix(monthResponse.Data[i].Moonrise.Timestamp, 0)
+		if monthResponse.Data[i].Moonrise != nil && monthResponse.Data[i].Moonrise.Timestamp != nil {
+			monthResponse.Data[i].Moonrise.Time = timestampToGoTime(monthResponse.Data[i].Moonrise.Timestamp, loc)
+			monthResponse.Data[i].Moonrise.Timestamp = nil
 		}
 		if monthResponse.Data[i].Moonset != nil {
-			timestampToGoTime(monthResponse.Data[i].Moonset, loc)
-			monthResponse.Data[i].Moonset.TimeISO = time.Unix(monthResponse.Data[i].Moonset.Timestamp, 0)
+			monthResponse.Data[i].Moonset.Time = timestampToGoTime(monthResponse.Data[i].Moonset.Timestamp, loc)
+			monthResponse.Data[i].Moonset.Timestamp = nil
 		}
 		t := time.Date(year, jt.GetMonth(month), 1+i, 0, 0, 0, 0, time.UTC).Format("2006-01-02")
 		monthResponse.Data[i].Day = &t
@@ -206,17 +206,17 @@ func GetRisesDay(year, month, day int, loc *time.Location, precision int, locati
 	if err := json.Unmarshal(body, &dayResponse); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
-	if dayResponse.Data.Meridian != nil {
-		timestampToGoTime(dayResponse.Data.Meridian, loc)
-		dayResponse.Data.Meridian.Timestamp = dayResponse.Data.Meridian.TimeISO.Unix()
+	if dayResponse.Data.Meridian != nil && dayResponse.Data.Meridian.Timestamp != nil {
+		dayResponse.Data.Meridian.Time = timestampToGoTime(dayResponse.Data.Meridian.Timestamp, loc)
+		dayResponse.Data.Meridian.Timestamp = nil
 	}
-	if dayResponse.Data.Moonrise != nil {
-		timestampToGoTime(dayResponse.Data.Moonrise, loc)
-		dayResponse.Data.Moonrise.Timestamp = dayResponse.Data.Moonrise.TimeISO.Unix()
+	if dayResponse.Data.Moonrise != nil && dayResponse.Data.Moonrise.Timestamp != nil {
+		dayResponse.Data.Moonrise.Time = timestampToGoTime(dayResponse.Data.Moonrise.Timestamp, loc)
+		dayResponse.Data.Moonrise.Timestamp = nil
 	}
 	if dayResponse.Data.Moonset != nil {
-		timestampToGoTime(dayResponse.Data.Moonset, loc)
-		dayResponse.Data.Moonset.Timestamp = dayResponse.Data.Moonset.TimeISO.Unix()
+		dayResponse.Data.Moonset.Time = timestampToGoTime(dayResponse.Data.Moonset.Timestamp, loc)
+		dayResponse.Data.Moonset.Timestamp = nil
 	}
 
 	return dayResponse.Data, nil
@@ -317,8 +317,10 @@ func GetMoonPosition(tGiven time.Time, loc *time.Location, precision int, locati
 	if err := json.Unmarshal(body, &pos); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
-	if pos != nil {
-		timestampToGoTime(pos, loc)
+	if pos != nil && pos.Timestamp != nil {
+		t := pos.Timestamp
+		pos.Time = timestampToGoTime(t, loc)
+		pos.Timestamp = nil
 	}
 
 	return pos, nil
@@ -335,10 +337,11 @@ func parseLocation(location []float64) (lat, lon float64, err error) {
 	return lat, lon, nil
 }
 
-func timestampToGoTime(ev *MoonPosition, loc *time.Location) {
-	utcTime := time.Unix(ev.Timestamp, 0).UTC()
-	ev.TimeISO = utcTime
+func timestampToGoTime(ev *int64, loc *time.Location) *time.Time {
+	utcTime := time.Unix(*ev, 0).UTC()
+	time := utcTime
 	if loc != nil {
-		ev.TimeISO = ev.TimeISO.In(loc)
+		time = time.In(loc)
 	}
+	return &time
 }

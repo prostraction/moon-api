@@ -43,24 +43,24 @@ func (c *Cache) MoonDetailed(tGiven time.Time, loc *time.Location, lang string, 
 	if err1 == nil && err2 == nil {
 		if moonRiseYesterday.IsMoonRise {
 			moonDaysDetailed.Day[0].Begin = new(time.Time)
-			*moonDaysDetailed.Day[0].Begin = moonRiseYesterday.Moonrise.TimeISO
+			moonDaysDetailed.Day[0].Begin = moonRiseYesterday.Moonrise.Time
 			moonDaysDetailed.Day[0].IsBeginExists = true
 		}
 		if moonRiseToday.IsMoonRise {
 			moonDaysDetailed.Day[0].End = new(time.Time)
-			*moonDaysDetailed.Day[0].End = moonRiseToday.Moonrise.TimeISO
+			moonDaysDetailed.Day[0].End = moonRiseToday.Moonrise.Time
 			moonDaysDetailed.Day[0].IsEndExists = true
 		}
 	}
 	if err2 == nil && err3 == nil {
 		if moonRiseToday.IsMoonRise {
 			moonDaysDetailed.Day[1].Begin = new(time.Time)
-			*moonDaysDetailed.Day[1].Begin = moonRiseToday.Moonrise.TimeISO
+			moonDaysDetailed.Day[1].Begin = moonRiseToday.Moonrise.Time
 			moonDaysDetailed.Day[1].IsBeginExists = true
 		}
 		if moonRiseTomorrow.IsMoonRise {
 			moonDaysDetailed.Day[1].End = new(time.Time)
-			*moonDaysDetailed.Day[1].End = moonRiseTomorrow.Moonrise.TimeISO
+			moonDaysDetailed.Day[1].End = moonRiseTomorrow.Moonrise.Time
 			moonDaysDetailed.Day[1].IsEndExists = true
 		}
 	}
