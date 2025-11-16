@@ -27,7 +27,9 @@ func (s *Server) moonPhaseCurrentV1(c *fiber.Ctx) error {
 	lonStr := c.Query("longitude", "no-value")
 	locationCords := parseCoords(latStr, lonStr)
 
-	return s.moonPhaseV1(c, tGiven, precision, locationCords)
+	timeFormat := c.Query("timeFormat", "ISO")
+
+	return s.moonPhaseV1(c, tGiven, precision, locationCords, timeFormat)
 }
 
 func (s *Server) moonPhaseTimestampV1(c *fiber.Ctx) error {
@@ -52,7 +54,9 @@ func (s *Server) moonPhaseTimestampV1(c *fiber.Ctx) error {
 	lonStr := c.Query("longitude", "no-value")
 	locationCords := parseCoords(latStr, lonStr)
 
-	return s.moonPhaseV1(c, tGiven, precision, locationCords)
+	timeFormat := c.Query("timeFormat", "ISO")
+
+	return s.moonPhaseV1(c, tGiven, precision, locationCords, timeFormat)
 }
 
 func (s *Server) moonPhaseDatetV1(c *fiber.Ctx) error {
@@ -88,12 +92,14 @@ func (s *Server) moonPhaseDatetV1(c *fiber.Ctx) error {
 	lonStr := c.Query("longitude", "no-value")
 	locationCords := parseCoords(latStr, lonStr)
 
+	timeFormat := c.Query("timeFormat", "ISO")
+
 	tGiven := time.Date(year, jt.GetMonth(month), day, hour, minute, second, 0, time.Local)
 	tGiven = tGiven.In(loc)
-	return s.moonPhaseV1(c, tGiven, precision, locationCords)
+	return s.moonPhaseV1(c, tGiven, precision, locationCords, timeFormat)
 }
 
-func (s *Server) moonPhaseV1(c *fiber.Ctx, tGiven time.Time, precision int, locationCords Coordinates) error {
+func (s *Server) moonPhaseV1(c *fiber.Ctx, tGiven time.Time, precision int, locationCords Coordinates, timeFormat string) error {
 	lang := c.Query("lang", "en")
 	utc := c.Query("utc", "UTC:+0")
 	loc, _ := jt.SetTimezoneLocFromString(utc)

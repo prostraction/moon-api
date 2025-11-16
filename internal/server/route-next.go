@@ -17,7 +17,7 @@ func (s *Server) moonNextMoonPhaseV1(c *fiber.Ctx) error {
 
 	np := s.moonCache.FindNearestPhase(tGiven)
 
-	format := c.Query("format", "ISO")
+	format := c.Query("timeFormat", "ISO")
 	if strings.ToLower(format) == "timestamp" {
 		npt := moon.NearestPhaseTimestamp{
 			NewMoon:      np.NewMoon.Unix(),

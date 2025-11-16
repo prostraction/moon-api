@@ -105,8 +105,7 @@ MoonPosition structure (Exists only if latitude and longitude are specified):
 
   | Response Variable | Type | Description | Example Value |
 | :--- | :--- | :--- | :--- |
-|`MoonPosition.Timestamp` | `Integer [required]` | Unix timestamp of calculation | `1757962800` |
-|`MoonPosition.TimeISO` | `String [required]` | ISO 8601 timestamp | `"2025-09-16T00:00:00+05:00"` |
+|`MoonPosition.Time` | `String / int64 [required]` | Time in ISO (default) or specified timeFormat | `"2025-09-16T00:00:00+05:00"` |
 |`MoonPosition.AzimuthDegrees` | `Float [required]` | Compass direction (0°=North) | `57.1` |
 |`MoonPosition.AltitudeDegrees` | `Float [required]` | Angle above horizon (negative = below) | `8.8` |
 |`MoonPosition.Direction` | `String [required]` | Cardinal direction abbreviation | `"ENE"` |
@@ -183,8 +182,7 @@ MoonPosition structure:
 
 | Response Variable | Type | Description | Example Value |
 | :--- | :--- | :--- | :--- |
-|`MoonPosition.Timestamp` | `Integer [required]` | Moonrise Unix timestamp | `1758048970` |
-|`MoonPosition.TimeISO` | `String [required]` | Moonrise ISO time | `"2025-09-16T23:56:10+05:00"` |
+|`MoonPosition.Time` | `String / int64 [required]` | Time in ISO (default) or specified timeFormat | `"2025-09-16T00:00:00+05:00"` |
 |`MoonPosition.AzimuthDegrees` | `Float [required]` | Moonrise azimuth | `47.3` |
 |`MoonPosition.AltitudeDegrees` | `Float [required]` | Moonrise altitude | `-0.6` |
 |`MoonPosition.Direction` | `String [required]` | Moonrise direction | `"ENE"` |
@@ -221,8 +219,7 @@ Response of:
       "Emoji": "♊"
     },
     "MoonPosition": {
-      "Timestamp": 1757883600,
-      "TimeISO": "2025-09-15T02:00:00+05:00",
+      "Time": "2025-09-15T02:00:00+05:00",
       "AzimuthDegrees": 66.96877,
       "AltitudeDegrees": 17.50543,
       "Direction": "ENE",
@@ -244,8 +241,7 @@ Response of:
       "Emoji": "♊"
     },
     "MoonPosition": {
-      "Timestamp": 1757926800,
-      "TimeISO": "2025-09-15T14:00:00+05:00",
+      "Time": "2025-09-15T14:00:00+05:00",
       "AzimuthDegrees": 279.37345,
       "AltitudeDegrees": 29.04833,
       "Direction": "W",
@@ -267,8 +263,7 @@ Response of:
       "Emoji": "♊"
     },
     "MoonPosition": {
-      "Timestamp": 1757970000,
-      "TimeISO": "2025-09-16T02:00:00+05:00",
+      "Time": "2025-09-16T02:00:00+05:00",
       "AzimuthDegrees": 57.08873,
       "AltitudeDegrees": 8.79646,
       "Direction": "ENE",
@@ -309,24 +304,21 @@ Response of:
     "IsMoonSet": true,
     "IsMeridian": true,
     "Moonrise": {
-      "Timestamp": 1757957865,
-      "TimeISO": "2025-09-15T22:37:45+05:00",
+      "Time": "2025-09-15T22:37:45+05:00",
       "AzimuthDegrees": 42.31555,
       "AltitudeDegrees": -0.56667,
       "Direction": "NE",
       "DistanceKm": 376365.00012
     },
     "Moonset": {
-      "Timestamp": 1757933213,
-      "TimeISO": "2025-09-15T15:46:53+05:00",
+      "Time": "2025-09-15T15:46:53+05:00",
       "AzimuthDegrees": 318.44328,
       "AltitudeDegrees": -0.56667,
       "Direction": "NW",
       "DistanceKm": 375398.22022
     },
     "Meridian": {
-      "Timestamp": 1757900413,
-      "TimeISO": "2025-09-15T06:40:13+05:00",
+      "Time": "2025-09-15T06:40:13+05:00",
       "AzimuthDegrees": 180,
       "AltitudeDegrees": 67.1,
       "Direction": "S",
@@ -428,8 +420,7 @@ MoonPosition structure:
 
 | Response Variable | Type | Description | Example Value |
 | :--- | :--- | :--- | :--- |
-|`MoonPosition.Timestamp` | `Integer [required]` | Moonrise Unix timestamp | `1758048970` |
-|`MoonPosition.TimeISO` | `String [required]` | Moonrise ISO time | `"2025-09-16T23:56:10+05:00"` |
+|`MoonPosition.Time` | `String / int64 [required]` | Time in ISO (default) or specified timeFormat | `"2025-09-16T00:00:00+05:00"` |
 |`MoonPosition.AzimuthDegrees` | `Float [required]` | Moonrise azimuth | `47.3` |
 |`MoonPosition.AltitudeDegrees` | `Float [required]` | Moonrise altitude | `-0.6` |
 |`MoonPosition.Direction` | `String [required]` | Moonrise direction | `"ENE"` |
@@ -442,7 +433,6 @@ MoonPosition structure:
 #### Response example
 
 ```json
-
 [
     {
         "Date": "2023-03-01",
@@ -450,24 +440,21 @@ MoonPosition structure:
         "IsMoonSet": true,
         "IsMeridian": true,
         "Moonrise": {
-            "Timestamp": 1677650857,
-            "TimeISO": "2023-03-01T11:07:37+05:00",
+            "Time": "2023-03-01T11:07:37+05:00",
             "AzimuthDegrees": 42.8762,
             "AltitudeDegrees": -0.56667,
             "Direction": "NE",
             "DistanceKm": 402636.75966
         },
         "Moonset": {
-            "Timestamp": 1677625807,
-            "TimeISO": "2023-03-01T04:10:07+05:00",
+            "Time": "2023-03-01T04:10:07+05:00",
             "AzimuthDegrees": 316.74613,
             "AltitudeDegrees": -0.56667,
             "Direction": "NW",
             "DistanceKm": 401798.89266
         },
         "Meridian": {
-            "Timestamp": 1677683130,
-            "TimeISO": "2023-03-01T20:05:30+05:00",
+            "Time": "2023-03-01T20:05:30+05:00",
             "AzimuthDegrees": 180,
             "AltitudeDegrees": 66.2,
             "Direction": "S",
@@ -480,24 +467,21 @@ MoonPosition structure:
         "IsMoonSet": true,
         "IsMeridian": true,
         "Moonrise": {
-            "Timestamp": 1677740467,
-            "TimeISO": "2023-03-02T12:01:07+05:00",
+            "Time": "2023-03-02T12:01:07+05:00",
             "AzimuthDegrees": 43.38104,
             "AltitudeDegrees": -0.56667,
             "Direction": "NE",
             "DistanceKm": 404836.13007
         },
         "Moonset": {
-            "Timestamp": 1677715380,
-            "TimeISO": "2023-03-02T05:03:00+05:00",
+            "Time": "2023-03-02T05:03:00+05:00",
             "AzimuthDegrees": 317.04922,
             "AltitudeDegrees": -0.56667,
             "Direction": "NW",
             "DistanceKm": 404345.126
         },
         "Meridian": {
-            "Timestamp": 1677772596,
-            "TimeISO": "2023-03-02T20:56:36+05:00",
+            "Time": "2023-03-02T20:56:36+05:00",
             "AzimuthDegrees": 180,
             "AltitudeDegrees": 65.4,
             "Direction": "S",
@@ -511,24 +495,21 @@ MoonPosition structure:
         "IsMoonSet": true,
         "IsMeridian": true,
         "Moonrise": {
-            "Timestamp": 1680245913,
-            "TimeISO": "2023-03-31T11:58:33+05:00",
+            "Time": "2023-03-31T11:58:33+05:00",
             "AzimuthDegrees": 49.55137,
             "AltitudeDegrees": -0.56667,
             "Direction": "NE",
             "DistanceKm": 404935.96867
         },
         "Moonset": {
-            "Timestamp": 1680218226,
-            "TimeISO": "2023-03-31T04:17:06+05:00",
+            "Time": "2023-03-31T04:17:06+05:00",
             "AzimuthDegrees": 312.1322,
             "AltitudeDegrees": -0.56667,
             "Direction": "NW",
             "DistanceKm": 404804.48186
         },
         "Meridian": {
-            "Timestamp": 1680276504,
-            "TimeISO": "2023-03-31T20:28:24+05:00",
+            "Time": "2023-03-31T20:28:24+05:00",
             "AzimuthDegrees": 180,
             "AltitudeDegrees": 61.6,
             "Direction": "S",
@@ -551,7 +532,7 @@ The method returns the moon phases for the given year. The response contains an 
 |`utc` | `string [optional, default="UTC+0"]` | UTC in format `UTC+7`, `UTC+09:30`, `-3` | `UTC+4`
 |`year` | `int [optional, default=<current year>]` | Format: YYYY Allowed range: [1, 9999] | `2025`
 
-#### Response
+#### Response example
 
 ```json
 [
@@ -592,7 +573,7 @@ The method returns the moon phases for the current year. The response contains a
 | :--- | :--- | :--- |  :--- | 
 |`utc` | `string [optional, default="UTC+0"]` | UTC in format `UTC+7`, `UTC+09:30`, `-3` | `UTC+4`
 
-#### Response:
+#### Response
 
 Response: as [GET /api/v1/moonTableYear](https://github.com/prostraction/moon#v1moontableyear-response)
 
@@ -614,7 +595,7 @@ The method converts human date to julian time (UTC +0 timezone).
 |`minute` | `int [optional, default=<current minute>]` | Format: m or mm. Allowed range: [0, 59] | `01` or `1`
 |`second` | `int [optional, default=<current second>]` | Format: s or ss. Allowed range: [0, 59] | `01` or `1`
 
-#### Response:
+#### Response example
 
 ```json
 {
@@ -638,7 +619,7 @@ The method converts human date to julian time (UTC +0 timezone).
 |`timestamp` | `int [optional, default=<current>]` | Timestamp for calculations. Current, if not specified | `1735693261`
 
 
-#### Response:
+#### Response example
 
 ```json
 {
@@ -662,7 +643,7 @@ The method converts julian time to human time (UTC +0 timezone).
 |`jtime` | `float64 [required]` | Julian Time to convert (float64) | `2460676.5423726854`
 
 
-#### Response:
+#### Response example
 
 ```json
 {
@@ -672,3 +653,49 @@ The method converts julian time to human time (UTC +0 timezone).
 }
 ```
 
+### GET /api/v1/nextMoonPhase
+
+The method returns next moon phase
+
+#### Params
+
+  | Parameter | Type | Description | Example Value |
+| :--- | :--- | :--- |  :--- | 
+|`utc` | `string [optional, default="UTC+0"]` | UTC in format `UTC+7`, `UTC+09:30`, `-3` | `UTC+4`
+|`timeFormat` | `string [optional]` | Available values: ISO (default), timestamp, duration. Duration is seconds between current date and event time. | `duration`
+
+
+#### Response example:
+
+timeFormat: `ISO`
+
+```json
+{
+    "NewMoon": "2025-11-20T11:48:16+05:00",
+    "FirstQuarter": "2025-11-28T11:44:00+05:00",
+    "FullMoon": "2025-12-05T04:15:18+05:00",
+    "LastQuarter": "2025-12-12T02:04:31+05:00"
+}
+```
+
+timeFormat: `timestamp`
+
+```json
+{
+    "NewMoon": 1763621296,
+    "FirstQuarter": 1764312240,
+    "FullMoon": 1764890118,
+    "LastQuarter": 1765487071
+}
+```
+
+timeFormat: `duration`
+
+```json
+{
+    "NewMoon": 313830,
+    "FirstQuarter": 1004774,
+    "FullMoon": 1582652,
+    "LastQuarter": 2179605
+}
+```
