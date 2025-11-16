@@ -30,6 +30,7 @@ The method returns the Moon parameters for the specified day and time. If the da
 |`utc` | `string [optional, default="UTC+0"]` | UTC in format `UTC+7`, `UTC+09:30`, `-3` | `UTC+4`
 |`lang` | `string [optional, default="en"]` | Values available: ("en", "es", "fr", "de", "ru", "jp") | `es`
 |`precision` | `int [optional, default=2]` | How many digits after ```.``` will be in output. Allowed range: [1, 20] | `5`
+|`timeFormat` | `string [optional]` | How the data will be formed. Available values: ISO (default), timestamp, duration or Go format. Duration is seconds between current date and event time.| `duration`
 |`latitude` | `float [optional, default=none]` | Latitude of viewer's place. Used for moon position calculations: ```MoonDaysDetailed```, ```MoonRiseAndSet```, and ```MoonPosition``` object | `51.1655`
 |`longitude` | `float [optional, default=none]` | Longitude of viewer's place. Used for moon position calculations: ```MoonDaysDetailed```, ```MoonRiseAndSet```, and ```MoonPosition``` object | `71.4272`
 |`year` | `int [optional, default=<current year>]` | Format: YYYY Allowed range: [1, 9999] | `2025`
@@ -38,6 +39,7 @@ The method returns the Moon parameters for the specified day and time. If the da
 |`hour` | `int [optional, default=<current hour>]` | Format: h or hh. Allowed range: [0, 23] | `01` or `1`
 |`minute` | `int [optional, default=<current minute>]` | Format: m or mm. Allowed range: [0, 59] | `01` or `1`
 |`second` | `int [optional, default=<current second>]` | Format: s or ss. Allowed range: [0, 59] | `01` or `1`
+
 
 ----------------------------------------------------------------
 
@@ -194,7 +196,7 @@ MoonPosition structure:
 
 ----------------------------------------------------------------
 
-#### Response example
+#### Response examples
 
 Response of:
 ```GET /api/v1/moonPhaseDate?lang=ru&utc=5&latitude=51.1655&longitude=71.4272&year=2025&month=09&day=15&precision=5&hour=12&minute=0&second=0```
@@ -330,6 +332,269 @@ Response of:
 
 </details>
 
+
+<details>
+  <summary><strong>timeFormat = 2006-01-02 15:04</strong></summary>
+
+```json
+{
+    "BeginDay": {
+        "MoonDays": 0.85568,
+        "Illumination": 0.35744,
+        "Phase": {
+            "Name": "New Moon",
+            "NameLocalized": "Новолуние",
+            "Emoji": "🌑",
+            "IsWaxing": true
+        },
+        "Zodiac": {
+            "Name": "Virgo",
+            "NameLocalized": "Дева",
+            "Emoji": "♍"
+        },
+        "MoonPosition": {
+            "Time": "2025-01-01 00:00",
+            "AzimuthDegrees": 326.86255,
+            "AltitudeDegrees": -62.68617,
+            "Direction": "NNW",
+            "DistanceKm": 382464.56722
+        }
+    },
+    "CurrentState": {
+        "MoonDays": 0.89806,
+        "Illumination": 0.4137,
+        "Phase": {
+            "Name": "New Moon",
+            "NameLocalized": "Новолуние",
+            "Emoji": "🌑",
+            "IsWaxing": true
+        },
+        "Zodiac": {
+            "Name": "Virgo",
+            "NameLocalized": "Дева",
+            "Emoji": "♍"
+        },
+        "MoonPosition": {
+            "Time": "2025-01-01 01:01",
+            "AzimuthDegrees": 356.08557,
+            "AltitudeDegrees": -65.49632,
+            "Direction": "N",
+            "DistanceKm": 382316.55173
+        }
+    },
+    "EndDay": {
+        "MoonDays": 1.85568,
+        "Illumination": 2.79491,
+        "Phase": {
+            "Name": "New Moon",
+            "NameLocalized": "Новолуние",
+            "Emoji": "🌑",
+            "IsWaxing": true
+        },
+        "Zodiac": {
+            "Name": "Virgo",
+            "NameLocalized": "Дева",
+            "Emoji": "♍"
+        },
+        "MoonPosition": {
+            "Time": "2025-01-02 00:00",
+            "AzimuthDegrees": 309.21002,
+            "AltitudeDegrees": -54.25535,
+            "Direction": "NW",
+            "DistanceKm": 379194.7976
+        }
+    },
+    "MoonDaysDetailed": {
+        "Count": 2,
+        "Day": [
+            {
+                "Begin": "2024-12-31 09:18",
+                "IsBeginExists": true,
+                "End": "2025-01-01 09:55",
+                "IsEndExists": true
+            },
+            {
+                "Begin": "2025-01-01 09:55",
+                "IsBeginExists": true,
+                "End": "2025-01-02 10:21",
+                "IsEndExists": true
+            }
+        ]
+    },
+    "ZodiacDetailed": {
+        "Count": 1,
+        "Zodiac": [
+            {
+                "Name": "Virgo",
+                "NameLocalized": "Дева",
+                "Emoji": "♍",
+                "Begin": "2024-12-31 03:27",
+                "End": "2025-01-02 15:27"
+            }
+        ]
+    },
+    "MoonRiseAndSet": {
+        "IsMoonRise": true,
+        "IsMoonSet": true,
+        "IsMeridian": true,
+        "Moonrise": {
+            "Time": "2025-01-01 09:55",
+            "AzimuthDegrees": 133.52155,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "SE",
+            "DistanceKm": 381054.53085
+        },
+        "Moonset": {
+            "Time": "2025-01-01 17:26",
+            "AzimuthDegrees": 228.55471,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "SW",
+            "DistanceKm": 380040.1844
+        },
+        "Meridian": {
+            "Time": "2025-01-01 13:36",
+            "AzimuthDegrees": 180,
+            "AltitudeDegrees": 13.2,
+            "Direction": "S",
+            "DistanceKm": 380550.46947
+        }
+    }
+}
+```
+
+</details>
+
+<details>
+  <summary><strong>timeFormat = timestamp</strong></summary>
+
+```json
+{
+    "BeginDay": {
+        "MoonDays": 0.85568,
+        "Illumination": 0.35744,
+        "Phase": {
+            "Name": "New Moon",
+            "NameLocalized": "Новолуние",
+            "Emoji": "🌑",
+            "IsWaxing": true
+        },
+        "Zodiac": {
+            "Name": "Virgo",
+            "NameLocalized": "Дева",
+            "Emoji": "♍"
+        },
+        "MoonPosition": {
+            "Time": 1735671600,
+            "AzimuthDegrees": 326.86255,
+            "AltitudeDegrees": -62.68617,
+            "Direction": "NNW",
+            "DistanceKm": 382464.56722
+        }
+    },
+    "CurrentState": {
+        "MoonDays": 0.89806,
+        "Illumination": 0.4137,
+        "Phase": {
+            "Name": "New Moon",
+            "NameLocalized": "Новолуние",
+            "Emoji": "🌑",
+            "IsWaxing": true
+        },
+        "Zodiac": {
+            "Name": "Virgo",
+            "NameLocalized": "Дева",
+            "Emoji": "♍"
+        },
+        "MoonPosition": {
+            "Time": 1735675261,
+            "AzimuthDegrees": 356.08557,
+            "AltitudeDegrees": -65.49632,
+            "Direction": "N",
+            "DistanceKm": 382316.55173
+        }
+    },
+    "EndDay": {
+        "MoonDays": 1.85568,
+        "Illumination": 2.79491,
+        "Phase": {
+            "Name": "New Moon",
+            "NameLocalized": "Новолуние",
+            "Emoji": "🌑",
+            "IsWaxing": true
+        },
+        "Zodiac": {
+            "Name": "Virgo",
+            "NameLocalized": "Дева",
+            "Emoji": "♍"
+        },
+        "MoonPosition": {
+            "Time": 1735758000,
+            "AzimuthDegrees": 309.21002,
+            "AltitudeDegrees": -54.25535,
+            "Direction": "NW",
+            "DistanceKm": 379194.7976
+        }
+    },
+    "MoonDaysDetailed": {
+        "Count": 2,
+        "Day": [
+            {
+                "Begin": 1735618722,
+                "IsBeginExists": true,
+                "End": 1735707321,
+                "IsEndExists": true
+            },
+            {
+                "Begin": 1735707321,
+                "IsBeginExists": true,
+                "End": 1735795276,
+                "IsEndExists": true
+            }
+        ]
+    },
+    "ZodiacDetailed": {
+        "Count": 1,
+        "Zodiac": [
+            {
+                "Name": "Virgo",
+                "NameLocalized": "Дева",
+                "Emoji": "♍",
+                "Begin": 1735597669,
+                "End": 1735813669
+            }
+        ]
+    },
+    "MoonRiseAndSet": {
+        "IsMoonRise": true,
+        "IsMoonSet": true,
+        "IsMeridian": true,
+        "Moonrise": {
+            "Time": 1735707321,
+            "AzimuthDegrees": 133.52155,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "SE",
+            "DistanceKm": 381054.53085
+        },
+        "Moonset": {
+            "Time": 1735734376,
+            "AzimuthDegrees": 228.55471,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "SW",
+            "DistanceKm": 380040.1844
+        },
+        "Meridian": {
+            "Time": 1735720605,
+            "AzimuthDegrees": 180,
+            "AltitudeDegrees": 13.2,
+            "Direction": "S",
+            "DistanceKm": 380550.46947
+        }
+    }
+}
+```
+
+</details>
+
 ----------------------------------------------------------------
 
 ### GET /api/v1/moonPhaseCurrent
@@ -347,6 +612,7 @@ This is a synonym for the moonPhaseDate method without day and time Params.
 |`precision` | `int [optional, default=2]` | How many digits after ```.``` will be in output. Allowed range: [1, 20] | `5`
 |`latitude` | `float [optional, default=none]` | Latitude of viewer's place. Used for moon position calculations: ```MoonDaysDetailed```, ```MoonRiseAndSet```, and ```MoonPosition``` object | `51.1655`
 |`longitude` | `float [optional, default=none]` | Longitude of viewer's place. Used for moon position calculations: ```MoonDaysDetailed```, ```MoonRiseAndSet```, and ```MoonPosition``` object | `71.4272`
+|`timeFormat` | `string [optional]` | How the data will be formed. Available values: ISO (default), timestamp, duration or Go format. Duration is seconds between current date and event time.| `duration`
 
 #### Response
 
@@ -370,6 +636,7 @@ This is a synonym for the moonPhaseDate method but with timestamp instead of dat
 |`latitude` | `float [optional, default=none]` | Latitude of viewer's place. Used for moon position calculations: ```MoonDaysDetailed```, ```MoonRiseAndSet```, and ```MoonPosition``` object | `51.1655`
 |`longitude` | `float [optional, default=none]` | Longitude of viewer's place. Used for moon position calculations: ```MoonDaysDetailed```, ```MoonRiseAndSet```, and ```MoonPosition``` object | `71.4272`
 |`timestamp` | `int [optional, default=<current>]` | Timestamp for calculations | `1758045697`
+|`timeFormat` | `string [optional]` | How the data will be formed. Available values: ISO (default), timestamp, duration or Go format. Duration is seconds between current date and event time.| `duration`
 
 #### Response
 
@@ -391,6 +658,7 @@ The method returns Moon position for specified month.
 |`longitude` | `float [required]` | Longitude of viewer's place. Used for moon position calculations: ```MoonDaysDetailed```, ```MoonRiseAndSet```, and ```MoonPosition``` object | `71.4272`
 |`year` | `int [optional, default=<current year>]` | Format: YYYY Allowed range: [1, 9999] | `2025`
 |`month` | `int [optional, default=<current month>]` | Format: M or MM. Allowed range: [1, 12] | `01` or `1`
+|`timeFormat` | `string [optional]` | How the data will be formed. Available values: ISO (default), timestamp, duration or Go format. Duration is seconds between current date and event time.| `duration`
 
 #### Response
 
@@ -431,6 +699,9 @@ MoonPosition structure:
 </details>
 
 #### Response example
+
+<details>
+  <summary><strong>JSON</strong></summary>
 
 ```json
 [
@@ -519,6 +790,82 @@ MoonPosition structure:
 ]
 ```
 
+</details>
+
+<details>
+  <summary><strong>timeFormat '2006-01-02 15:04'</strong></summary>
+
+```json
+[
+    {
+        "Date": "2023-03-01",
+        "IsMoonRise": true,
+        "IsMoonSet": true,
+        "IsMeridian": true,
+        "Moonrise": {
+            "Time": "2023-03-01 11:07",
+            "AzimuthDegrees": 42.8762,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "NE",
+            "DistanceKm": 402636.75966
+        },
+        "Moonset": {
+            "Time": "2023-03-01 04:10",
+            "AzimuthDegrees": 316.74613,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "NW",
+            "DistanceKm": 401798.89266
+        },
+        "Meridian": {
+            "Time": "2023-03-01 20:05",
+            "AzimuthDegrees": 180,
+            "AltitudeDegrees": 66.2,
+            "Direction": "S",
+            "DistanceKm": 403572.05151
+        }
+    },
+ ...
+```
+
+</details>
+
+
+<details>
+  <summary><strong>timeFormat 'timestamp'</strong></summary>
+
+```json
+[
+    {
+        "Date": "2023-03-01",
+        "IsMoonRise": true,
+        "IsMoonSet": true,
+        "IsMeridian": true,
+        "Moonrise": {
+            "Time": 1677650857,
+            "AzimuthDegrees": 42.8762,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "NE",
+            "DistanceKm": 402636.75966
+        },
+        "Moonset": {
+            "Time": 1677625807,
+            "AzimuthDegrees": 316.74613,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "NW",
+            "DistanceKm": 401798.89266
+        },
+        "Meridian": {
+            "Time": 1677683130,
+            "AzimuthDegrees": 180,
+            "AltitudeDegrees": 66.2,
+            "Direction": "S",
+            "DistanceKm": 403572.05151
+        }
+    },
+ ...
+```
+</details>
+
 ----------------------------------------------------------------
 
 ### GET /api/v1/moonTableYear
@@ -531,8 +878,12 @@ The method returns the moon phases for the given year. The response contains an 
 | :--- | :--- | :--- |  :--- | 
 |`utc` | `string [optional, default="UTC+0"]` | UTC in format `UTC+7`, `UTC+09:30`, `-3` | `UTC+4`
 |`year` | `int [optional, default=<current year>]` | Format: YYYY Allowed range: [1, 9999] | `2025`
+|`timeFormat` | `string [optional]` | How the data will be formed. Available values: ISO (default), timestamp, duration or Go format. Duration is seconds between current date and event time.| `duration`
 
 #### Response example
+
+<details>
+  <summary><strong>JSON</strong></summary>
 
 ```json
 [
@@ -561,6 +912,72 @@ The method returns the moon phases for the given year. The response contains an 
 ]
 ```
 
+</details>
+
+<details>
+  <summary><strong>timeFormat '2006-01-02 15:04'</strong></summary>
+
+```json
+[
+    // first moon of the year
+    {
+        "NewMoon": "2022-12-23 15:17",
+        "FirstQuarter": "2022-12-30 06:24",
+        "FullMoon": "2023-01-07 04:09",
+        "LastQuarter": "2023-01-07 04:09"
+    },
+    // second moon of the year
+    {
+        "NewMoon": "2023-01-22 01:55",
+        "FirstQuarter": "2023-01-28 20:05",
+        "FullMoon": "2023-02-05 23:30",
+        "LastQuarter": "2023-02-05 23:30"
+    },
+...
+    // last moon of the year
+    {
+        "NewMoon": "2023-12-13 04:32",
+        "FirstQuarter": "2023-12-19 23:42",
+        "FullMoon": "2023-12-27 05:33",
+        "LastQuarter": "2023-12-27 05:33"
+    }
+]
+```
+
+</details>
+
+<details>
+  <summary><strong>timeFormat 'timestamp'</strong></summary>
+
+```json
+[
+    // first moon of the year
+    {
+        "NewMoon": 1671790676,
+        "FirstQuarter": 1672363444,
+        "FullMoon": 1673046595,
+        "LastQuarter": 1673046595
+    },
+    // second moon of the year
+    {
+        "NewMoon": 1674334530,
+        "FirstQuarter": 1674918315,
+        "FullMoon": 1675621844,
+        "LastQuarter": 1675621844
+    },
+...
+    // last moon of the year
+    {
+        "NewMoon": 1702423927,
+        "FirstQuarter": 1703011321,
+        "FullMoon": 1703637223,
+        "LastQuarter": 1703637223
+    }
+]
+```
+
+</details>
+
 ----------------------------------------------------------------
 
 ### GET /api/v1/moonTableCurrent
@@ -572,6 +989,7 @@ The method returns the moon phases for the current year. The response contains a
   | Parameter | Type | Description | Example Value |
 | :--- | :--- | :--- |  :--- | 
 |`utc` | `string [optional, default="UTC+0"]` | UTC in format `UTC+7`, `UTC+09:30`, `-3` | `UTC+4`
+|`timeFormat` | `string [optional]` | How the data will be formed. Available values: ISO (default), timestamp, duration or Go format. Duration is seconds between current date and event time.| `duration`
 
 #### Response
 
@@ -662,7 +1080,7 @@ The method returns next moon phase
   | Parameter | Type | Description | Example Value |
 | :--- | :--- | :--- |  :--- | 
 |`utc` | `string [optional, default="UTC+0"]` | UTC in format `UTC+7`, `UTC+09:30`, `-3` | `UTC+4`
-|`timeFormat` | `string [optional]` | Available values: ISO (default), timestamp, duration. Duration is seconds between current date and event time. | `duration`
+|`timeFormat` | `string [optional]` | How the data will be formed. Available values: ISO (default), timestamp, duration or Go format. Duration is seconds between current date and event time.| `duration`
 
 
 #### Response example:
@@ -675,6 +1093,17 @@ timeFormat: `ISO`
     "FirstQuarter": "2025-11-28T11:44:00+05:00",
     "FullMoon": "2025-12-05T04:15:18+05:00",
     "LastQuarter": "2025-12-12T02:04:31+05:00"
+}
+```
+
+timeFormat: `Mon, 02 Jan 2006 15:04:05`
+
+```json
+{
+    "NewMoon": "Thu, 20 Nov 2025 11:48:16",
+    "FirstQuarter": "Fri, 28 Nov 2025 11:44:00",
+    "FullMoon": "Fri, 05 Dec 2025 04:15:18",
+    "LastQuarter": "Fri, 12 Dec 2025 02:04:31"
 }
 ```
 

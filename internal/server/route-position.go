@@ -23,6 +23,8 @@ func (s *Server) moonPositionMonthly(c *fiber.Ctx) error {
 	lonStr := c.Query("longitude", "no-value")
 	locationCords := parseCoords(latStr, lonStr)
 
+	timeFormat := c.Query("timeFormat", "ISO")
+
 	if !locationCords.IsValid {
 		e := ErrorPrintable{}
 		e.Status = 400
@@ -30,7 +32,7 @@ func (s *Server) moonPositionMonthly(c *fiber.Ctx) error {
 		return c.JSON(e)
 	}
 
-	if resp, err := s.positionCache.GetRisesMonthly(year, month, loc, precision, locationCords.Longitude, locationCords.Latitude); err == nil {
+	if resp, err := s.positionCache.GetRisesMonthly(year, month, loc, precision, timeFormat, locationCords.Longitude, locationCords.Latitude); err == nil {
 		return c.JSON(resp)
 	} else {
 		e := ErrorPrintable{}

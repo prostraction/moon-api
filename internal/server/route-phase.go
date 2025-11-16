@@ -132,32 +132,32 @@ func (s *Server) moonPhaseV1(c *fiber.Ctx, tGiven time.Time, precision int, loca
 	resp.CurrentState.Illumination = ToFixed(resp.info.IlluminationCurrent*100, precision)
 	resp.EndDay.Illumination = ToFixed(resp.info.IlluminationEndDay*100, precision)
 
-	resp.ZodiacDetailed, resp.BeginDay.Zodiac, resp.CurrentState.Zodiac, resp.EndDay.Zodiac = zodiac.CurrentZodiacs(tGiven, loc, lang, s.moonCache.CreateMoonTable(tGiven).Elems)
+	resp.ZodiacDetailed, resp.BeginDay.Zodiac, resp.CurrentState.Zodiac, resp.EndDay.Zodiac = zodiac.CurrentZodiacs(tGiven, loc, lang, timeFormat, s.moonCache.CreateMoonTable(tGiven).Elems)
 
 	if locationCords.IsValid {
-		resp.MoonRiseAndSet, err = s.positionCache.GetRisesDay(tGiven.Year(), int(tGiven.Month()), tGiven.Day(), tGiven.Location(), precision, locationCords.Longitude, locationCords.Latitude)
+		resp.MoonRiseAndSet, err = s.positionCache.GetRisesDay(tGiven.Year(), int(tGiven.Month()), tGiven.Day(), tGiven.Location(), precision, timeFormat, locationCords.Longitude, locationCords.Latitude)
 		if err != nil {
 			log.Error(err)
 		}
-		resp.MoonDaysDetailed = s.moonCache.MoonDetailed(tGiven, loc, lang, locationCords.Longitude, locationCords.Latitude)
+		resp.MoonDaysDetailed = s.moonCache.MoonDetailed(tGiven, loc, lang, timeFormat, locationCords.Longitude, locationCords.Latitude)
 
 		newT := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), 0, 0, 0, 0, tGiven.Location())
-		resp.BeginDay.Position, err = pos.GetMoonPosition(newT, newT.Location(), precision, locationCords.Longitude, locationCords.Latitude)
+		resp.BeginDay.Position, err = pos.GetMoonPosition(newT, newT.Location(), precision, timeFormat, locationCords.Longitude, locationCords.Latitude)
 		if err != nil {
 			log.Error(err)
 		}
 
-		resp.CurrentState.Position, err = pos.GetMoonPosition(tGiven, tGiven.Location(), precision, locationCords.Longitude, locationCords.Latitude)
+		resp.CurrentState.Position, err = pos.GetMoonPosition(tGiven, tGiven.Location(), precision, timeFormat, locationCords.Longitude, locationCords.Latitude)
 		if err != nil {
 			log.Error(err)
 		}
 
-		resp.EndDay.Position, err = pos.GetMoonPosition(newT.AddDate(0, 0, 1), newT.AddDate(0, 0, 1).Location(), precision, locationCords.Longitude, locationCords.Latitude)
+		resp.EndDay.Position, err = pos.GetMoonPosition(newT.AddDate(0, 0, 1), newT.AddDate(0, 0, 1).Location(), precision, timeFormat, locationCords.Longitude, locationCords.Latitude)
 		if err != nil {
 			log.Error(err)
 		}
 	} else {
-		resp.MoonRiseAndSet, err = s.positionCache.GetRisesDay(tGiven.Year(), int(tGiven.Month()), tGiven.Day(), tGiven.Location(), precision)
+		resp.MoonRiseAndSet, err = s.positionCache.GetRisesDay(tGiven.Year(), int(tGiven.Month()), tGiven.Day(), tGiven.Location(), precision, timeFormat)
 	}
 
 	if err != nil && err.Error() != "no location prodived" {

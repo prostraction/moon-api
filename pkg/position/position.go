@@ -49,12 +49,12 @@ type Parameters struct {
 
 // resp for 1 day
 type MoonPosition struct {
-	Timestamp       *int64     `json:"Timestamp,omitempty"`
-	Time            *time.Time `json:"Time"`
-	AzimuthDegrees  float64    `json:"AzimuthDegrees"`
-	AltitudeDegrees float64    `json:"AltitudeDegrees"`
-	Direction       string     `json:"Direction"`
-	DistanceKm      float64    `json:"DistanceKm"`
+	Timestamp       *int64  `json:"Timestamp,omitempty"`
+	Time            *any    `json:"Time"`
+	AzimuthDegrees  float64 `json:"AzimuthDegrees"`
+	AltitudeDegrees float64 `json:"AltitudeDegrees"`
+	Direction       string  `json:"Direction"`
+	DistanceKm      float64 `json:"DistanceKm"`
 }
 
 type DayData struct {
@@ -67,7 +67,7 @@ type DayData struct {
 	Meridian   *MoonPosition `json:"Meridian,omitempty"`
 }
 
-func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision int, location ...float64) (*[]DayData, error) {
+func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision int, timeFormat string, location ...float64) (*[]DayData, error) {
 	lat, lon, err := parseLocation(location)
 	if err != nil {
 		return nil, err
@@ -93,6 +93,8 @@ func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision i
 	strKey.WriteString(strconv.FormatFloat(lat, 'e', precision, 64))
 	strKey.WriteString("-")
 	strKey.WriteString(strconv.FormatFloat(lon, 'e', precision, 64))
+	strKey.WriteString("-")
+	strKey.WriteString(timeFormat)
 
 	if c.CacheMonthly != nil && c.CacheMonthly[strKey.String()] != nil {
 		return c.CacheMonthly[strKey.String()], nil
@@ -138,15 +140,18 @@ func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision i
 
 	for i := range monthResponse.Data {
 		if monthResponse.Data[i].Meridian != nil && monthResponse.Data[i].Meridian.Timestamp != nil {
-			monthResponse.Data[i].Meridian.Time = timestampToGoTime(monthResponse.Data[i].Meridian.Timestamp, loc)
+			var t any = timestampToGoTime(monthResponse.Data[i].Meridian.Timestamp, timeFormat, loc)
+			monthResponse.Data[i].Meridian.Time = &t
 			monthResponse.Data[i].Meridian.Timestamp = nil
 		}
 		if monthResponse.Data[i].Moonrise != nil && monthResponse.Data[i].Moonrise.Timestamp != nil {
-			monthResponse.Data[i].Moonrise.Time = timestampToGoTime(monthResponse.Data[i].Moonrise.Timestamp, loc)
+			var t any = timestampToGoTime(monthResponse.Data[i].Moonrise.Timestamp, timeFormat, loc)
+			monthResponse.Data[i].Moonrise.Time = &t
 			monthResponse.Data[i].Moonrise.Timestamp = nil
 		}
 		if monthResponse.Data[i].Moonset != nil {
-			monthResponse.Data[i].Moonset.Time = timestampToGoTime(monthResponse.Data[i].Moonset.Timestamp, loc)
+			var t any = timestampToGoTime(monthResponse.Data[i].Moonset.Timestamp, timeFormat, loc)
+			monthResponse.Data[i].Moonset.Time = &t
 			monthResponse.Data[i].Moonset.Timestamp = nil
 		}
 		t := time.Date(year, jt.GetMonth(month), 1+i, 0, 0, 0, 0, time.UTC).Format("2006-01-02")
@@ -160,7 +165,7 @@ func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision i
 	return &monthResponse.Data, nil
 }
 
-func GetRisesDay(year, month, day int, loc *time.Location, precision int, location ...float64) (*DayData, error) {
+func GetRisesDay(year, month, day int, loc *time.Location, precision int, timeFormat string, location ...float64) (*DayData, error) {
 	lat, lon, err := parseLocation(location)
 	if err != nil {
 		return nil, err
@@ -207,22 +212,25 @@ func GetRisesDay(year, month, day int, loc *time.Location, precision int, locati
 		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 	if dayResponse.Data.Meridian != nil && dayResponse.Data.Meridian.Timestamp != nil {
-		dayResponse.Data.Meridian.Time = timestampToGoTime(dayResponse.Data.Meridian.Timestamp, loc)
+		var t any = timestampToGoTime(dayResponse.Data.Meridian.Timestamp, timeFormat, loc)
+		dayResponse.Data.Meridian.Time = &t
 		dayResponse.Data.Meridian.Timestamp = nil
 	}
 	if dayResponse.Data.Moonrise != nil && dayResponse.Data.Moonrise.Timestamp != nil {
-		dayResponse.Data.Moonrise.Time = timestampToGoTime(dayResponse.Data.Moonrise.Timestamp, loc)
+		var t any = timestampToGoTime(dayResponse.Data.Moonrise.Timestamp, timeFormat, loc)
+		dayResponse.Data.Moonrise.Time = &t
 		dayResponse.Data.Moonrise.Timestamp = nil
 	}
 	if dayResponse.Data.Moonset != nil {
-		dayResponse.Data.Moonset.Time = timestampToGoTime(dayResponse.Data.Moonset.Timestamp, loc)
+		var t any = timestampToGoTime(dayResponse.Data.Moonset.Timestamp, timeFormat, loc)
+		dayResponse.Data.Moonset.Time = &t
 		dayResponse.Data.Moonset.Timestamp = nil
 	}
 
 	return dayResponse.Data, nil
 }
 
-func (c *Cache) GetRisesDay(year, month, day int, loc *time.Location, precision int, location ...float64) (*DayData, error) {
+func (c *Cache) GetRisesDay(year, month, day int, loc *time.Location, precision int, timeFormat string, location ...float64) (*DayData, error) {
 	lat, lon, err := parseLocation(location)
 	if err != nil {
 		return nil, err
@@ -250,12 +258,14 @@ func (c *Cache) GetRisesDay(year, month, day int, loc *time.Location, precision 
 	strKey.WriteString(strconv.FormatFloat(lat, 'e', precision, 64))
 	strKey.WriteString("-")
 	strKey.WriteString(strconv.FormatFloat(lon, 'e', precision, 64))
+	strKey.WriteString("-")
+	strKey.WriteString(timeFormat)
 
 	if c.CacheDaily != nil && c.CacheDaily[strKey.String()] != nil {
 		return c.CacheDaily[strKey.String()], nil
 	}
 
-	dayResponse, err := GetRisesDay(year, month, day, loc, precision, location...)
+	dayResponse, err := GetRisesDay(year, month, day, loc, precision, timeFormat, location...)
 	if err != nil {
 		return nil, err
 	}
@@ -267,7 +277,7 @@ func (c *Cache) GetRisesDay(year, month, day int, loc *time.Location, precision 
 	return dayResponse, nil
 }
 
-func GetMoonPosition(tGiven time.Time, loc *time.Location, precision int, location ...float64) (*MoonPosition, error) {
+func GetMoonPosition(tGiven time.Time, loc *time.Location, precision int, timeFormat string, location ...float64) (*MoonPosition, error) {
 	lat, lon, err := parseLocation(location)
 	if err != nil {
 		return nil, err
@@ -318,8 +328,8 @@ func GetMoonPosition(tGiven time.Time, loc *time.Location, precision int, locati
 		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 	if pos != nil && pos.Timestamp != nil {
-		t := pos.Timestamp
-		pos.Time = timestampToGoTime(t, loc)
+		var t any = timestampToGoTime(pos.Timestamp, timeFormat, loc)
+		pos.Time = &t
 		pos.Timestamp = nil
 	}
 
@@ -337,11 +347,26 @@ func parseLocation(location []float64) (lat, lon float64, err error) {
 	return lat, lon, nil
 }
 
-func timestampToGoTime(ev *int64, loc *time.Location) *time.Time {
+func timestampToGoTime(ev *int64, timeFormat string, loc *time.Location) *any {
+	if ev == nil {
+		return nil
+	}
 	utcTime := time.Unix(*ev, 0).UTC()
 	time := utcTime
 	if loc != nil {
 		time = time.In(loc)
 	}
-	return &time
+
+	if strings.ToLower(timeFormat) == "timestamp" {
+		var t any = time.Unix()
+		return &t
+	}
+
+	if strings.ToLower(timeFormat) != "iso" {
+		var t any = time.Format(timeFormat)
+		return &t
+	}
+
+	var t any = time
+	return &t
 }

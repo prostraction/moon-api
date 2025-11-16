@@ -26,9 +26,7 @@ func (s *Server) moonNextMoonPhaseV1(c *fiber.Ctx) error {
 			LastQuarter:  np.LastQuarter.Unix(),
 		}
 		return c.JSON(npt)
-	}
-
-	if strings.ToLower(format) == "duration" {
+	} else if strings.ToLower(format) == "duration" {
 		npd := moon.NearestPhaseTimestamp{
 			NewMoon:      np.NewMoon.Unix() - tGiven.Unix(),
 			FirstQuarter: np.FirstQuarter.Unix() - tGiven.Unix(),
@@ -36,7 +34,16 @@ func (s *Server) moonNextMoonPhaseV1(c *fiber.Ctx) error {
 			LastQuarter:  np.LastQuarter.Unix() - tGiven.Unix(),
 		}
 		return c.JSON(npd)
+	} else if strings.ToLower(format) == "iso" {
+		return c.JSON(np)
+	} else {
+		npc := moon.NearestPhaseString{
+			NewMoon:      np.NewMoon.Format(format),
+			FirstQuarter: np.FirstQuarter.Format(format),
+			FullMoon:     np.FullMoon.Format(format),
+			LastQuarter:  np.LastQuarter.Format(format),
+		}
+		return c.JSON(npc)
 	}
 
-	return c.JSON(np)
 }

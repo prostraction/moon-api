@@ -29,9 +29,9 @@ type Cache struct {
 }
 
 type MoonDay struct {
-	Begin         *time.Time `json:"Begin,omitempty"`
+	Begin         *any `json:"Begin,omitempty"`
 	IsBeginExists bool
-	End           *time.Time `json:"End,omitempty"`
+	End           *any `json:"End,omitempty"`
 	IsEndExists   bool
 }
 
@@ -52,4 +52,11 @@ type NearestPhaseTimestamp struct {
 	FirstQuarter int64
 	FullMoon     int64
 	LastQuarter  int64
+}
+
+type NearestPhaseString struct {
+	NewMoon      string
+	FirstQuarter string
+	FullMoon     string
+	LastQuarter  string
 }

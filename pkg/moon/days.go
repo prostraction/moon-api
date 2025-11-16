@@ -2,6 +2,7 @@ package moon
 
 import (
 	"math"
+	"strings"
 	"time"
 
 	il "moon/pkg/illumination"
@@ -92,9 +93,10 @@ func (c *Cache) CreateMoonTable(timeGiven time.Time) *MoonTable {
 	return moonTable
 }
 
-func BeginMoonDayToEarthDay(tGiven time.Time, duration time.Duration, moonTable []*MoonTableElement) time.Time {
+func BeginMoonDayToEarthDay(tGiven time.Time, duration time.Duration, timeFormat string, moonTable []*MoonTableElement) *any {
+	var time any = time.Time{}
 	if len(moonTable) == 0 {
-		return time.Time{}
+		return &time
 	}
 	for i := range moonTable {
 		elem := moonTable[i]
@@ -102,19 +104,42 @@ func BeginMoonDayToEarthDay(tGiven time.Time, duration time.Duration, moonTable 
 			if tGiven.After(elem.NewMoon) && tGiven.Before(elem.LastQuarter) {
 				t := elem.NewMoon
 				t = t.Add(duration)
-				return t
+				if strings.ToLower(timeFormat) == "timestamp" {
+					var tRet any = t.Unix()
+					return &tRet
+				}
+
+				if strings.ToLower(timeFormat) != "iso" {
+					var tRet any = t.Format(timeFormat)
+					return &tRet
+				}
+
+				var tRet any = t
+				return &tRet
 			}
 			if i < len(moonTable)-1 {
 				elem2 := moonTable[i+1]
 				if tGiven.After(elem.LastQuarter) && tGiven.Before(elem2.NewMoon) {
 					t := elem.NewMoon
 					t = t.Add(duration)
-					return t
+
+					if strings.ToLower(timeFormat) == "timestamp" {
+						var tRet any = t.Unix()
+						return &tRet
+					}
+
+					if strings.ToLower(timeFormat) != "iso" {
+						var tRet any = t.Format(timeFormat)
+						return &tRet
+					}
+
+					var tRet any = t
+					return &tRet
 				}
 			}
 		}
 	}
-	return time.Time{}
+	return &time
 }
 
 func (c *Cache) FindNearestPhase(tGiven time.Time) NearestPhase {

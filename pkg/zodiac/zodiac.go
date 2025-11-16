@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func CurrentZodiacs(tGiven time.Time, loc *time.Location, lang string, moonTable []*moon.MoonTableElement) (*Zodiacs, Zodiac, Zodiac, Zodiac) {
+func CurrentZodiacs(tGiven time.Time, loc *time.Location, lang string, timeFormat string, moonTable []*moon.MoonTableElement) (*Zodiacs, Zodiac, Zodiac, Zodiac) {
 	zods := new(Zodiacs)
 
 	zodiacBegin := Zodiac{}
@@ -28,11 +28,11 @@ func CurrentZodiacs(tGiven time.Time, loc *time.Location, lang string, moonTable
 		zods.Count = 1
 		zodBegin := zodiacPositionBegin * jt.Fminute / 360 * 30. * 30.
 		zodEnd := (zodiacPositionEnd + 1) * jt.Fminute / 360 * 30. * 30.
-		tBegin := moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodBegin)*time.Minute, moonTable)
-		tEnd := moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodEnd)*time.Minute, moonTable)
+		var tBegin any = moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodBegin)*time.Minute, timeFormat, moonTable)
+		var tEnd any = moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodEnd)*time.Minute, timeFormat, moonTable)
 		zods.Zodiac = make([]ZodiacDetailed, 1)
-		zods.Zodiac[0].Begin = tBegin
-		zods.Zodiac[0].End = tEnd
+		zods.Zodiac[0].Begin = &tBegin
+		zods.Zodiac[0].End = &tEnd
 		zods.Zodiac[0].Name, zods.Zodiac[0].Emoji = getZodiacResp(zodiacPositionBegin)
 		zods.Zodiac[0].NameLocalized = getZodiacRespLocalized(zodiacPositionBegin, lang)
 	} else {
@@ -40,11 +40,11 @@ func CurrentZodiacs(tGiven time.Time, loc *time.Location, lang string, moonTable
 		zodBegin1 := (zodiacPositionBegin) * jt.Fminute / 360 * 30. * 30.
 		zodEnd1 := (zodiacPositionBegin + 1) * jt.Fminute / 360 * 30. * 30.
 
-		tBegin1 := moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodBegin1)*time.Minute, moonTable)
-		tEnd1 := moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodEnd1)*time.Minute, moonTable)
+		var tBegin1 any = moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodBegin1)*time.Minute, timeFormat, moonTable)
+		var tEnd1 any = moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodEnd1)*time.Minute, timeFormat, moonTable)
 		zods.Zodiac = make([]ZodiacDetailed, 2)
-		zods.Zodiac[0].Begin = tBegin1
-		zods.Zodiac[0].End = tEnd1
+		zods.Zodiac[0].Begin = &tBegin1
+		zods.Zodiac[0].End = &tEnd1
 		zods.Zodiac[0].Name, zods.Zodiac[0].Emoji = getZodiacResp(zodiacPositionBegin)
 		zods.Zodiac[0].NameLocalized = getZodiacRespLocalized(zodiacPositionBegin, lang)
 
@@ -55,10 +55,10 @@ func CurrentZodiacs(tGiven time.Time, loc *time.Location, lang string, moonTable
 
 		zodBegin2 := (zodiacPositionEnd) * jt.Fminute / 360 * 30. * 30.
 		zodEnd2 := (zodiacPositionEnd + 1) * jt.Fminute / 360 * 30. * 30.
-		tBegin2 := moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodBegin2)*time.Minute, moonTable)
-		tEnd2 := moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodEnd2)*time.Minute, moonTable)
-		zods.Zodiac[1].Begin = tBegin2
-		zods.Zodiac[1].End = tEnd2
+		var tBegin2 any = moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodBegin2)*time.Minute, timeFormat, moonTable)
+		var tEnd2 any = moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodEnd2)*time.Minute, timeFormat, moonTable)
+		zods.Zodiac[1].Begin = &tBegin2
+		zods.Zodiac[1].End = &tEnd2
 		zods.Zodiac[1].Name, zods.Zodiac[1].Emoji = getZodiacResp(zodiacPositionEnd)
 		zods.Zodiac[1].NameLocalized = getZodiacRespLocalized(zodiacPositionEnd, lang)
 	}

@@ -18,7 +18,6 @@ const (
 	SecondsPerMinute = 60.0
 )
 
-// looking cool, but mismatch with nasa
 func ToJulianDate(t time.Time) float64 {
 	year := t.Year()
 	month := int(t.Month())

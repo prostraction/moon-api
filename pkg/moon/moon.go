@@ -23,7 +23,7 @@ func (c *Cache) CurrentMoonDays(tGiven time.Time, loc *time.Location) (time.Dura
 	return beginMoonDays, currentMoonDays, endMoonDays
 }
 
-func (c *Cache) MoonDetailed(tGiven time.Time, loc *time.Location, lang string, longitude float64, latitude float64) *MoonDaysDetailed {
+func (c *Cache) MoonDetailed(tGiven time.Time, loc *time.Location, lang string, timeFormat string, longitude float64, latitude float64) *MoonDaysDetailed {
 	if loc == nil {
 		loc = time.UTC
 	}
@@ -36,30 +36,26 @@ func (c *Cache) MoonDetailed(tGiven time.Time, loc *time.Location, lang string, 
 	moonDaysDetailed.Day = make([]MoonDay, 2)
 	moonDaysDetailed.Count = 2
 
-	moonRiseYesterday, err1 := pos.GetRisesDay(dayYesterday.Year(), int(dayYesterday.Month()), dayYesterday.Day(), loc, 2, longitude, latitude)
-	moonRiseToday, err2 := pos.GetRisesDay(dayToday.Year(), int(dayToday.Month()), dayToday.Day(), loc, 2, longitude, latitude)
-	moonRiseTomorrow, err3 := pos.GetRisesDay(dayTomorrow.Year(), int(dayTomorrow.Month()), dayTomorrow.Day(), loc, 2, longitude, latitude)
+	moonRiseYesterday, err1 := pos.GetRisesDay(dayYesterday.Year(), int(dayYesterday.Month()), dayYesterday.Day(), loc, 2, timeFormat, longitude, latitude)
+	moonRiseToday, err2 := pos.GetRisesDay(dayToday.Year(), int(dayToday.Month()), dayToday.Day(), loc, 2, timeFormat, longitude, latitude)
+	moonRiseTomorrow, err3 := pos.GetRisesDay(dayTomorrow.Year(), int(dayTomorrow.Month()), dayTomorrow.Day(), loc, 2, timeFormat, longitude, latitude)
 
 	if err1 == nil && err2 == nil {
 		if moonRiseYesterday.IsMoonRise {
-			moonDaysDetailed.Day[0].Begin = new(time.Time)
 			moonDaysDetailed.Day[0].Begin = moonRiseYesterday.Moonrise.Time
 			moonDaysDetailed.Day[0].IsBeginExists = true
 		}
 		if moonRiseToday.IsMoonRise {
-			moonDaysDetailed.Day[0].End = new(time.Time)
 			moonDaysDetailed.Day[0].End = moonRiseToday.Moonrise.Time
 			moonDaysDetailed.Day[0].IsEndExists = true
 		}
 	}
 	if err2 == nil && err3 == nil {
 		if moonRiseToday.IsMoonRise {
-			moonDaysDetailed.Day[1].Begin = new(time.Time)
 			moonDaysDetailed.Day[1].Begin = moonRiseToday.Moonrise.Time
 			moonDaysDetailed.Day[1].IsBeginExists = true
 		}
 		if moonRiseTomorrow.IsMoonRise {
-			moonDaysDetailed.Day[1].End = new(time.Time)
 			moonDaysDetailed.Day[1].End = moonRiseTomorrow.Moonrise.Time
 			moonDaysDetailed.Day[1].IsEndExists = true
 		}
