@@ -2,6 +2,19 @@ package moon
 
 import "time"
 
+type EnumPhase int
+
+const (
+	NewMoon EnumPhase = iota
+	FirstQuarter
+	FullMoon
+	LastQuarter
+)
+
+type MoonTable struct {
+	Elems []*MoonTableElement
+}
+
 type MoonTableElement struct {
 	NewMoon      time.Time
 	FirstQuarter time.Time
@@ -12,7 +25,7 @@ type MoonTableElement struct {
 }
 
 type Cache struct {
-	tables map[string][]*MoonTableElement
+	moonTable map[string]*MoonTable
 }
 
 type MoonDay struct {
@@ -25,4 +38,11 @@ type MoonDay struct {
 type MoonDaysDetailed struct {
 	Count int
 	Day   []MoonDay
+}
+
+type NearestPhase struct {
+	NewMoon      time.Time
+	FirstQuarter time.Time
+	FullMoon     time.Time
+	LastQuarter  time.Time
 }

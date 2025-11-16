@@ -8,10 +8,6 @@ import (
 	"time"
 )
 
-type MoonTable struct {
-	Table []*moon.MoonTableElement
-}
-
 type MoonStat struct {
 	MoonDays     float64
 	Illumination float64
@@ -58,4 +54,16 @@ type JulianTimeResp struct {
 	CivilDate          string
 	CivilDateTimestamp int64
 	JulianDate         float64
+}
+
+type NextMoonPhaseElement struct {
+	Date      string
+	Countdown int64
+}
+
+type NextMoonPhase struct {
+	New   *NextMoonPhaseElement
+	First *NextMoonPhaseElement
+	Full  *NextMoonPhaseElement
+	Last  *NextMoonPhaseElement
 }

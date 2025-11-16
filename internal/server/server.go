@@ -59,7 +59,7 @@ func (s *Server) NewRouter() *fiber.App {
 	//app.Get("/v1/moonRiseSetCalendar")
 	//app.Get("/v1/moonPhaseCalendar")
 	//app.Get("/v1/moonZodiacCalendar")
-	//app.Get("/v1/moonMonthCalendar") -- all combined? think more
+	//app.Get("/v1/moonMonthCalendar") -- all combined? think more....
 
 	// eclipses
 	//app.Get("/v1/moonEclipseYear")
@@ -68,11 +68,8 @@ func (s *Server) NewRouter() *fiber.App {
 	//app.Get("/v1/sunEclipseCalendar")
 
 	// methods when?
-	//app.Get("/v1/nextMoonPhase")
-	//app.Get("/v1/nextMoonPhaseFull")
-	//app.Get("/v1/nextMoonPhaseNew")
-	//app.Get("/v1/nextMoonPhaseFirst")
-	//app.Get("/v1/nextMoonPhaseThird")
+	app.Get("/v1/nextMoonPhase", s.moonNextMoonPhaseV1)
+	app.Get("/api/v1/nextMoonPhase", s.moonNextMoonPhaseV1)
 
 	//app.Get("/v1/nextMoonEclipse")
 	//app.Get("/v1/nextSunEclipse")
@@ -98,4 +95,8 @@ func (s *Server) NewRouter() *fiber.App {
 
 	s.moonCache = new(moon.Cache)
 	return app
+}
+
+func (s *Server) versionV1(c *fiber.Ctx) error {
+	return c.JSON("1.2.0rc1")
 }

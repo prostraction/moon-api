@@ -10,12 +10,12 @@ func round(num float64) int {
 	return int(num + math.Copysign(0.5, num))
 }
 
-func toFixed(num float64, precision int) float64 {
+func ToFixed(num float64, precision int) float64 {
 	output := math.Pow(10, float64(precision))
 	return float64(round(num*output)) / output
 }
 
-func strToInt(val string, fallback int, min int, max int) int {
+func StrToInt(val string, fallback int, min int, max int) int {
 	v, err := strconv.Atoi(val)
 	if err != nil {
 		v = fallback
@@ -48,7 +48,7 @@ func parseCoords(latStr, lonStr string) Coordinates {
 	return locationCords
 }
 
-func isValidDate(year, month, day int) error {
+func IsValidDate(year, month, day int) error {
 	if year < 0 || year > 9999 {
 		return errors.New("'year' should be in range [0,9999]")
 	}

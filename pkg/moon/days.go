@@ -9,12 +9,12 @@ import (
 	phase "moon/pkg/phase"
 )
 
-func (c *Cache) CreateMoonTable(timeGiven time.Time) []*MoonTableElement {
+func (c *Cache) CreateMoonTable(timeGiven time.Time) *MoonTable {
 	t := time.Date(timeGiven.Year(), 0, 0, 0, 0, 0, 0, timeGiven.Location())
-	if c.tables != nil && c.tables[t.String()] != nil {
-		return c.tables[t.String()]
+	if c.moonTable != nil && c.moonTable[t.String()] != nil {
+		return c.moonTable[t.String()]
 	}
-	moonTable := []*MoonTableElement{}
+	moonTable := new(MoonTable)
 
 	var l int
 	var k1, mtime float64
@@ -76,18 +76,18 @@ func (c *Cache) CreateMoonTable(timeGiven time.Time) []*MoonTableElement {
 		elem.FullMoon = jt.FromJulianDate(mp, timeGiven.Location())
 
 		if elem.t1 != elem.t2 {
-			moonTable = append(moonTable, elem)
+			moonTable.Elems = append(moonTable.Elems, elem)
 		}
 
 		if elem.LastQuarter.Year() > timeGiven.Year() {
 			break
 		}
 	}
-	if c.tables == nil {
-		c.tables = make(map[string][]*MoonTableElement)
+	if c.moonTable == nil {
+		c.moonTable = make(map[string]*MoonTable)
 	}
-	if c.tables[t.String()] == nil {
-		c.tables[t.String()] = moonTable
+	if c.moonTable[t.String()] == nil {
+		c.moonTable[t.String()] = moonTable
 	}
 	return moonTable
 }
@@ -115,6 +115,26 @@ func BeginMoonDayToEarthDay(tGiven time.Time, duration time.Duration, moonTable 
 		}
 	}
 	return time.Time{}
+}
+
+func (c *Cache) FindNearestPhase(tGiven time.Time) NearestPhase {
+	var np NearestPhase
+	table := c.CreateMoonTable(tGiven)
+
+	if val, err := c.SearchPhase(tGiven, table, NewMoon); err == nil {
+		np.NewMoon = val
+	}
+	if val, err := c.SearchPhase(tGiven, table, FirstQuarter); err == nil {
+		np.FirstQuarter = val
+	}
+	if val, err := c.SearchPhase(tGiven, table, FullMoon); err == nil {
+		np.FullMoon = val
+	}
+	if val, err := c.SearchPhase(tGiven, table, LastQuarter); err == nil {
+		np.LastQuarter = val
+	}
+
+	return np
 }
 
 func GetMoonDays(tGiven time.Time, table []*MoonTableElement) time.Duration {

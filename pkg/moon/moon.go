@@ -1,6 +1,8 @@
 package moon
 
 import (
+	"errors"
+	"log"
 	pos "moon/pkg/position"
 	"time"
 )
@@ -14,9 +16,9 @@ func (c *Cache) CurrentMoonDays(tGiven time.Time, loc *time.Location) (time.Dura
 	dayEndTime := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day()+1, 0, 0, 0, 0, loc)
 
 	moonTable := c.CreateMoonTable(tGiven)
-	beginMoonDays := GetMoonDays(dayBeginTime, moonTable)
-	currentMoonDays := GetMoonDays(tGiven, moonTable)
-	endMoonDays := GetMoonDays(dayEndTime, moonTable)
+	beginMoonDays := GetMoonDays(dayBeginTime, moonTable.Elems)
+	currentMoonDays := GetMoonDays(tGiven, moonTable.Elems)
+	endMoonDays := GetMoonDays(dayEndTime, moonTable.Elems)
 
 	return beginMoonDays, currentMoonDays, endMoonDays
 }
@@ -70,6 +72,132 @@ func (c *Cache) MoonDetailed(tGiven time.Time, loc *time.Location, lang string, 
 	return moonDaysDetailed
 }
 
-func (c *Cache) GenerateMoonTable(tGiven time.Time) []*MoonTableElement {
+func (c *Cache) GenerateMoonTable(tGiven time.Time) *MoonTable {
 	return c.CreateMoonTable(tGiven)
+}
+
+func (c *Cache) SearchPhase(tGiven time.Time, moonTable *MoonTable, phase EnumPhase) (t time.Time, err error) {
+	if moonTable == nil {
+		err = errors.New("passed empty moonTable to SearchNewMoon")
+		log.Println(err.Error())
+		return
+	}
+	err = errors.New("not found")
+	for i := range moonTable.Elems {
+		elem := moonTable.Elems[i]
+		if elem.t1 != elem.t2 {
+			elemSearch1 := elem.NewMoon
+			if tGiven.Before(elemSearch1) {
+				elemSearch1 = time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day()-1, 0, 0, 0, 0, tGiven.Location())
+			}
+			elemSearch2 := elem.LastQuarter
+
+			// range current phase:
+			if tGiven.After(elemSearch1) && tGiven.Before(elemSearch2) {
+				// found in current phase
+				switch phase {
+				case NewMoon:
+					if tGiven.Before(elem.NewMoon) {
+						return elem.NewMoon, nil
+					}
+				case FirstQuarter:
+					if tGiven.Before(elem.FirstQuarter) {
+						return elem.FirstQuarter, nil
+					}
+				case FullMoon:
+					if tGiven.Before(elem.FullMoon) {
+						return elem.FullMoon, nil
+					}
+				case LastQuarter:
+					if tGiven.Before(elem.LastQuarter) {
+						return elem.LastQuarter, nil
+					}
+				}
+				// found in next phase
+				if i < len(moonTable.Elems)-1 {
+					// use values if in table
+					switch phase {
+					case NewMoon:
+						return moonTable.Elems[i+1].NewMoon, nil
+					case FirstQuarter:
+						return moonTable.Elems[i+1].FirstQuarter, nil
+					case FullMoon:
+						return moonTable.Elems[i+1].FullMoon, nil
+					case LastQuarter:
+						return moonTable.Elems[i+1].LastQuarter, nil
+					}
+				} else {
+					// create table for next table
+					newT := time.Date(tGiven.Year()+1, 0, 0, 0, 0, 0, 0, tGiven.Location())
+					newMoonTable := c.CreateMoonTable(newT)
+
+					if newMoonTable != nil && newMoonTable.Elems != nil && len(newMoonTable.Elems) > 0 {
+						switch phase {
+						case NewMoon:
+							if tGiven.Before(newMoonTable.Elems[0].NewMoon) {
+								return newMoonTable.Elems[0].NewMoon, nil
+							}
+						case FirstQuarter:
+							if tGiven.Before(newMoonTable.Elems[0].FirstQuarter) {
+								return newMoonTable.Elems[0].FirstQuarter, nil
+							}
+						case FullMoon:
+							if tGiven.Before(newMoonTable.Elems[0].FullMoon) {
+								return newMoonTable.Elems[0].FullMoon, nil
+							}
+						case LastQuarter:
+							if tGiven.Before(newMoonTable.Elems[0].LastQuarter) {
+								return newMoonTable.Elems[0].LastQuarter, nil
+							}
+						}
+					}
+				}
+			}
+			// range next phase
+			if i < len(moonTable.Elems)-1 {
+				// try to find in current table
+				elem2 := moonTable.Elems[i+1]
+				elemSearch1 = elem.LastQuarter
+
+				switch phase {
+				case NewMoon:
+					elemSearch2 = elem2.NewMoon
+				case FirstQuarter:
+					elemSearch2 = elem2.FirstQuarter
+				case FullMoon:
+					elemSearch2 = elem2.FullMoon
+				case LastQuarter:
+					elemSearch2 = elem2.LastQuarter
+				}
+
+				if tGiven.After(elemSearch1) && tGiven.Before(elemSearch2) {
+					return elemSearch2, nil
+				}
+
+			} else {
+				// try to find in next table
+				newT := time.Date(tGiven.Year()+1, 0, 0, 0, 0, 0, 0, tGiven.Location())
+				newMoonTable := c.CreateMoonTable(newT)
+				if newMoonTable != nil && newMoonTable.Elems != nil && len(newMoonTable.Elems) > 0 {
+					elemSearch1 = elem.LastQuarter
+
+					switch phase {
+					case NewMoon:
+						elemSearch2 = newMoonTable.Elems[0].NewMoon
+					case FirstQuarter:
+						elemSearch2 = newMoonTable.Elems[0].FirstQuarter
+					case FullMoon:
+						elemSearch2 = newMoonTable.Elems[0].FullMoon
+					case LastQuarter:
+						elemSearch2 = newMoonTable.Elems[0].LastQuarter
+					}
+
+					if tGiven.After(elemSearch1) && tGiven.Before(elemSearch2) {
+						return elemSearch2, nil
+					}
+				}
+			}
+		}
+	}
+	return
 }
