@@ -46,3 +46,10 @@ type NearestPhase struct {
 	FullMoon     time.Time
 	LastQuarter  time.Time
 }
+
+type NearestPhaseTimestamp struct {
+	NewMoon      int64
+	FirstQuarter int64
+	FullMoon     int64
+	LastQuarter  int64
+}

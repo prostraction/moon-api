@@ -125,7 +125,7 @@ func (s *Server) moonPhaseV1(c *fiber.Ctx, tGiven time.Time, precision int, loca
 	resp.ZodiacDetailed, resp.BeginDay.Zodiac, resp.CurrentState.Zodiac, resp.EndDay.Zodiac = zodiac.CurrentZodiacs(tGiven, loc, lang, s.moonCache.CreateMoonTable(tGiven).Elems)
 
 	if locationCords.IsValid {
-		resp.MoonRiseAndSet, err = pos.GetRisesDay(tGiven.Year(), int(tGiven.Month()), tGiven.Day(), tGiven.Location(), precision, locationCords.Longitude, locationCords.Latitude)
+		resp.MoonRiseAndSet, err = s.positionCache.GetRisesDay(tGiven.Year(), int(tGiven.Month()), tGiven.Day(), tGiven.Location(), precision, locationCords.Longitude, locationCords.Latitude)
 		if err != nil {
 			log.Error(err)
 		}
@@ -147,7 +147,7 @@ func (s *Server) moonPhaseV1(c *fiber.Ctx, tGiven time.Time, precision int, loca
 			log.Error(err)
 		}
 	} else {
-		resp.MoonRiseAndSet, err = pos.GetRisesDay(tGiven.Year(), int(tGiven.Month()), tGiven.Day(), tGiven.Location(), precision)
+		resp.MoonRiseAndSet, err = s.positionCache.GetRisesDay(tGiven.Year(), int(tGiven.Month()), tGiven.Day(), tGiven.Location(), precision)
 	}
 
 	if err != nil && err.Error() != "no location prodived" {

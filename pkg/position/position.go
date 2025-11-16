@@ -8,8 +8,15 @@ import (
 	jt "moon/pkg/julian-time"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 	"time"
 )
+
+type Cache struct {
+	CacheDaily   map[string]*DayData
+	CacheMonthly map[string]*[]DayData
+}
 
 // DayResponse
 type DayResponse struct {
@@ -22,6 +29,7 @@ type DayResponse struct {
 // MonthResponse
 type MonthResponse struct {
 	Status     string     `json:"Status"`
+	Message    string     `json:"Message,omitempty"`
 	Parameters Parameters `json:"Parameters"`
 	Data       []DayData  `json:"Data"`
 	Range      string     `json:"Range"`
@@ -50,18 +58,44 @@ type MoonPosition struct {
 }
 
 type DayData struct {
-	Moonrise   *MoonPosition `json:"Moonrise,omitempty"`
-	Moonset    *MoonPosition `json:"Moonset,omitempty"`
-	Meridian   *MoonPosition `json:"Meridian,omitempty"`
+	Day        *string       `json:"Date,omitempty"`
 	IsMoonRise bool          `json:"IsMoonRise"`
 	IsMoonSet  bool          `json:"IsMoonSet"`
 	IsMeridian bool          `json:"IsMeridian"`
+	Moonrise   *MoonPosition `json:"Moonrise,omitempty"`
+	Moonset    *MoonPosition `json:"Moonset,omitempty"`
+	Meridian   *MoonPosition `json:"Meridian,omitempty"`
 }
 
-func GetRisesMonthly(year, month int, loc *time.Location, precision int, location ...float64) (*MonthResponse, error) {
+func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision int, location ...float64) (*[]DayData, error) {
 	lat, lon, err := parseLocation(location)
 	if err != nil {
 		return nil, err
+	}
+
+	if c.CacheMonthly == nil {
+		c.CacheMonthly = make(map[string]*[]DayData)
+	}
+
+	var strKey strings.Builder
+	strKey.WriteString(strconv.Itoa(year))
+	strKey.WriteString("-")
+	strKey.WriteString(strconv.Itoa(month))
+	strKey.WriteString("-")
+	if loc != nil {
+		strKey.WriteString(loc.String())
+	} else {
+		strKey.WriteString("nil")
+	}
+	strKey.WriteString("-")
+	strKey.WriteString(strconv.Itoa(precision))
+	strKey.WriteString("-")
+	strKey.WriteString(strconv.FormatFloat(lat, 'e', precision, 64))
+	strKey.WriteString("-")
+	strKey.WriteString(strconv.FormatFloat(lon, 'e', precision, 64))
+
+	if c.CacheMonthly != nil && c.CacheMonthly[strKey.String()] != nil {
+		return c.CacheMonthly[strKey.String()], nil
 	}
 
 	h := 0
@@ -80,29 +114,50 @@ func GetRisesMonthly(year, month int, loc *time.Location, precision int, locatio
 	params.Add("month", fmt.Sprintf("%d", month))
 	params.Add("precision", fmt.Sprintf("%d", precision))
 
-	url := baseURL + "?" + params.Encode()
+	url := baseURL + "monthly?" + params.Encode()
 	client := &http.Client{Timeout: 69 * time.Second}
 	resp, err := client.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("failed to make request: %w", err)
+		return nil, fmt.Errorf("[%s] Failed to make request: %w", resp.Status, err)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("server returned status: %s", resp.Status)
-	}
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
+		return nil, fmt.Errorf("[%s] Failed to read response: %w", resp.Status, err)
 	}
 
 	var monthResponse MonthResponse
 	if err := json.Unmarshal(body, &monthResponse); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+		return nil, fmt.Errorf("[%s] Failed to unmarshal response: %w", resp.Status, err)
 	}
 
-	return &monthResponse, nil
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("[%s] %s", resp.Status, monthResponse.Message)
+	}
+
+	for i := range monthResponse.Data {
+		if monthResponse.Data[i].Meridian != nil {
+			timestampToGoTime(monthResponse.Data[i].Meridian, loc)
+			monthResponse.Data[i].Meridian.TimeISO = time.Unix(monthResponse.Data[i].Meridian.Timestamp, 0)
+		}
+		if monthResponse.Data[i].Moonrise != nil {
+			timestampToGoTime(monthResponse.Data[i].Moonrise, loc)
+			monthResponse.Data[i].Moonrise.TimeISO = time.Unix(monthResponse.Data[i].Moonrise.Timestamp, 0)
+		}
+		if monthResponse.Data[i].Moonset != nil {
+			timestampToGoTime(monthResponse.Data[i].Moonset, loc)
+			monthResponse.Data[i].Moonset.TimeISO = time.Unix(monthResponse.Data[i].Moonset.Timestamp, 0)
+		}
+		t := time.Date(year, jt.GetMonth(month), 1+i, 0, 0, 0, 0, time.UTC).Format("2006-01-02")
+		monthResponse.Data[i].Day = &t
+	}
+
+	if c.CacheMonthly != nil && c.CacheMonthly[strKey.String()] == nil {
+		c.CacheMonthly[strKey.String()] = &monthResponse.Data
+	}
+
+	return &monthResponse.Data, nil
 }
 
 func GetRisesDay(year, month, day int, loc *time.Location, precision int, location ...float64) (*DayData, error) {
@@ -165,6 +220,51 @@ func GetRisesDay(year, month, day int, loc *time.Location, precision int, locati
 	}
 
 	return dayResponse.Data, nil
+}
+
+func (c *Cache) GetRisesDay(year, month, day int, loc *time.Location, precision int, location ...float64) (*DayData, error) {
+	lat, lon, err := parseLocation(location)
+	if err != nil {
+		return nil, err
+	}
+
+	if c.CacheDaily == nil {
+		c.CacheDaily = make(map[string]*DayData)
+	}
+
+	var strKey strings.Builder
+	strKey.WriteString(strconv.Itoa(year))
+	strKey.WriteString("-")
+	strKey.WriteString(strconv.Itoa(month))
+	strKey.WriteString("-")
+	strKey.WriteString(strconv.Itoa(day))
+	strKey.WriteString("-")
+	if loc != nil {
+		strKey.WriteString(loc.String())
+	} else {
+		strKey.WriteString("nil")
+	}
+	strKey.WriteString("-")
+	strKey.WriteString(strconv.Itoa(precision))
+	strKey.WriteString("-")
+	strKey.WriteString(strconv.FormatFloat(lat, 'e', precision, 64))
+	strKey.WriteString("-")
+	strKey.WriteString(strconv.FormatFloat(lon, 'e', precision, 64))
+
+	if c.CacheDaily != nil && c.CacheDaily[strKey.String()] != nil {
+		return c.CacheDaily[strKey.String()], nil
+	}
+
+	dayResponse, err := GetRisesDay(year, month, day, loc, precision, location...)
+	if err != nil {
+		return nil, err
+	}
+
+	if c.CacheDaily != nil && c.CacheDaily[strKey.String()] == nil {
+		c.CacheDaily[strKey.String()] = dayResponse
+	}
+
+	return dayResponse, nil
 }
 
 func GetMoonPosition(tGiven time.Time, loc *time.Location, precision int, location ...float64) (*MoonPosition, error) {

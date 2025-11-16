@@ -2,13 +2,15 @@ package server
 
 import (
 	"moon/pkg/moon"
+	"moon/pkg/position"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 type Server struct {
-	moonCache *moon.Cache
+	moonCache     *moon.Cache
+	positionCache *position.Cache
 }
 
 func (s *Server) NewRouter() *fiber.App {
@@ -54,8 +56,9 @@ func (s *Server) NewRouter() *fiber.App {
 	app.Get("/api/v1/moonPhaseTimestamp", s.moonPhaseTimestampV1)
 	app.Get("/api/v1/moonPhaseDate", s.moonPhaseDatetV1)
 
-	// maybe rename "moon*" -> "*"
 	// per month
+	app.Get("/v1/moonPositionMonthly", s.moonPositionMonthly)
+	app.Get("/api/v1/moonPositionMonthly", s.moonPositionMonthly)
 	//app.Get("/v1/moonRiseSetCalendar")
 	//app.Get("/v1/moonPhaseCalendar")
 	//app.Get("/v1/moonZodiacCalendar")
@@ -94,9 +97,10 @@ func (s *Server) NewRouter() *fiber.App {
 	app.Get("/api/v1/version", s.versionV1)
 
 	s.moonCache = new(moon.Cache)
+	s.positionCache = new(position.Cache)
 	return app
 }
 
 func (s *Server) versionV1(c *fiber.Ctx) error {
-	return c.JSON("1.2.0rc1")
+	return c.JSON("1.2.0rc2")
 }

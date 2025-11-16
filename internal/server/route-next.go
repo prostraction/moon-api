@@ -2,6 +2,8 @@ package server
 
 import (
 	jt "moon/pkg/julian-time"
+	"moon/pkg/moon"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -14,6 +16,27 @@ func (s *Server) moonNextMoonPhaseV1(c *fiber.Ctx) error {
 	tGiven = tGiven.In(loc)
 
 	np := s.moonCache.FindNearestPhase(tGiven)
+
+	format := c.Query("format", "ISO")
+	if strings.ToLower(format) == "timestamp" {
+		npt := moon.NearestPhaseTimestamp{
+			NewMoon:      np.NewMoon.Unix(),
+			FirstQuarter: np.FirstQuarter.Unix(),
+			FullMoon:     np.FullMoon.Unix(),
+			LastQuarter:  np.LastQuarter.Unix(),
+		}
+		return c.JSON(npt)
+	}
+
+	if strings.ToLower(format) == "duration" {
+		npd := moon.NearestPhaseTimestamp{
+			NewMoon:      np.NewMoon.Unix() - tGiven.Unix(),
+			FirstQuarter: np.FirstQuarter.Unix() - tGiven.Unix(),
+			FullMoon:     np.FullMoon.Unix() - tGiven.Unix(),
+			LastQuarter:  np.LastQuarter.Unix() - tGiven.Unix(),
+		}
+		return c.JSON(npd)
+	}
 
 	return c.JSON(np)
 }
