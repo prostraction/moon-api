@@ -19,11 +19,11 @@ python addon/skyfield/server.py
 
 ## Methods
 
-### GET /v1/moonPhaseDate
+### GET /api/v1/moonPhaseDate
 
 The method returns the Moon parameters for the specified day and time. If the day or time is not specified, the current value for the unspecified fields is taken. If longitude and latitude are specified, the response will contain additional structures.
 
-### Params
+#### Params
 
   | Parameter | Type | Description | Example Value |
 | :--- | :--- | :--- |  :--- | 
@@ -41,7 +41,7 @@ The method returns the Moon parameters for the specified day and time. If the da
 
 ----------------------------------------------------------------
 
-### /v1/moonPhaseDate Response:
+#### Response:
 
 The method returns 6 objects:
 - ```BeginDay```, ```CurrentState```, ```EndDay``` objects of the ```MoonStat``` structure to display the position of the moon at the beginning of the day, the specified time and the end of the day, respectively;
@@ -65,7 +65,7 @@ The method returns 6 objects:
 
 ----------------------------------------------------------------
 
-#### MoonStat (used as ```BeginDay```, ```CurrentState```, ```EndDay```)
+##### MoonStat (used as ```BeginDay```, ```CurrentState```, ```EndDay```)
 
 ```MoonStat``` objects are used to display at a given time.
 In case of a method response, MoonStat will contain the values:
@@ -118,7 +118,7 @@ MoonPosition structure (Exists only if latitude and longitude are specified):
 
 ----------------------------------------------------------------
 
-#### MoonDaysDetailed
+##### MoonDaysDetailed
 
 ```MoonDaysDetailed``` is a structure that contains an array for each lunar day that falls on a given Earth day. Exists only if latitude and longitude are specified.
 
@@ -138,7 +138,7 @@ MoonPosition structure (Exists only if latitude and longitude are specified):
 
 ----------------------------------------------------------------
 
-#### ZodiacDetailed
+##### ZodiacDetailed
 
 ```ZodiacDetailed``` is a structure for determining which zodiac sign the moon is in on a given time interval, when it began and ended. It contains an array for each lunar day that falls on a given Earth day.
 
@@ -159,7 +159,7 @@ MoonPosition structure (Exists only if latitude and longitude are specified):
 
 ----------------------------------------------------------------
 
-#### MoonRiseAndSet
+##### MoonRiseAndSet
 
 ```MoonRiseAndSet``` is a structure for determining the moonrise, moonset and meridian on a given day. Exists only if latitude and longitude are specified.
 
@@ -168,12 +168,13 @@ MoonPosition structure (Exists only if latitude and longitude are specified):
 
 | Response Variable | Type | Description | Example Value |
 | :--- | :--- | :--- | :--- |
-|`MoonRiseAndSet.Moonrise` | `Object of struct MoonPosition [optional]` | Moonrise position data. Exists only if IsMoonRise = true | - |
-|`MoonRiseAndSet.Moonset` | `Object of struct MoonPosition [optional]` | Moonset position data. Exists only if IsMoonSet = true | - |
-|`MoonRiseAndSet.Meridian` | `Object of struct MoonPosition [optional]` | Meridian position data, Exists only if IsMeridian = true | - |
+|`MoonRiseAndSet.Date` | `String [optional]` | Date for day of calculations, missing as default | `2025-01-15` |
 |`MoonRiseAndSet.IsMoonRise` | `Boolean [required]` | True if moonrise occurs at given day | `true` |
 |`MoonRiseAndSet.IsMoonSet` | `Boolean [required]` | True if moonset occurs at given day | `true` |
 |`MoonRiseAndSet.IsMeridian` | `Boolean [required]` | True if meridian transit occurs at given day | `true` |
+|`MoonRiseAndSet.Moonrise` | `Object of struct MoonPosition [optional]` | Moonrise position data. Exists only if IsMoonRise = true | - |
+|`MoonRiseAndSet.Moonset` | `Object of struct MoonPosition [optional]` | Moonset position data. Exists only if IsMoonSet = true | - |
+|`MoonRiseAndSet.Meridian` | `Object of struct MoonPosition [optional]` | Meridian position data, Exists only if IsMeridian = true | - |
 
 MoonPosition structure:
 
@@ -195,10 +196,10 @@ MoonPosition structure:
 
 ----------------------------------------------------------------
 
-#### Full response example:
+#### Response example
 
 Response of:
-```GET /v1/moonPhaseDate?lang=ru&utc=5&latitude=51.1655&longitude=71.4272&year=2025&month=09&day=15&precision=5&hour=12&minute=0&second=0```
+```GET /api/v1/moonPhaseDate?lang=ru&utc=5&latitude=51.1655&longitude=71.4272&year=2025&month=09&day=15&precision=5&hour=12&minute=0&second=0```
 
 <details>
   <summary><strong>JSON</strong></summary>
@@ -304,6 +305,9 @@ Response of:
     ]
   },
   "MoonRiseAndSet": {
+    "IsMoonRise": true,
+    "IsMoonSet": true,
+    "IsMeridian": true,
     "Moonrise": {
       "Timestamp": 1757957865,
       "TimeISO": "2025-09-15T22:37:45+05:00",
@@ -327,10 +331,7 @@ Response of:
       "AltitudeDegrees": 67.1,
       "Direction": "S",
       "DistanceKm": 374133.37617
-    },
-    "IsMoonRise": true,
-    "IsMoonSet": true,
-    "IsMeridian": true
+    }
   }
 }
 ```
@@ -339,13 +340,13 @@ Response of:
 
 ----------------------------------------------------------------
 
-### GET /v1/moonPhaseCurrent
+### GET /api/v1/moonPhaseCurrent
 
 The method returns the Moon parameters for the current day and time. If the day or time is not specified, the current value for the unspecified fields is taken. If longitude and latitude are specified, the response will contain additional structures.
 
 This is a synonym for the moonPhaseDate method without day and time Params.
 
-### Params
+#### Params
 
   | Parameter | Type | Description | Example Value |
 | :--- | :--- | :--- |  :--- | 
@@ -355,19 +356,19 @@ This is a synonym for the moonPhaseDate method without day and time Params.
 |`latitude` | `float [optional, default=none]` | Latitude of viewer's place. Used for moon position calculations: ```MoonDaysDetailed```, ```MoonRiseAndSet```, and ```MoonPosition``` object | `51.1655`
 |`longitude` | `float [optional, default=none]` | Longitude of viewer's place. Used for moon position calculations: ```MoonDaysDetailed```, ```MoonRiseAndSet```, and ```MoonPosition``` object | `71.4272`
 
-### Response
+#### Response
 
-Response as [GET /v1/moonPhaseDate](https://github.com/prostraction/moon/#v1moonphasedate-response)
+Response as [GET /api/v1/moonPhaseDate](https://github.com/prostraction/moon/#v1moonphasedate-response)
 
 ----------------------------------------------------------------
 
-### GET /v1/moonPhaseTimestamp
+### GET /api/v1/moonPhaseTimestamp
 
 The method returns the Moon parameters for the given timestamp. If it is not specified, the current value for the timestamp is taken. If longitude and latitude are specified, the response will contain additional structures.
 
 This is a synonym for the moonPhaseDate method but with timestamp instead of date.
 
-### Params
+#### Params
 
   | Parameter | Type | Description | Example Value |
 | :--- | :--- | :--- |  :--- | 
@@ -378,24 +379,179 @@ This is a synonym for the moonPhaseDate method but with timestamp instead of dat
 |`longitude` | `float [optional, default=none]` | Longitude of viewer's place. Used for moon position calculations: ```MoonDaysDetailed```, ```MoonRiseAndSet```, and ```MoonPosition``` object | `71.4272`
 |`timestamp` | `int [optional, default=<current>]` | Timestamp for calculations | `1758045697`
 
-### Response
+#### Response
 
-Response as [GET /v1/moonPhaseDate](https://github.com/prostraction/moon/#v1moonphasedate-response)
+Response as [GET /api/v1/moonPhaseDate](https://github.com/prostraction/moon/#v1moonphasedate-response)
 
 ----------------------------------------------------------------
 
-### GET /v1/moonTableYear
+### GET /api/v1/moonPositionMonthly
+
+The method returns Moon position for specified month.
+
+#### Params
+
+  | Parameter | Type | Description | Example Value |
+| :--- | :--- | :--- |  :--- | 
+|`utc` | `string [optional, default="UTC+0"]` | UTC in format `UTC+7`, `UTC+09:30`, `-3` | `UTC+4`
+|`precision` | `int [optional, default=2]` | How many digits after ```.``` will be in output. Allowed range: [1, 20] | `5`
+|`latitude` | `float [required]` | Latitude of viewer's place. Used for moon position calculations: ```MoonDaysDetailed```, ```MoonRiseAndSet```, and ```MoonPosition``` object | `51.1655`
+|`longitude` | `float [required]` | Longitude of viewer's place. Used for moon position calculations: ```MoonDaysDetailed```, ```MoonRiseAndSet```, and ```MoonPosition``` object | `71.4272`
+|`year` | `int [optional, default=<current year>]` | Format: YYYY Allowed range: [1, 9999] | `2025`
+|`month` | `int [optional, default=<current month>]` | Format: M or MM. Allowed range: [1, 12] | `01` or `1`
+
+#### Response
+
+The method returns array of object MoonRiseAndSet for each day of selected month.
+
+##### MoonRiseAndSet
+
+```MoonRiseAndSet``` is a structure for determining the moonrise, moonset and meridian on a given day. Exists only if latitude and longitude are specified.
+
+<details>
+  <summary><strong>Table</strong></summary>
+
+| Response Variable | Type | Description | Example Value |
+| :--- | :--- | :--- | :--- |
+|`MoonRiseAndSet.Date` | `String [optional]` | Date for day of calculations, missing as default | `2025-01-15` |
+|`MoonRiseAndSet.IsMoonRise` | `Boolean [required]` | True if moonrise occurs at given day | `true` |
+|`MoonRiseAndSet.IsMoonSet` | `Boolean [required]` | True if moonset occurs at given day | `true` |
+|`MoonRiseAndSet.IsMeridian` | `Boolean [required]` | True if meridian transit occurs at given day | `true` |
+|`MoonRiseAndSet.Moonrise` | `Object of struct MoonPosition [optional]` | Moonrise position data. Exists only if IsMoonRise = true | - |
+|`MoonRiseAndSet.Moonset` | `Object of struct MoonPosition [optional]` | Moonset position data. Exists only if IsMoonSet = true | - |
+|`MoonRiseAndSet.Meridian` | `Object of struct MoonPosition [optional]` | Meridian position data, Exists only if IsMeridian = true | - |
+
+MoonPosition structure:
+
+<details>
+  <summary><strong>Table</strong></summary>
+
+| Response Variable | Type | Description | Example Value |
+| :--- | :--- | :--- | :--- |
+|`MoonPosition.Timestamp` | `Integer [required]` | Moonrise Unix timestamp | `1758048970` |
+|`MoonPosition.TimeISO` | `String [required]` | Moonrise ISO time | `"2025-09-16T23:56:10+05:00"` |
+|`MoonPosition.AzimuthDegrees` | `Float [required]` | Moonrise azimuth | `47.3` |
+|`MoonPosition.AltitudeDegrees` | `Float [required]` | Moonrise altitude | `-0.6` |
+|`MoonPosition.Direction` | `String [required]` | Moonrise direction | `"ENE"` |
+|`MoonPosition.DistanceKm` | `Float [required]` | Earth-Moon distance in km | `376559.9` |
+
+</details>
+
+</details>
+
+#### Response example
+
+```json
+
+[
+    {
+        "Date": "2023-03-01",
+        "IsMoonRise": true,
+        "IsMoonSet": true,
+        "IsMeridian": true,
+        "Moonrise": {
+            "Timestamp": 1677650857,
+            "TimeISO": "2023-03-01T11:07:37+05:00",
+            "AzimuthDegrees": 42.8762,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "NE",
+            "DistanceKm": 402636.75966
+        },
+        "Moonset": {
+            "Timestamp": 1677625807,
+            "TimeISO": "2023-03-01T04:10:07+05:00",
+            "AzimuthDegrees": 316.74613,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "NW",
+            "DistanceKm": 401798.89266
+        },
+        "Meridian": {
+            "Timestamp": 1677683130,
+            "TimeISO": "2023-03-01T20:05:30+05:00",
+            "AzimuthDegrees": 180,
+            "AltitudeDegrees": 66.2,
+            "Direction": "S",
+            "DistanceKm": 403572.05151
+        }
+    },
+    {
+        "Date": "2023-03-02",
+        "IsMoonRise": true,
+        "IsMoonSet": true,
+        "IsMeridian": true,
+        "Moonrise": {
+            "Timestamp": 1677740467,
+            "TimeISO": "2023-03-02T12:01:07+05:00",
+            "AzimuthDegrees": 43.38104,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "NE",
+            "DistanceKm": 404836.13007
+        },
+        "Moonset": {
+            "Timestamp": 1677715380,
+            "TimeISO": "2023-03-02T05:03:00+05:00",
+            "AzimuthDegrees": 317.04922,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "NW",
+            "DistanceKm": 404345.126
+        },
+        "Meridian": {
+            "Timestamp": 1677772596,
+            "TimeISO": "2023-03-02T20:56:36+05:00",
+            "AzimuthDegrees": 180,
+            "AltitudeDegrees": 65.4,
+            "Direction": "S",
+            "DistanceKm": 405326.66664
+        }
+    },
+    ...
+    {
+        "Date": "2023-03-31",
+        "IsMoonRise": true,
+        "IsMoonSet": true,
+        "IsMeridian": true,
+        "Moonrise": {
+            "Timestamp": 1680245913,
+            "TimeISO": "2023-03-31T11:58:33+05:00",
+            "AzimuthDegrees": 49.55137,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "NE",
+            "DistanceKm": 404935.96867
+        },
+        "Moonset": {
+            "Timestamp": 1680218226,
+            "TimeISO": "2023-03-31T04:17:06+05:00",
+            "AzimuthDegrees": 312.1322,
+            "AltitudeDegrees": -0.56667,
+            "Direction": "NW",
+            "DistanceKm": 404804.48186
+        },
+        "Meridian": {
+            "Timestamp": 1680276504,
+            "TimeISO": "2023-03-31T20:28:24+05:00",
+            "AzimuthDegrees": 180,
+            "AltitudeDegrees": 61.6,
+            "Direction": "S",
+            "DistanceKm": 404936.05398
+        }
+    }
+]
+```
+
+----------------------------------------------------------------
+
+### GET /api/v1/moonTableYear
 
 The method returns the moon phases for the given year. The response contains an array for each month, each element of which contains the time of the new moon, first quarter, full moon, last quarter.
 
-### Params
+#### Params
 
   | Parameter | Type | Description | Example Value |
 | :--- | :--- | :--- |  :--- | 
 |`utc` | `string [optional, default="UTC+0"]` | UTC in format `UTC+7`, `UTC+09:30`, `-3` | `UTC+4`
 |`year` | `int [optional, default=<current year>]` | Format: YYYY Allowed range: [1, 9999] | `2025`
 
-### /v1/moonTableYear Response
+#### Response
 
 ```json
 [
@@ -426,16 +582,93 @@ The method returns the moon phases for the given year. The response contains an 
 
 ----------------------------------------------------------------
 
-### GET /v1/moonTableCurrent
+### GET /api/v1/moonTableCurrent
 
 The method returns the moon phases for the current year. The response contains an array for each month, each element of which contains the time of the new moon, first quarter, full moon, last quarter.
 
-### Params
+#### Params
 
   | Parameter | Type | Description | Example Value |
 | :--- | :--- | :--- |  :--- | 
 |`utc` | `string [optional, default="UTC+0"]` | UTC in format `UTC+7`, `UTC+09:30`, `-3` | `UTC+4`
 
-### Response:
+#### Response:
 
-Response: as GET [/v1/moonTableYear](https://github.com/prostraction/moon#v1moontableyear-response)
+Response: as [GET /api/v1/moonTableYear](https://github.com/prostraction/moon#v1moontableyear-response)
+
+----------------------------------------------------------------
+
+### GET /api/v1/toJulianTimeByDate
+
+The method converts human date to julian time (UTC +0 timezone).
+
+#### Params
+
+  | Parameter | Type | Description | Example Value |
+| :--- | :--- | :--- |  :--- | 
+|`precision` | `int [optional, default=2]` | How many digits after ```.``` will be in output. Allowed range: [1, 20] | `5`
+|`year` | `int [optional, default=<current year>]` | Format: YYYY Allowed range: [1, 9999] | `2025`
+|`month` | `int [optional, default=<current month>]` | Format: M or MM. Allowed range: [1, 12] | `01` or `1`
+|`day` | `int [optional, default=<current day>]` | Format: D or DD. Allowed range: [1, 31] | `01` or `1`
+|`hour` | `int [optional, default=<current hour>]` | Format: h or hh. Allowed range: [0, 23] | `01` or `1`
+|`minute` | `int [optional, default=<current minute>]` | Format: m or mm. Allowed range: [0, 59] | `01` or `1`
+|`second` | `int [optional, default=<current second>]` | Format: s or ss. Allowed range: [0, 59] | `01` or `1`
+
+#### Response:
+
+```json
+{
+    "CivilDate": "2025-01-01 01:01:01 +0000 UTC",
+    "CivilDateTimestamp": 1735693261,
+    "JulianDate": 2460676.54237
+}
+```
+
+----------------------------------------------------------------
+
+### GET /api/v1/toJulianTimeByTimestamp
+
+The method converts human date to julian time (UTC +0 timezone).
+
+#### Params
+
+  | Parameter | Type | Description | Example Value |
+| :--- | :--- | :--- |  :--- | 
+|`precision` | `int [optional, default=2]` | How many digits after ```.``` will be in output. Allowed range: [1, 20] | `5`
+|`timestamp` | `int [optional, default=<current>]` | Timestamp for calculations. Current, if not specified | `1735693261`
+
+
+#### Response:
+
+```json
+{
+    "CivilDate": "2025-01-01 01:01:01 +0000 UTC",
+    "CivilDateTimestamp": 1735693261,
+    "JulianDate": 2460676.54237
+}
+```
+
+----------------------------------------------------------------
+
+### GET /api/v1/fromJulianTime
+
+The method converts julian time to human time (UTC +0 timezone).
+
+#### Params
+
+  | Parameter | Type | Description | Example Value |
+| :--- | :--- | :--- |  :--- | 
+|`precision` | `int [optional, default=2]` | How many digits after ```.``` will be in output. Allowed range: [1, 20] | `5`
+|`jtime` | `float64 [required]` | Julian Time to convert (float64) | `2460676.5423726854`
+
+
+#### Response:
+
+```json
+{
+    "CivilDate": "2025-01-01 01:01:01 +0000 UTC",
+    "CivilDateTimestamp": 1735693261,
+    "JulianDate": 2460676.54237
+}
+```
+
