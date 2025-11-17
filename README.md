@@ -1006,6 +1006,7 @@ The method converts human date to julian time (UTC +0 timezone).
   | Parameter | Type | Description | Example Value |
 | :--- | :--- | :--- |  :--- | 
 |`precision` | `int [optional, default=2]` | How many digits after ```.``` will be in output. Allowed range: [1, 20] | `5`
+|`timeFormat` | `string [optional]` | How the data will be formed. Available values: ISO (default), timestamp, duration or Go format. Duration is seconds between current date and event time.| `duration`
 |`year` | `int [optional, default=<current year>]` | Format: YYYY Allowed range: [1, 9999] | `2025`
 |`month` | `int [optional, default=<current month>]` | Format: M or MM. Allowed range: [1, 12] | `01` or `1`
 |`day` | `int [optional, default=<current day>]` | Format: D or DD. Allowed range: [1, 31] | `01` or `1`
@@ -1013,12 +1014,29 @@ The method converts human date to julian time (UTC +0 timezone).
 |`minute` | `int [optional, default=<current minute>]` | Format: m or mm. Allowed range: [0, 59] | `01` or `1`
 |`second` | `int [optional, default=<current second>]` | Format: s or ss. Allowed range: [0, 59] | `01` or `1`
 
-#### Response example
+#### Response examples
 
 ```json
 {
-    "CivilDate": "2025-01-01 01:01:01 +0000 UTC",
-    "CivilDateTimestamp": 1735693261,
+    "CivilDate": "2025-01-01T01:01:01Z",
+    "JulianDate": 2460676.54237
+}
+```
+
+timeFormat: `Mon, 02 Jan 2006 15:04:05`
+
+```json
+{
+    "CivilDate": "Wed, 01 Jan 2025 01:01:01",
+    "JulianDate": 2460676.54237
+}
+```
+
+timeFormat: `timestamp`
+
+```json
+{
+    "CivilDate": 1735693261,
     "JulianDate": 2460676.54237
 }
 ```
@@ -1035,17 +1053,33 @@ The method converts human date to julian time (UTC +0 timezone).
 | :--- | :--- | :--- |  :--- | 
 |`precision` | `int [optional, default=2]` | How many digits after ```.``` will be in output. Allowed range: [1, 20] | `5`
 |`timestamp` | `int [optional, default=<current>]` | Timestamp for calculations. Current, if not specified | `1735693261`
-
+|`timeFormat` | `string [optional]` | How the data will be formed. Available values: ISO (default), timestamp, duration or Go format. Duration is seconds between current date and event time.| `duration`
 
 #### Response example
 
 ```json
 {
-    "CivilDate": "2025-01-01 01:01:01 +0000 UTC",
-    "CivilDateTimestamp": 1735693261,
+    "CivilDate": "2025-01-01T01:01:01Z",
     "JulianDate": 2460676.54237
 }
 ```
+
+timeFormat: `Mon, 02 Jan 2006 15:04:05`
+
+```json
+{
+    "CivilDate": "Wed, 01 Jan 2025 01:01:01",
+    "JulianDate": 2460676.54237
+}
+```
+
+timeFormat: `timestamp`
+
+```json
+{
+    "CivilDate": 1735693261,
+    "JulianDate": 2460676.54237
+}
 
 ----------------------------------------------------------------
 
@@ -1059,14 +1093,31 @@ The method converts julian time to human time (UTC +0 timezone).
 | :--- | :--- | :--- |  :--- | 
 |`precision` | `int [optional, default=2]` | How many digits after ```.``` will be in output. Allowed range: [1, 20] | `5`
 |`jtime` | `float64 [required]` | Julian Time to convert (float64) | `2460676.5423726854`
+|`timeFormat` | `string [optional]` | How the data will be formed. Available values: ISO (default), timestamp, duration or Go format. Duration is seconds between current date and event time.| `duration`
 
-
-#### Response example
+#### Response examples
 
 ```json
 {
-    "CivilDate": "2025-01-01 01:01:01 +0000 UTC",
-    "CivilDateTimestamp": 1735693261,
+    "CivilDate": "2025-01-01T01:01:01Z",
+    "JulianDate": 2460676.54237
+}
+```
+
+timeFormat: `Mon, 02 Jan 2006 15:04:05`
+
+```json
+{
+    "CivilDate": "Wed, 01 Jan 2025 01:01:01",
+    "JulianDate": 2460676.54237
+}
+```
+
+timeFormat: `timestamp`
+
+```json
+{
+    "CivilDate": 1735693261,
     "JulianDate": 2460676.54237
 }
 ```

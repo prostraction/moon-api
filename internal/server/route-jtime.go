@@ -2,6 +2,7 @@ package server
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -20,6 +21,8 @@ func (s *Server) toJulianTimeByDateV1(c *fiber.Ctx) error {
 	month := StrToInt(c.Query("month", strconv.Itoa(int(tNow.Month()))), int(tNow.Month()), 1, 12)
 	day := StrToInt(c.Query("day", strconv.Itoa(int(tNow.Day()))), int(tNow.Day()), 1, 31)
 
+	timeFormat := c.Query("timeFormat", "ISO")
+
 	err := IsValidDate(year, month, day)
 	if err != nil {
 		c.Status(400)
@@ -35,7 +38,9 @@ func (s *Server) toJulianTimeByDateV1(c *fiber.Ctx) error {
 	second := StrToInt(c.Query("second", strconv.Itoa(int(tNow.Second()))), int(tNow.Second()), 0, 59)
 
 	tGiven := time.Date(year, jt.GetMonth(month), day, hour, minute, second, 0, time.UTC)
-	return s.toJulianTimeV1(c, tGiven, precision)
+
+	resp := s.toJulianTimeV1(c, tGiven, timeFormat, precision)
+	return c.JSON(resp)
 }
 
 func (s *Server) toJulianTimeByTimestampV1(c *fiber.Ctx) error {
@@ -45,20 +50,32 @@ func (s *Server) toJulianTimeByTimestampV1(c *fiber.Ctx) error {
 		t = time.Now().Unix()
 	}
 
+	timeFormat := c.Query("timeFormat", "ISO")
 	precision := StrToInt(c.Query("precision", "2"), 2, 0, 20)
 
 	tm := time.Unix(t, 0)
 	tGiven := time.Date(tm.Year(), tm.Month(), tm.Day(), tm.Hour(), tm.Minute(), tm.Second(), 0, time.Local)
 	tGiven = tGiven.In(time.UTC)
-	return s.toJulianTimeV1(c, tGiven, precision)
+
+	resp := s.toJulianTimeV1(c, tGiven, timeFormat, precision)
+	return c.JSON(resp)
 }
 
-func (s *Server) toJulianTimeV1(c *fiber.Ctx, tGiven time.Time, precision int) error {
+func (s *Server) toJulianTimeV1(c *fiber.Ctx, tGiven time.Time, timeFormat string, precision int) JulianTimeResp {
 	resp := JulianTimeResp{}
-	resp.CivilDate = tGiven.String()
-	resp.CivilDateTimestamp = tGiven.Unix()
+
+	var t any
+	if strings.ToLower(timeFormat) == "timestamp" {
+		t = tGiven.Unix()
+	} else if strings.ToLower(timeFormat) != "iso" {
+		t = tGiven.Format(timeFormat)
+	} else {
+		t = tGiven
+	}
+
+	resp.CivilDate = &t
 	resp.JulianDate = ToFixed(jt.ToJulianDate(tGiven), precision)
-	return c.JSON(resp)
+	return resp
 }
 
 func (s *Server) fromJulianTimeV1(c *fiber.Ctx) error {
@@ -79,10 +96,19 @@ func (s *Server) fromJulianTimeV1(c *fiber.Ctx) error {
 	t := jt.FromJulianDate(jtime, loc)
 
 	precision := StrToInt(c.Query("precision", "2"), 2, 0, 20)
+	timeFormat := c.Query("timeFormat", "ISO")
+
+	var tFormat any
+	if strings.ToLower(timeFormat) == "timestamp" {
+		tFormat = t.Unix()
+	} else if strings.ToLower(timeFormat) != "iso" {
+		tFormat = t.Format(timeFormat)
+	} else {
+		tFormat = t
+	}
 
 	resp := JulianTimeResp{}
-	resp.CivilDate = t.String()
-	resp.CivilDateTimestamp = t.Unix()
+	resp.CivilDate = &tFormat
 	resp.JulianDate = ToFixed(jtime, precision)
 
 	return c.JSON(resp)

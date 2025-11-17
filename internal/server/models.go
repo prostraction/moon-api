@@ -56,7 +56,6 @@ type Coordinates struct {
 }
 
 type JulianTimeResp struct {
-	CivilDate          string
-	CivilDateTimestamp int64
-	JulianDate         float64
+	CivilDate  *any
+	JulianDate float64
 }
