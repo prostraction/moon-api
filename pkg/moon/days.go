@@ -94,14 +94,14 @@ func (c *Cache) CreateMoonTable(timeGiven time.Time) *MoonTable {
 }
 
 func BeginMoonDayToEarthDay(tGiven time.Time, duration time.Duration, timeFormat string, moonTable []*MoonTableElement) *any {
-	var time any = time.Time{}
+	var tt any = time.Time{}
 	if len(moonTable) == 0 {
-		return &time
+		return &tt
 	}
 	for i := range moonTable {
 		elem := moonTable[i]
 		if elem.t1 != elem.t2 {
-			if tGiven.After(elem.NewMoon) && tGiven.Before(elem.LastQuarter) {
+			if tGiven.After(elem.NewMoon) && tGiven.Before(elem.NewMoon.Add(time.Hour*24*32)) {
 				t := elem.NewMoon
 				t = t.Add(duration)
 				if strings.ToLower(timeFormat) == "timestamp" {
@@ -139,7 +139,7 @@ func BeginMoonDayToEarthDay(tGiven time.Time, duration time.Duration, timeFormat
 			}
 		}
 	}
-	return &time
+	return &tt
 }
 
 func (c *Cache) FindNearestPhase(tGiven time.Time) NearestPhase {
@@ -162,16 +162,51 @@ func (c *Cache) FindNearestPhase(tGiven time.Time) NearestPhase {
 	return np
 }
 
+/*
 func GetMoonDays(tGiven time.Time, table []*MoonTableElement) time.Duration {
 	var moonDays time.Duration
 	for i := range table {
 		elem := table[i]
 
 		if elem.t1 != elem.t2 {
-			if tGiven.After(elem.NewMoon) /*&& tGiven.Before(elem.TFull)*/ {
+			if tGiven.After(elem.NewMoon) {
 				moonDays = tGiven.Sub(elem.NewMoon)
 			}
 		}
 	}
 	return moonDays
+}*/
+
+func GetMoonDaysPrecise(tGiven time.Time, table []*MoonTableElement) (time.Duration, time.Duration, time.Duration) {
+	for i := range table {
+		elem := table[i]
+		if elem.t1 != elem.t2 {
+			if tGiven.After(elem.NewMoon) && tGiven.Before(elem.NewMoon.Add(time.Hour*24*32)) {
+				var elem2 *MoonTableElement
+				if i < len(table)-1 {
+					elem2 = table[i+1] // new next moon
+				} else {
+					elem2 = new(MoonTableElement) // new next moon approx (fix?)
+					elem2.NewMoon = elem.NewMoon.AddDate(0, 0, 29)
+					elem2.NewMoon = elem.NewMoon.Add(time.Hour * 12)
+				}
+				moonMonDays := elem2.NewMoon.Sub(elem.NewMoon) // moon month
+
+				eartbeg := tGiven.Add(-tGiven.Sub(elem.NewMoon))
+				eartend := time.Date(eartbeg.Year(), eartbeg.Month()+1, eartbeg.Day(), eartbeg.Hour(), eartbeg.Minute(), eartbeg.Second(), 0, tGiven.Location())
+				eartMon := eartend.Unix() - eartbeg.Unix() // earth month
+
+				beginDay := elem.NewMoon
+				day := time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*24.))
+
+				for tGiven.Sub(beginDay) > day {
+					beginDay = beginDay.Add(day)
+				}
+
+				endDay := beginDay.Add(day)
+				return beginDay.Sub(elem.NewMoon) % moonMonDays, endDay.Sub(elem.NewMoon) % moonMonDays, moonMonDays
+			}
+		}
+	}
+	return time.Duration(0), time.Duration(0), time.Duration(0)
 }

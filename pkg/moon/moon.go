@@ -16,9 +16,11 @@ func (c *Cache) CurrentMoonDays(tGiven time.Time, loc *time.Location) (time.Dura
 	dayEndTime := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day()+1, 0, 0, 0, 0, loc)
 
 	moonTable := c.CreateMoonTable(tGiven)
-	beginMoonDays := GetMoonDays(dayBeginTime, moonTable.Elems)
-	currentMoonDays := GetMoonDays(tGiven, moonTable.Elems)
-	endMoonDays := GetMoonDays(dayEndTime, moonTable.Elems)
+
+	beginMoonDays, endMoonDays, _ := GetMoonDaysPrecise(dayBeginTime, moonTable.Elems)
+
+	dayProgress := float64(tGiven.Sub(dayBeginTime)) / float64(dayEndTime.Sub(dayBeginTime))
+	currentMoonDays := beginMoonDays + time.Duration(float64(endMoonDays-beginMoonDays)*dayProgress)
 
 	return beginMoonDays, currentMoonDays, endMoonDays
 }
