@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "9d158224-dba6-4890-ad63-22f987406d00",
+		"_postman_id": "026b2bd4-85f5-43d9-8f57-f1d26a4e548a",
 		"name": "Moon Collection V1",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "19971618"
+		"_exporter_id": "37785427"
 	},
 	"item": [
 		{
@@ -878,7 +878,7 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "Text",
 							"header": [
 								{
 									"key": "Server",
@@ -1251,7 +1251,7 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "Text",
 							"header": [
 								{
 									"key": "Server",
@@ -1497,7 +1497,7 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "Text",
 							"header": [
 								{
 									"key": "Server",
@@ -1554,7 +1554,7 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "Text",
 							"header": [
 								{
 									"key": "Server",
@@ -1625,15 +1625,6 @@
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
 									"raw": "{{baseUrl}}/v1/moonTableCurrent?utc=5",
 									"host": [
@@ -1691,15 +1682,6 @@
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
 									"raw": "{{baseUrl}}/v1/moonTableCurrent?utc=5&timeFormat=2006-01-02 15:04",
 									"host": [
@@ -1725,7 +1707,7 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "Text",
 							"header": [
 								{
 									"key": "Server",
@@ -1752,15 +1734,6 @@
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
 									"raw": "{{baseUrl}}/v1/moonTableCurrent?utc=5&timeFormat=timestamp",
 									"host": [
@@ -1786,7 +1759,7 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "Text",
 							"header": [
 								{
 									"key": "Server",
@@ -1828,7 +1801,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/toJulianTimeByDate?precision=5&year=2025&month=01&day=01&hour=01&minute=01&second=01",
+							"raw": "{{baseUrl}}/v1/toJulianTimeByDate?precision=5&year=2025&month=01&day=01&hour=01&minute=01&second=01&timeFormat=02 Jan 2006 15:04:05",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1871,6 +1844,11 @@
 									"key": "second",
 									"value": "01",
 									"description": "Format: s or ss. Allowed range: [0, 59]. Current, if not specified"
+								},
+								{
+									"key": "timeFormat",
+									"value": "02 Jan 2006 15:04:05",
+									"description": "Supports: \"ISO\" (default), \"timestamp\" any Go time format directives (without UTC), for example: \"Mon, 02 Jan 2006 15:04:05\""
 								}
 							]
 						}
@@ -1886,7 +1864,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{baseUrl}}/v1/toJulianTimeByDate?precision=5&year=2025&month=01&day=01&hour=01&minute=01&second=01",
+									"raw": "{{baseUrl}}/v1/toJulianTimeByDate?precision=5&year=2025&month=01&day=01&hour=01&minute=01&second=01&timeFormat=ISO",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1929,6 +1907,97 @@
 											"key": "second",
 											"value": "01",
 											"description": "Format: s or ss. Allowed range: [0, 59]. Current, if not specified"
+										},
+										{
+											"key": "timeFormat",
+											"value": "ISO",
+											"description": "Supports: \"ISO\" (default), \"timestamp\" any Go time format directives (without UTC), for example: \"Mon, 02 Jan 2006 15:04:05\""
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Fiber"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 17 Nov 2025 04:26:30 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "63"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"CivilDate\": \"2025-01-01T01:01:01Z\",\n    \"JulianDate\": 2460676.54237\n}"
+						},
+						{
+							"name": "toJulianTimeByDate — custom timeFormat",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/toJulianTimeByDate?precision=5&year=2025&month=01&day=01&hour=01&minute=01&second=01&timeFormat=Mon, 02 Jan 2006 15:04:05",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"toJulianTimeByDate"
+									],
+									"query": [
+										{
+											"key": "precision",
+											"value": "5",
+											"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+										},
+										{
+											"key": "year",
+											"value": "2025",
+											"description": "Format: YYYY Allowed range: [1, 9999]. Current, if not specified"
+										},
+										{
+											"key": "month",
+											"value": "01",
+											"description": "Format: M or MM. Allowed range: [1, 12]. Current, if not specified"
+										},
+										{
+											"key": "day",
+											"value": "01",
+											"description": "Format: D or DD. Allowed range: [1, 31]. Current, if not specified"
+										},
+										{
+											"key": "hour",
+											"value": "01",
+											"description": "Format: h or hh. Allowed range: [0, 23]. Current, if not specified"
+										},
+										{
+											"key": "minute",
+											"value": "01",
+											"description": "Format: m or mm. Allowed range: [0, 59] Current, if not specified"
+										},
+										{
+											"key": "second",
+											"value": "01",
+											"description": "Format: s or ss. Allowed range: [0, 59]. Current, if not specified"
+										},
+										{
+											"key": "timeFormat",
+											"value": "Mon, 02 Jan 2006 15:04:05",
+											"description": "Supports: \"ISO\" (default), \"timestamp\" any Go time format directives (without UTC), for example: \"Mon, 02 Jan 2006 15:04:05\""
 										}
 									]
 								}
@@ -1943,21 +2012,111 @@
 								},
 								{
 									"key": "Date",
-									"value": "Tue, 04 Nov 2025 15:16:26 GMT"
+									"value": "Mon, 17 Nov 2025 04:23:36 GMT"
 								},
 								{
 									"key": "Content-Type",
 									"value": "application/json",
+									"name": "Content-Type",
 									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "Content-Length",
-									"value": "104"
+									"value": "68"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"CivilDate\": \"2025-01-01 01:01:01 +0000 UTC\",\n    \"CivilDateTimestamp\": 1735693261,\n    \"JulianDate\": 2460676.54237\n}"
+							"body": "{\n    \"CivilDate\": \"Wed, 01 Jan 2025 01:01:01\",\n    \"JulianDate\": 2460676.54237\n}"
+						},
+						{
+							"name": "toJulianTimeByDate — timestamp timeFormat",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/toJulianTimeByDate?precision=5&year=2025&month=01&day=01&hour=01&minute=01&second=01&timeFormat=timestamp",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"toJulianTimeByDate"
+									],
+									"query": [
+										{
+											"key": "precision",
+											"value": "5",
+											"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+										},
+										{
+											"key": "year",
+											"value": "2025",
+											"description": "Format: YYYY Allowed range: [1, 9999]. Current, if not specified"
+										},
+										{
+											"key": "month",
+											"value": "01",
+											"description": "Format: M or MM. Allowed range: [1, 12]. Current, if not specified"
+										},
+										{
+											"key": "day",
+											"value": "01",
+											"description": "Format: D or DD. Allowed range: [1, 31]. Current, if not specified"
+										},
+										{
+											"key": "hour",
+											"value": "01",
+											"description": "Format: h or hh. Allowed range: [0, 23]. Current, if not specified"
+										},
+										{
+											"key": "minute",
+											"value": "01",
+											"description": "Format: m or mm. Allowed range: [0, 59] Current, if not specified"
+										},
+										{
+											"key": "second",
+											"value": "01",
+											"description": "Format: s or ss. Allowed range: [0, 59]. Current, if not specified"
+										},
+										{
+											"key": "timeFormat",
+											"value": "timestamp",
+											"description": "Supports: \"ISO\" (default), \"timestamp\" any Go time format directives (without UTC), for example: \"Mon, 02 Jan 2006 15:04:05\""
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Fiber"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 17 Nov 2025 04:24:35 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "51"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"CivilDate\": 1735693261,\n    \"JulianDate\": 2460676.54237\n}"
 						}
 					]
 				},
@@ -1974,7 +2133,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/toJulianTimeByTimestamp?precision=10&timestamp=1735693261",
+							"raw": "{{baseUrl}}/v1/toJulianTimeByTimestamp?precision=10&timestamp=1735693261&timeFormat=Mon, 02 Jan 2006 15:04:05",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1992,6 +2151,11 @@
 									"key": "timestamp",
 									"value": "1735693261",
 									"description": "Timestamp for calculations. Current, if not specified"
+								},
+								{
+									"key": "timeFormat",
+									"value": "Mon, 02 Jan 2006 15:04:05",
+									"description": "Supports: \"ISO\" (default), \"timestamp\" any Go time format directives (without UTC), for example: \"Mon, 02 Jan 2006 15:04:05\""
 								}
 							]
 						}
@@ -2039,7 +2203,135 @@
 								},
 								{
 									"key": "Date",
-									"value": "Tue, 04 Nov 2025 15:23:01 GMT"
+									"value": "Mon, 17 Nov 2025 04:26:15 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "68"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"CivilDate\": \"2025-01-01T01:01:01Z\",\n    \"JulianDate\": 2460676.5423726854\n}"
+						},
+						{
+							"name": "toJulianTimeByTimestamp — custom timeFormat",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/toJulianTimeByTimestamp?precision=10&timestamp=1735693261&timeFormat=Mon, 02 Jan 2006 15:04:05",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"toJulianTimeByTimestamp"
+									],
+									"query": [
+										{
+											"key": "precision",
+											"value": "10",
+											"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+										},
+										{
+											"key": "timestamp",
+											"value": "1735693261",
+											"description": "Timestamp for calculations. Current, if not specified"
+										},
+										{
+											"key": "timeFormat",
+											"value": "Mon, 02 Jan 2006 15:04:05",
+											"description": "Supports: \"ISO\" (default), \"timestamp\" any Go time format directives (without UTC), for example: \"Mon, 02 Jan 2006 15:04:05\""
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Fiber"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 17 Nov 2025 04:27:18 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "73"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"CivilDate\": \"Wed, 01 Jan 2025 01:01:01\",\n    \"JulianDate\": 2460676.5423726854\n}"
+						},
+						{
+							"name": "toJulianTimeByTimestamp — timestamp timeFormat",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/toJulianTimeByTimestamp?precision=10&timestamp=1735693261&timeFormat=timestamp",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"toJulianTimeByTimestamp"
+									],
+									"query": [
+										{
+											"key": "precision",
+											"value": "10",
+											"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+										},
+										{
+											"key": "timestamp",
+											"value": "1735693261",
+											"description": "Timestamp for calculations. Current, if not specified"
+										},
+										{
+											"key": "timeFormat",
+											"value": "timestamp",
+											"description": "Supports: \"ISO\" (default), \"timestamp\" any Go time format directives (without UTC), for example: \"Mon, 02 Jan 2006 15:04:05\""
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Fiber"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 17 Nov 2025 04:27:47 GMT"
 								},
 								{
 									"key": "Content-Type",
@@ -2049,11 +2341,17 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "109"
+									"value": "56"
 								}
 							],
-							"cookie": [],
-							"body": "{\n    \"CivilDate\": \"2025-01-01 01:01:01 +0000 UTC\",\n    \"CivilDateTimestamp\": 1735693261,\n    \"JulianDate\": 2460676.5423726854\n}"
+							"cookie": [
+								{
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
+								}
+							],
+							"body": "{\n    \"CivilDate\": 1735693261,\n    \"JulianDate\": 2460676.5423726854\n}"
 						}
 					]
 				},
@@ -2063,7 +2361,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/v1/fromJulianTime?precision=5&jtime=2460676.5423726854",
+							"raw": "{{baseUrl}}/v1/fromJulianTime?precision=5&jtime=2460676.5423726854&timeFormat=Mon, 02 Jan 2006 15:04:05",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -2081,6 +2379,11 @@
 									"key": "jtime",
 									"value": "2460676.5423726854",
 									"description": "Julian Time to convert (float64)"
+								},
+								{
+									"key": "timeFormat",
+									"value": "Mon, 02 Jan 2006 15:04:05",
+									"description": "Supports: \"ISO\" (default), \"timestamp\" any Go time format directives (without UTC), for example: \"Mon, 02 Jan 2006 15:04:05\""
 								}
 							]
 						}
@@ -2124,21 +2427,142 @@
 								},
 								{
 									"key": "Date",
-									"value": "Tue, 04 Nov 2025 15:17:41 GMT"
+									"value": "Mon, 17 Nov 2025 04:28:25 GMT"
 								},
 								{
 									"key": "Content-Type",
 									"value": "application/json",
+									"name": "Content-Type",
 									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "Content-Length",
-									"value": "104"
+									"value": "63"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"CivilDate\": \"2025-01-01 01:01:01 +0000 UTC\",\n    \"CivilDateTimestamp\": 1735693261,\n    \"JulianDate\": 2460676.54237\n}"
+							"body": "{\n    \"CivilDate\": \"2025-01-01T01:01:01Z\",\n    \"JulianDate\": 2460676.54237\n}"
+						},
+						{
+							"name": "fromJulianTime — custom timeFormat",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/v1/fromJulianTime?precision=5&jtime=2460676.5423726854&timeFormat=Mon, 02 Jan 2006 15:04:05",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"fromJulianTime"
+									],
+									"query": [
+										{
+											"key": "precision",
+											"value": "5",
+											"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+										},
+										{
+											"key": "jtime",
+											"value": "2460676.5423726854",
+											"description": "Julian Time to convert (float64)"
+										},
+										{
+											"key": "timeFormat",
+											"value": "Mon, 02 Jan 2006 15:04:05",
+											"description": "Supports: \"ISO\" (default), \"timestamp\" any Go time format directives (without UTC), for example: \"Mon, 02 Jan 2006 15:04:05\""
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Fiber"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 17 Nov 2025 04:30:26 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "68"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"CivilDate\": \"Wed, 01 Jan 2025 01:01:01\",\n    \"JulianDate\": 2460676.54237\n}"
+						},
+						{
+							"name": "fromJulianTime — timestamp timeFormat",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/v1/fromJulianTime?precision=5&jtime=2460676.5423726854&timeFormat=timestamp",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"fromJulianTime"
+									],
+									"query": [
+										{
+											"key": "precision",
+											"value": "5",
+											"description": "How many digits after . will be in output. Allowed range: [1, 20]"
+										},
+										{
+											"key": "jtime",
+											"value": "2460676.5423726854",
+											"description": "Julian Time to convert (float64)"
+										},
+										{
+											"key": "timeFormat",
+											"value": "timestamp",
+											"description": "Supports: \"ISO\" (default), \"timestamp\" any Go time format directives (without UTC), for example: \"Mon, 02 Jan 2006 15:04:05\""
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Fiber"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 17 Nov 2025 04:30:57 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "51"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"CivilDate\": 1735693261,\n    \"JulianDate\": 2460676.54237\n}"
 						}
 					]
 				}
@@ -2188,10 +2612,6 @@
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{baseUrl}}/v1/nextMoonPhase?utc=5&timeFormat=Mon, 02 Jan 2006 15:04:05",
 									"host": [
@@ -2247,10 +2667,6 @@
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{baseUrl}}/v1/nextMoonPhase?utc=5&timeFormat=duration",
 									"host": [
@@ -2311,10 +2727,6 @@
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{baseUrl}}/v1/nextMoonPhase?utc=5",
 									"host": [
@@ -2371,10 +2783,6 @@
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{baseUrl}}/v1/nextMoonPhase?utc=5&timeFormat=timestamp",
 									"host": [
