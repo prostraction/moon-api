@@ -1,6 +1,7 @@
 package zodiac
 
 import (
+	"log"
 	jt "moon/pkg/julian-time"
 	moon "moon/pkg/moon"
 	"time"
@@ -14,20 +15,18 @@ func CurrentZodiacs(tGiven time.Time, loc *time.Location, lang string, timeForma
 	zodiacEnd := Zodiac{}
 
 	dayBeginTime := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), 0, 0, 0, 0, loc)
-	dayEndTime := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day()+1, 0, 0, 0, 0, loc)
+	beginMoonDays, endMoonDays, _ := moon.GetMoonDaysPrecise(dayBeginTime, moonTable)
 
-	beginMoonDays, endMoonDays, monthDays := moon.GetMoonDaysPrecise(dayBeginTime, moonTable)
-	dayProgress := float64(tGiven.Sub(dayBeginTime)) / float64(dayEndTime.Sub(dayBeginTime))
-	currentMoonDays := beginMoonDays + time.Duration(float64(endMoonDays-beginMoonDays)*dayProgress)
+	zodiacPositionBegin := int((beginMoonDays.Minutes()/jt.Fminute*360.)/30./30.) % 12
+	zodiacPositionCurrent := int(((beginMoonDays.Minutes()+float64(tGiven.Hour()*60)+float64(tGiven.Minute()))/jt.Fminute*360.)/30./30.) % 12
+	zodiacPositionEnd := int(((beginMoonDays.Minutes()+1440)/jt.Fminute*360.)/30./30.) % 12
 
-	zodiacPositionBegin := int((beginMoonDays.Minutes()/jt.Fminute*360.)/30./(monthDays.Hours()/24.)) % 12
-	zodiacPositionCurrent := int((currentMoonDays.Minutes()/jt.Fminute*360.)/30./(monthDays.Hours()/24.)) % 12
-	zodiacPositionEnd := int((endMoonDays.Minutes()/jt.Fminute*360.)/30./(monthDays.Hours()/24.)) % 12
+	log.Println(zodiacPositionBegin, zodiacPositionEnd)
 
 	if zodiacPositionBegin == zodiacPositionEnd {
 		zods.Count = 1
-		zodBegin := zodiacPositionBegin * int(float64(jt.Fminute/360*30.*(monthDays.Hours()/24.)))
-		zodEnd := (zodiacPositionEnd + 1) * int(float64(jt.Fminute/360*30.*(monthDays.Hours()/24.)))
+		zodBegin := zodiacPositionBegin * jt.Fminute / 360 * 30. * 30.
+		zodEnd := (zodiacPositionEnd + 1) * jt.Fminute / 360 * 30. * 30.
 		var tBegin any = moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodBegin)*time.Minute, timeFormat, moonTable)
 		var tEnd any = moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodEnd)*time.Minute, timeFormat, moonTable)
 		zods.Zodiac = make([]ZodiacDetailed, 1)
@@ -37,8 +36,8 @@ func CurrentZodiacs(tGiven time.Time, loc *time.Location, lang string, timeForma
 		zods.Zodiac[0].NameLocalized = getZodiacRespLocalized(zodiacPositionBegin, lang)
 	} else {
 		zods.Count = 2
-		zodBegin1 := (zodiacPositionBegin) * int(float64(jt.Fminute/360*30.*(monthDays.Hours()/24.)))
-		zodEnd1 := (zodiacPositionBegin + 1) * int(float64(jt.Fminute/360*30.*(monthDays.Hours()/24.)))
+		zodBegin1 := (zodiacPositionBegin) * jt.Fminute / 360 * 30. * 30.
+		zodEnd1 := (zodiacPositionBegin + 1) * jt.Fminute / 360 * 30. * 30.
 
 		var tBegin1 any = moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodBegin1)*time.Minute, timeFormat, moonTable)
 		var tEnd1 any = moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodEnd1)*time.Minute, timeFormat, moonTable)
@@ -50,11 +49,11 @@ func CurrentZodiacs(tGiven time.Time, loc *time.Location, lang string, timeForma
 
 		if int(endMoonDays.Minutes()/jt.Fminute) == 0 {
 			endMoonDays += (beginMoonDays + 24*time.Hour)
-			zodiacPositionEnd = int((endMoonDays.Minutes() / float64(jt.Fminute/360*30.*(monthDays.Hours()/24.)))) % 12
+			zodiacPositionEnd = int((endMoonDays.Minutes()/jt.Fminute*360.)/30./30.) % 12
 		}
 
-		zodBegin2 := (zodiacPositionEnd) * int(float64(jt.Fminute/360*30.*(monthDays.Hours()/24.)))
-		zodEnd2 := (zodiacPositionEnd + 1) * int(float64(jt.Fminute/360*30.*(monthDays.Hours()/24.)))
+		zodBegin2 := (zodiacPositionEnd) * jt.Fminute / 360 * 30. * 30.
+		zodEnd2 := (zodiacPositionEnd + 1) * jt.Fminute / 360 * 30. * 30.
 		var tBegin2 any = moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodBegin2)*time.Minute, timeFormat, moonTable)
 		var tEnd2 any = moon.BeginMoonDayToEarthDay(tGiven, time.Duration(zodEnd2)*time.Minute, timeFormat, moonTable)
 		zods.Zodiac[1].Begin = &tBegin2
