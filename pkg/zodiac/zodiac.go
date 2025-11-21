@@ -1,7 +1,6 @@
 package zodiac
 
 import (
-	"log"
 	jt "moon/pkg/julian-time"
 	moon "moon/pkg/moon"
 	"time"
@@ -20,8 +19,6 @@ func CurrentZodiacs(tGiven time.Time, loc *time.Location, lang string, timeForma
 	zodiacPositionBegin := int((beginMoonDays.Minutes()/jt.Fminute*360.)/30./30.) % 12
 	zodiacPositionCurrent := int(((beginMoonDays.Minutes()+float64(tGiven.Hour()*60)+float64(tGiven.Minute()))/jt.Fminute*360.)/30./30.) % 12
 	zodiacPositionEnd := int(((beginMoonDays.Minutes()+1440)/jt.Fminute*360.)/30./30.) % 12
-
-	log.Println(zodiacPositionBegin, zodiacPositionEnd)
 
 	if zodiacPositionBegin == zodiacPositionEnd {
 		zods.Count = 1

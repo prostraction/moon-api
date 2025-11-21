@@ -22,7 +22,6 @@ func ToJulianDate(t time.Time) float64 {
 	year := t.Year()
 	month := int(t.Month())
 
-	// Calculate fractional day including time
 	fractionalDay := (float64(t.Hour()) +
 		float64(t.Minute())/MinutesPerHour +
 		float64(t.Second())/(MinutesPerHour*SecondsPerMinute)) / HoursPerDay
@@ -61,18 +60,15 @@ func SetTimezoneLocFromString(utc string) (*time.Location, error) {
 	re := regexp.MustCompile(`[^a-zA-Z0-9:+-\-]`)
 	utc = re.ReplaceAllString(utc, "")
 
-	// Remove "UTC" prefix if present and convert to lowercase for case-insensitive matching
 	normalized := strings.ToLower(utc)
 	normalized = strings.TrimPrefix(normalized, "utc")
 	normalized = strings.TrimPrefix(normalized, "gmt")
 	normalized = strings.TrimSpace(normalized)
 
-	// Handle cases like "UTC", "+0", "-0", "0"
 	if normalized == "" || normalized == "+0" || normalized == "-0" || normalized == "0" {
 		return time.UTC, nil
 	}
 
-	// Check if it starts with + or -
 	sign := 1
 	if strings.HasPrefix(normalized, "+") {
 		sign = 1
@@ -85,7 +81,6 @@ func SetTimezoneLocFromString(utc string) (*time.Location, error) {
 	var hours, minutes int
 	var err error
 
-	// Handle cases with colon separator (e.g., "05:30", "5:30")
 	if strings.Contains(normalized, ":") {
 		parts := strings.Split(normalized, ":")
 		if len(parts) != 2 {
@@ -103,16 +98,15 @@ func SetTimezoneLocFromString(utc string) (*time.Location, error) {
 		}
 
 	} else {
-		// Handle cases without colon
 		switch len(normalized) {
-		case 1, 2: // Just hours (e.g., "5", "12")
+		case 1, 2:
 			hours, err = strconv.Atoi(normalized)
 			if err != nil {
 				return time.UTC, fmt.Errorf("invalid hours: %s", normalized)
 			}
 			minutes = 0
 
-		case 3: // Hours + minutes (e.g., "530" -> 5 hours, 30 minutes)
+		case 3:
 			hours, err = strconv.Atoi(normalized[:1])
 			if err != nil {
 				return time.UTC, fmt.Errorf("invalid hours: %s", normalized[:1])
@@ -122,7 +116,7 @@ func SetTimezoneLocFromString(utc string) (*time.Location, error) {
 				return time.UTC, fmt.Errorf("invalid minutes: %s", normalized[1:])
 			}
 
-		case 4: // Hours + minutes (e.g., "0530" -> 5 hours, 30 minutes)
+		case 4:
 			hours, err = strconv.Atoi(normalized[:2])
 			if err != nil {
 				return time.UTC, fmt.Errorf("invalid hours: %s", normalized[:2])
@@ -137,15 +131,12 @@ func SetTimezoneLocFromString(utc string) (*time.Location, error) {
 		}
 	}
 
-	// Validate hours range
 	if hours < 0 || hours > 23 {
 		return time.UTC, fmt.Errorf("hours out of range (0-23): %d", hours)
 	}
 
-	// Calculate total seconds offset
 	totalSeconds := sign * (hours*3600 + minutes*60)
 
-	// Create location name
 	locationName := fmt.Sprintf("UTC%s%d:%02d", m.GetSignPrefix(sign), hours, minutes)
 	if minutes == 0 {
 		locationName = fmt.Sprintf("UTC%s%d", m.GetSignPrefix(sign), hours)
@@ -166,19 +157,15 @@ func GetTimeFromLocation(loc *time.Location) (hours int, minutes int, err error)
 	if utc == "" {
 		return 0, 0, errors.New("empty timezone string")
 	}
-
-	// Remove "UTC" prefix if present and convert to lowercase for case-insensitive matching
 	normalized := strings.ToLower(utc)
 	normalized = strings.TrimPrefix(normalized, "utc")
 	normalized = strings.TrimPrefix(normalized, "gmt")
 	normalized = strings.TrimSpace(normalized)
 
-	// Handle cases like "+5", "-3", etc.
 	if normalized == "" || normalized == "+0" || normalized == "-0" || normalized == "0" {
 		return 0, 0, nil
 	}
 
-	// Check if it starts with + or -
 	var sign int = 1
 	if strings.HasPrefix(normalized, "+") {
 		sign = 1
@@ -188,7 +175,6 @@ func GetTimeFromLocation(loc *time.Location) (hours int, minutes int, err error)
 		normalized = normalized[1:]
 	}
 
-	// Handle cases with colon separator (e.g., "05:30", "5:30")
 	if strings.Contains(normalized, ":") {
 		parts := strings.Split(normalized, ":")
 		if len(parts) != 2 {
@@ -208,8 +194,6 @@ func GetTimeFromLocation(loc *time.Location) (hours int, minutes int, err error)
 		return sign * hours, minutes, nil
 	}
 
-	// Handle cases without colon (e.g., "0530", "530", "5")
-	// Check if it's just hours (e.g., "5")
 	if len(normalized) <= 2 {
 		hours, err := strconv.Atoi(normalized)
 		if err != nil {
@@ -218,7 +202,6 @@ func GetTimeFromLocation(loc *time.Location) (hours int, minutes int, err error)
 		return sign * hours, minutes, nil
 	}
 
-	// Handle cases like "0530" (4 digits)
 	if len(normalized) == 4 {
 		hoursStr := normalized[:2]
 		minutesStr := normalized[2:]
@@ -236,7 +219,6 @@ func GetTimeFromLocation(loc *time.Location) (hours int, minutes int, err error)
 		return sign * hours, minutes, nil
 	}
 
-	// Handle cases like "530" (3 digits - hours + minutes)
 	if len(normalized) == 3 {
 		hoursStr := normalized[:1]
 		minutesStr := normalized[1:]

@@ -8,6 +8,8 @@ import (
 	il "moon/pkg/illumination"
 	jt "moon/pkg/julian-time"
 	phase "moon/pkg/phase"
+
+	"github.com/gofiber/fiber/v2/log"
 )
 
 func (c *Cache) CreateMoonTable(timeGiven time.Time) *MoonTable {
@@ -102,8 +104,7 @@ func BeginMoonDayToEarthDay(tGiven time.Time, duration time.Duration, timeFormat
 		elem := moonTable[i]
 		if elem.t1 != elem.t2 {
 			if tGiven.After(elem.NewMoon) && tGiven.Before(elem.NewMoon.Add(time.Hour*24*32)) {
-				t := elem.NewMoon
-				t = t.Add(duration)
+				t := elem.NewMoon.Add(duration)
 				if strings.ToLower(timeFormat) == "timestamp" {
 					var tRet any = t.Unix()
 					return &tRet
@@ -120,8 +121,7 @@ func BeginMoonDayToEarthDay(tGiven time.Time, duration time.Duration, timeFormat
 			if i < len(moonTable)-1 {
 				elem2 := moonTable[i+1]
 				if tGiven.After(elem.LastQuarter) && tGiven.Before(elem2.NewMoon) {
-					t := elem.NewMoon
-					t = t.Add(duration)
+					t := elem.NewMoon.Add(duration)
 
 					if strings.ToLower(timeFormat) == "timestamp" {
 						var tRet any = t.Unix()
@@ -186,6 +186,7 @@ func GetMoonDaysPrecise(tGiven time.Time, table []*MoonTableElement) (time.Durat
 				if i < len(table)-1 {
 					elem2 = table[i+1] // new next moon
 				} else {
+					log.Error("if i < len(table)-1 { // fix it, it is required")
 					elem2 = new(MoonTableElement) // new next moon approx (fix?)
 					elem2.NewMoon = elem.NewMoon.AddDate(0, 0, 29)
 					elem2.NewMoon = elem.NewMoon.Add(time.Hour * 12)

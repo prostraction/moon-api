@@ -3,6 +3,7 @@ package server
 import (
 	"moon/pkg/moon"
 	"moon/pkg/position"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -15,10 +16,15 @@ type Server struct {
 
 func (s *Server) NewRouter() *fiber.App {
 	app := fiber.New(fiber.Config{
-		Prefork:       true,
-		ServerHeader:  "Fiber",
-		CaseSensitive: false,
-		StrictRouting: true,
+		Prefork:                      true,
+		ServerHeader:                 "",
+		CaseSensitive:                false,
+		StrictRouting:                false,
+		ReadTimeout:                  60 * time.Second,
+		WriteTimeout:                 60 * time.Second,
+		DisableKeepalive:             true,
+		DisableStartupMessage:        true,
+		DisablePreParseMultipartForm: true,
 	})
 
 	app.Use(cors.New(cors.Config{
@@ -43,12 +49,7 @@ func (s *Server) NewRouter() *fiber.App {
 	// maybe rename moonPhase -> phase later
 
 	// moon phase for day:
-	// - begin, current, end of the day:
-	//	- moon days, illumintaion, phase, zodiac
-	// - moon days by time
-	// - zodiacs by time
-	// - rise, set and meridian:
-	//	- time, direction, azimuth, exists
+
 	app.Get("/v1/moonPhaseCurrent", s.moonPhaseCurrentV1)
 	app.Get("/v1/moonPhaseTimestamp", s.moonPhaseTimestampV1)
 	app.Get("/v1/moonPhaseDate", s.moonPhaseDatetV1)
@@ -102,5 +103,5 @@ func (s *Server) NewRouter() *fiber.App {
 }
 
 func (s *Server) versionV1(c *fiber.Ctx) error {
-	return c.JSON("1.2.0rc6")
+	return c.JSON("1.2.0")
 }
