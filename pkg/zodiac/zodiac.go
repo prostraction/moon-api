@@ -14,7 +14,7 @@ func CurrentZodiacs(tGiven time.Time, loc *time.Location, lang string, timeForma
 	zodiacEnd := Zodiac{}
 
 	dayBeginTime := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), 0, 0, 0, 0, loc)
-	beginMoonDays, endMoonDays, _ := moon.GetMoonDaysPrecise(dayBeginTime, moonTable)
+	beginMoonDays, _, endMoonDays, _ := moon.GetMoonDaysPrecise(dayBeginTime, moonTable)
 
 	zodiacPositionBegin := int((beginMoonDays.Minutes()/jt.Fminute*360.)/30./30.) % 12
 	zodiacPositionCurrent := int(((beginMoonDays.Minutes()+float64(tGiven.Hour()*60)+float64(tGiven.Minute()))/jt.Fminute*360.)/30./30.) % 12

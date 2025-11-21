@@ -177,11 +177,12 @@ func GetMoonDays(tGiven time.Time, table []*MoonTableElement) time.Duration {
 	return moonDays
 }*/
 
-func GetMoonDaysPrecise(tGiven time.Time, table []*MoonTableElement) (time.Duration, time.Duration, time.Duration) {
+func GetMoonDaysPrecise(tGiven time.Time, table []*MoonTableElement) (time.Duration, time.Duration, time.Duration, time.Duration) {
+	tBegin := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), 0, 0, 0, 0, tGiven.Location())
 	for i := range table {
 		elem := table[i]
 		if elem.t1 != elem.t2 {
-			if tGiven.After(elem.NewMoon) && tGiven.Before(elem.NewMoon.Add(time.Hour*24*32)) {
+			if tBegin.After(elem.NewMoon) && tBegin.Before(elem.NewMoon.Add(time.Hour*24*32)) {
 				var elem2 *MoonTableElement
 				if i < len(table)-1 {
 					elem2 = table[i+1] // new next moon
@@ -193,21 +194,26 @@ func GetMoonDaysPrecise(tGiven time.Time, table []*MoonTableElement) (time.Durat
 				}
 				moonMonDays := elem2.NewMoon.Sub(elem.NewMoon) // moon month
 
-				eartbeg := tGiven.Add(-tGiven.Sub(elem.NewMoon))
-				eartend := time.Date(eartbeg.Year(), eartbeg.Month()+1, eartbeg.Day(), eartbeg.Hour(), eartbeg.Minute(), eartbeg.Second(), 0, tGiven.Location())
+				eartbeg := tBegin.Add(-tGiven.Sub(elem.NewMoon))
+				eartend := time.Date(eartbeg.Year(), eartbeg.Month()+1, eartbeg.Day(), eartbeg.Hour(), eartbeg.Minute(), eartbeg.Second(), 0, tBegin.Location())
 				eartMon := eartend.Unix() - eartbeg.Unix() // earth month
 
 				beginDay := elem.NewMoon
+				currentDay := elem.NewMoon
 				day := time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*24.))
 
-				for tGiven.Sub(beginDay) > day {
+				for tBegin.Sub(beginDay) > day {
 					beginDay = beginDay.Add(day)
+					currentDay = currentDay.Add(day)
 				}
 
+				currentDay = currentDay.Add(time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Hour()))))
+				currentDay = currentDay.Add(time.Minute * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Minute()))))
+
 				endDay := beginDay.Add(day)
-				return beginDay.Sub(elem.NewMoon) % moonMonDays, endDay.Sub(elem.NewMoon) % moonMonDays, moonMonDays
+				return beginDay.Sub(elem.NewMoon) % moonMonDays, currentDay.Sub(elem.NewMoon) % moonMonDays, endDay.Sub(elem.NewMoon) % moonMonDays, moonMonDays
 			}
 		}
 	}
-	return time.Duration(0), time.Duration(0), time.Duration(0)
+	return time.Duration(0), time.Duration(0), time.Duration(0), time.Duration(0)
 }
