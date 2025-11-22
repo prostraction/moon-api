@@ -277,6 +277,8 @@ func (c *Cache) GetRisesDay(year, month, day int, loc *time.Location, precision 
 	return dayResponse, nil
 }
 
+// to do: refactor here.
+// 3 req to 1 day is not ok
 func GetMoonPosition(tGiven time.Time, loc *time.Location, precision int, timeFormat string, location ...float64) (*MoonPosition, error) {
 	lat, lon, err := parseLocation(location)
 	if err != nil {

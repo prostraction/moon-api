@@ -153,7 +153,6 @@ func GetTimeFromLocation(loc *time.Location) (hours int, minutes int, err error)
 	re := regexp.MustCompile(`[^a-zA-Z0-9:+-\-]`)
 	utc = re.ReplaceAllString(utc, "")
 
-	// Handle empty string
 	if utc == "" {
 		return 0, 0, errors.New("empty timezone string")
 	}

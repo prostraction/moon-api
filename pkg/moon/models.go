@@ -2,15 +2,14 @@ package moon
 
 import "time"
 
-type EnumPhase int
+type MoonDaysInDay struct {
+	Begin   time.Duration
+	Current time.Duration
+	End     time.Duration
+}
 
-const (
-	NewMoon EnumPhase = iota
-	FirstQuarter
-	FullMoon
-	LastQuarter
-)
-
+// used by:
+// all moon package
 type MoonTable struct {
 	Elems []*MoonTableElement
 }
@@ -20,12 +19,22 @@ type MoonTableElement struct {
 	FirstQuarter time.Time
 	FullMoon     time.Time
 	LastQuarter  time.Time
-	t1           float64
-	t2           float64
 }
 
-type Cache struct {
-	moonTable map[string]*MoonTable
+type EnumPhase int
+
+const (
+	NewMoon EnumPhase = iota
+	FirstQuarter
+	FullMoon
+	LastQuarter
+)
+
+// used by:
+// - phase methods
+type MoonDaysDetailed struct {
+	Count int
+	Day   []MoonDay
 }
 
 type MoonDay struct {
@@ -35,25 +44,21 @@ type MoonDay struct {
 	IsEndExists   bool
 }
 
-type MoonDaysDetailed struct {
-	Count int
-	Day   []MoonDay
-}
-
+// used by:
+// - route-phase
+// - rounte-moon-table
 type NearestPhase struct {
 	NewMoon      time.Time
 	FirstQuarter time.Time
 	FullMoon     time.Time
 	LastQuarter  time.Time
 }
-
 type NearestPhaseTimestamp struct {
 	NewMoon      int64
 	FirstQuarter int64
 	FullMoon     int64
 	LastQuarter  int64
 }
-
 type NearestPhaseString struct {
 	NewMoon      string
 	FirstQuarter string

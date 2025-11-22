@@ -16,7 +16,7 @@ type ErrorPrintable struct {
 type MoonStat struct {
 	MoonDays     float64
 	Illumination float64
-	Phase        phase.PhaseResp
+	Phase        *phase.Phase
 	Zodiac       zodiac.Zodiac
 	Position     *pos.MoonPosition `json:"MoonPosition,omitempty"`
 }
@@ -46,7 +46,7 @@ type MoonPhaseResponse struct {
 
 	MoonRiseAndSet *pos.DayData `json:"MoonRiseAndSet,omitempty"`
 
-	info *FullInfo
+	//info *FullInfo
 }
 
 type Coordinates struct {

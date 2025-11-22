@@ -41,31 +41,31 @@ func (s *Server) moonTableYearV1(c *fiber.Ctx) error {
 }
 
 func (s *Server) moonTableV1(c *fiber.Ctx, timeFormat string, tGiven time.Time) error {
-	table := s.moonCache.GenerateMoonTable(tGiven)
+	moonTable := moon.CreateMoonTable(tGiven)
 
 	if strings.ToLower(timeFormat) == "timestamp" {
 		val := []moon.NearestPhaseTimestamp{}
-		for i := range table.Elems {
+		for i := range moonTable.Elems {
 			val = append(val, moon.NearestPhaseTimestamp{
-				NewMoon:      table.Elems[i].NewMoon.Unix(),
-				FirstQuarter: table.Elems[i].FirstQuarter.Unix(),
-				FullMoon:     table.Elems[i].FullMoon.Unix(),
-				LastQuarter:  table.Elems[i].FullMoon.Unix(),
+				NewMoon:      moonTable.Elems[i].NewMoon.Unix(),
+				FirstQuarter: moonTable.Elems[i].FirstQuarter.Unix(),
+				FullMoon:     moonTable.Elems[i].FullMoon.Unix(),
+				LastQuarter:  moonTable.Elems[i].FullMoon.Unix(),
 			})
 		}
 		return c.JSON(val)
 	} else if strings.ToLower(timeFormat) != "iso" {
 		val := []moon.NearestPhaseString{}
-		for i := range table.Elems {
+		for i := range moonTable.Elems {
 			val = append(val, moon.NearestPhaseString{
-				NewMoon:      table.Elems[i].NewMoon.Format(timeFormat),
-				FirstQuarter: table.Elems[i].FirstQuarter.Format(timeFormat),
-				FullMoon:     table.Elems[i].FullMoon.Format(timeFormat),
-				LastQuarter:  table.Elems[i].FullMoon.Format(timeFormat),
+				NewMoon:      moonTable.Elems[i].NewMoon.Format(timeFormat),
+				FirstQuarter: moonTable.Elems[i].FirstQuarter.Format(timeFormat),
+				FullMoon:     moonTable.Elems[i].FullMoon.Format(timeFormat),
+				LastQuarter:  moonTable.Elems[i].FullMoon.Format(timeFormat),
 			})
 		}
 		return c.JSON(val)
 	}
 
-	return c.JSON(table.Elems)
+	return c.JSON(moonTable.Elems)
 }

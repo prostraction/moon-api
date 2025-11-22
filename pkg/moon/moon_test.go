@@ -43,8 +43,6 @@ func TestSearchPhase_NextPhase(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-						t1:           1.0,
-						t2:           2.0,
 					},
 				},
 			},
@@ -61,16 +59,12 @@ func TestSearchPhase_NextPhase(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-						t1:           1.0,
-						t2:           2.0,
 					},
 					{
 						NewMoon:      time.Date(2023, 2, 1, 0, 0, 0, 0, location),
 						FirstQuarter: time.Date(2023, 2, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 2, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 2, 22, 0, 0, 0, 0, location),
-						t1:           3.0,
-						t2:           4.0,
 					},
 				},
 			},
@@ -87,16 +81,12 @@ func TestSearchPhase_NextPhase(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-						t1:           1.0,
-						t2:           2.0,
 					},
 					{
 						NewMoon:      time.Date(2023, 2, 1, 0, 0, 0, 0, location),
 						FirstQuarter: time.Date(2023, 2, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 2, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 2, 22, 0, 0, 0, 0, location),
-						t1:           3.0,
-						t2:           4.0,
 					},
 				},
 			},
@@ -113,16 +103,12 @@ func TestSearchPhase_NextPhase(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-						t1:           1.0,
-						t2:           2.0,
 					},
 					{
 						NewMoon:      time.Date(2023, 2, 1, 0, 0, 0, 0, location),
 						FirstQuarter: time.Date(2023, 2, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 2, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 2, 22, 0, 0, 0, 0, location),
-						t1:           3.0,
-						t2:           4.0,
 					},
 				},
 			},
@@ -139,39 +125,18 @@ func TestSearchPhase_NextPhase(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-						t1:           1.0,
-						t2:           2.0,
 					},
 				},
 			},
 			phase:    NewMoon,
 			wantTime: time.Date(2023, 1, 1, 0, 0, 0, 0, location),
 		},
-		{
-			name:   "element with t1 == t2 should be skipped",
-			tGiven: time.Date(2023, 1, 10, 0, 0, 0, 0, location),
-			moonTable: &MoonTable{
-				Elems: []*MoonTableElement{
-					{
-						NewMoon:      time.Date(2023, 1, 1, 0, 0, 0, 0, location),
-						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
-						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
-						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-						t1:           1.0,
-						t2:           1.0,
-					},
-				},
-			},
-			phase:     NewMoon,
-			wantError: errors.New("not found"),
-		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cache := &Cache{}
 
-			gotTime, err := cache.SearchPhase(tt.tGiven, tt.moonTable, tt.phase)
+			gotTime, err := SearchPhase(tt.tGiven, tt.moonTable, tt.phase)
 			if tt.wantError != nil {
 				if err == nil {
 					t.Errorf("Test: %v, SearchPhase() error = %v, wantErr %v", tt.name, err, tt.wantError)
@@ -203,16 +168,12 @@ func TestSearchPhase_AllPhaseTypes(t *testing.T) {
 				FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 				FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 				LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-				t1:           1.0,
-				t2:           2.0,
 			},
 			{
 				NewMoon:      time.Date(2023, 2, 1, 0, 0, 0, 0, location),
 				FirstQuarter: time.Date(2023, 2, 8, 0, 0, 0, 0, location),
 				FullMoon:     time.Date(2023, 2, 15, 0, 0, 0, 0, location),
 				LastQuarter:  time.Date(2023, 2, 22, 0, 0, 0, 0, location),
-				t1:           3.0,
-				t2:           4.0,
 			},
 		},
 	}
@@ -249,11 +210,9 @@ func TestSearchPhase_AllPhaseTypes(t *testing.T) {
 		},
 	}
 
-	cache := &Cache{}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := cache.SearchPhase(tt.tGiven, moonTable, tt.phase)
+			result, err := SearchPhase(tt.tGiven, moonTable, tt.phase)
 
 			if err != nil {
 				t.Errorf("SearchPhase() for %s failed with error: %v", tt.name, err)
@@ -287,24 +246,18 @@ func TestSearchPhase_ComplexScenarios(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-						t1:           1.0,
-						t2:           2.0,
 					},
 					{
 						NewMoon:      time.Date(2023, 2, 1, 0, 0, 0, 0, location),
 						FirstQuarter: time.Date(2023, 2, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 2, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 2, 22, 0, 0, 0, 0, location),
-						t1:           3.0,
-						t2:           4.0,
 					},
 					{
 						NewMoon:      time.Date(2023, 3, 3, 0, 0, 0, 0, location),
 						FirstQuarter: time.Date(2023, 3, 10, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 3, 17, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 3, 24, 0, 0, 0, 0, location),
-						t1:           5.0,
-						t2:           6.0,
 					},
 				},
 			},
@@ -321,16 +274,12 @@ func TestSearchPhase_ComplexScenarios(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-						t1:           1.0,
-						t2:           2.0,
 					},
 					{
 						NewMoon:      time.Date(2023, 2, 1, 0, 0, 0, 0, location),
 						FirstQuarter: time.Date(2023, 2, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 2, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 2, 22, 0, 0, 0, 0, location),
-						t1:           3.0,
-						t2:           4.0,
 					},
 				},
 			},
@@ -339,11 +288,9 @@ func TestSearchPhase_ComplexScenarios(t *testing.T) {
 		},
 	}
 
-	cache := &Cache{}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := cache.SearchPhase(tt.tGiven, tt.moonTable, tt.phase)
+			result, err := SearchPhase(tt.tGiven, tt.moonTable, tt.phase)
 
 			if err != nil {
 				t.Errorf("SearchPhase() for %s failed with error: %v", tt.name, err)
@@ -378,16 +325,12 @@ func TestSearchPhase_EdgeCases(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-						t1:           1.0,
-						t2:           2.0,
 					},
 					{
 						NewMoon:      time.Date(2023, 2, 1, 0, 0, 0, 0, location),
 						FirstQuarter: time.Date(2023, 2, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 2, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 2, 22, 0, 0, 0, 0, location),
-						t1:           3.0,
-						t2:           4.0,
 					},
 				},
 			},
@@ -404,47 +347,17 @@ func TestSearchPhase_EdgeCases(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-						t1:           1.0,
-						t2:           2.0,
 					},
 					{
 						NewMoon:      time.Date(2023, 2, 1, 0, 0, 0, 0, location),
 						FirstQuarter: time.Date(2023, 2, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 2, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 2, 22, 0, 0, 0, 0, location),
-						t1:           3.0,
-						t2:           4.0,
 					},
 				},
 			},
 			phase:    NewMoon,
 			wantTime: time.Date(2023, 2, 1, 0, 0, 0, 0, location),
-		},
-		{
-			name:   "all elements skipped due to t1 == t2",
-			tGiven: time.Date(2023, 1, 10, 0, 0, 0, 0, location),
-			moonTable: &MoonTable{
-				Elems: []*MoonTableElement{
-					{
-						NewMoon:      time.Date(2023, 1, 1, 0, 0, 0, 0, location),
-						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
-						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
-						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-						t1:           1.0,
-						t2:           1.0,
-					},
-					{
-						NewMoon:      time.Date(2023, 2, 1, 0, 0, 0, 0, location),
-						FirstQuarter: time.Date(2023, 2, 8, 0, 0, 0, 0, location),
-						FullMoon:     time.Date(2023, 2, 15, 0, 0, 0, 0, location),
-						LastQuarter:  time.Date(2023, 2, 22, 0, 0, 0, 0, location),
-						t1:           2.0,
-						t2:           2.0,
-					},
-				},
-			},
-			phase:     NewMoon,
-			wantError: errors.New("not found"),
 		},
 		{
 			name:   "mixed valid and invalid elements",
@@ -456,16 +369,12 @@ func TestSearchPhase_EdgeCases(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-						t1:           1.0,
-						t2:           1.0,
 					},
 					{
 						NewMoon:      time.Date(2023, 2, 1, 0, 0, 0, 0, location),
 						FirstQuarter: time.Date(2023, 2, 8, 0, 0, 0, 0, location),
 						FullMoon:     time.Date(2023, 2, 15, 0, 0, 0, 0, location),
 						LastQuarter:  time.Date(2023, 2, 22, 0, 0, 0, 0, location),
-						t1:           2.0,
-						t2:           3.0,
 					},
 				},
 			},
@@ -476,9 +385,7 @@ func TestSearchPhase_EdgeCases(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cache := &Cache{}
-
-			gotTime, err := cache.SearchPhase(tt.tGiven, tt.moonTable, tt.phase)
+			gotTime, err := SearchPhase(tt.tGiven, tt.moonTable, tt.phase)
 
 			if tt.wantError != nil {
 				if err == nil {
@@ -523,8 +430,6 @@ func TestSearchPhase_TimeLocation(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, moscowLocation),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, moscowLocation),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, moscowLocation),
-						t1:           1.0,
-						t2:           2.0,
 					},
 				},
 			},
@@ -541,8 +446,6 @@ func TestSearchPhase_TimeLocation(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, newYorkLocation),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, newYorkLocation),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, newYorkLocation),
-						t1:           1.0,
-						t2:           2.0,
 					},
 				},
 			},
@@ -559,8 +462,6 @@ func TestSearchPhase_TimeLocation(t *testing.T) {
 						FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, utcLocation),
 						FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, utcLocation),
 						LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, utcLocation),
-						t1:           1.0,
-						t2:           2.0,
 					},
 				},
 			},
@@ -571,9 +472,7 @@ func TestSearchPhase_TimeLocation(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cache := &Cache{}
-
-			result, err := cache.SearchPhase(tt.tGiven, tt.moonTable, tt.phase)
+			result, err := SearchPhase(tt.tGiven, tt.moonTable, tt.phase)
 
 			if err != nil {
 				t.Errorf("SearchPhase() for %s failed with error: %v", tt.name, err)
@@ -602,8 +501,6 @@ func TestSearchPhase_PhaseOrder(t *testing.T) {
 				FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 				FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 				LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-				t1:           1.0,
-				t2:           2.0,
 			},
 		},
 	}
@@ -635,11 +532,9 @@ func TestSearchPhase_PhaseOrder(t *testing.T) {
 		},
 	}
 
-	cache := &Cache{}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := cache.SearchPhase(tt.tGiven, moonTable, tt.phase)
+			result, err := SearchPhase(tt.tGiven, moonTable, tt.phase)
 
 			if err != nil {
 				t.Errorf("SearchPhase() for %s failed with error: %v", tt.name, err)
@@ -664,8 +559,6 @@ func TestSearchPhase_SingleElement(t *testing.T) {
 				FirstQuarter: time.Date(2023, 1, 8, 0, 0, 0, 0, location),
 				FullMoon:     time.Date(2023, 1, 15, 0, 0, 0, 0, location),
 				LastQuarter:  time.Date(2023, 1, 22, 0, 0, 0, 0, location),
-				t1:           1.0,
-				t2:           2.0,
 			},
 		},
 	}
@@ -697,11 +590,9 @@ func TestSearchPhase_SingleElement(t *testing.T) {
 		},
 	}
 
-	cache := &Cache{}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := cache.SearchPhase(tt.tGiven, singleElementTable, tt.phase)
+			result, err := SearchPhase(tt.tGiven, singleElementTable, tt.phase)
 
 			if tt.wantError != nil {
 				if err == nil {
@@ -735,17 +626,14 @@ func TestSearchPhase_Performance(t *testing.T) {
 			FirstQuarter: baseTime.AddDate(0, 0, 7),
 			FullMoon:     baseTime.AddDate(0, 0, 14),
 			LastQuarter:  baseTime.AddDate(0, 0, 21),
-			t1:           float64(i * 2),
-			t2:           float64(i*2 + 1),
 		}
 		elems = append(elems, elem)
 	}
 
 	largeMoonTable := &MoonTable{Elems: elems}
-	cache := &Cache{}
 
 	tGiven := time.Date(2023, 6, 15, 0, 0, 0, 0, location)
-	result, err := cache.SearchPhase(tGiven, largeMoonTable, FullMoon)
+	result, err := SearchPhase(tGiven, largeMoonTable, FullMoon)
 
 	if err != nil {
 		t.Errorf("SearchPhase() with large table failed: %v", err)

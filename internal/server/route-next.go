@@ -12,10 +12,11 @@ import (
 func (s *Server) moonNextMoonPhaseV1(c *fiber.Ctx) error {
 	utc := c.Query("utc", "UTC:+0")
 	loc, _ := jt.SetTimezoneLocFromString(utc)
-	tGiven := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second(), 0, time.Local)
+	tGiven := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second(), time.Now().Nanosecond(), time.Local)
 	tGiven = tGiven.In(loc)
 
-	np := s.moonCache.FindNearestPhase(tGiven)
+	moonTable := moon.CreateMoonTable(tGiven)
+	np := moon.FindNearestPhase(tGiven, moonTable)
 
 	format := c.Query("timeFormat", "ISO")
 	if strings.ToLower(format) == "timestamp" {

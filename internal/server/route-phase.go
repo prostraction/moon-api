@@ -2,6 +2,7 @@ package server
 
 import (
 	jt "moon/pkg/julian-time"
+	"moon/pkg/moon"
 	"moon/pkg/phase"
 	pos "moon/pkg/position"
 	"moon/pkg/zodiac"
@@ -100,46 +101,51 @@ func (s *Server) moonPhaseDatetV1(c *fiber.Ctx) error {
 }
 
 func (s *Server) moonPhaseV1(c *fiber.Ctx, tGiven time.Time, precision int, locationCords Coordinates, timeFormat string) error {
-	lang := c.Query("lang", "en")
-	utc := c.Query("utc", "UTC:+0")
-	loc, _ := jt.SetTimezoneLocFromString(utc)
-	/*if err != nil {
-		log.Println(err)
-	}*/
-
-	resp := MoonPhaseResponse{}
-	resp.EndDay = new(MoonStat)
-	resp.CurrentState = new(MoonStat)
-	resp.BeginDay = new(MoonStat)
-	resp.info = new(FullInfo)
-
 	var err error
 
-	var beginDuration, currentDuration, endDuration time.Duration
-	beginDuration, currentDuration, endDuration = s.moonCache.CurrentMoonDays(tGiven, loc)
+	lang := c.Query("lang", "en")
+	utc := c.Query("utc", "UTC:+0")
 
-	resp.info.MoonDaysBegin = beginDuration.Minutes() / jt.Fminute
-	resp.info.MoonDaysCurrent = currentDuration.Minutes() / jt.Fminute
-	resp.info.MoonDaysEnd = endDuration.Minutes() / jt.Fminute
+	loc, err := jt.SetTimezoneLocFromString(utc)
+	if err != nil {
+		log.Trace(err)
+	}
 
-	resp.BeginDay.MoonDays = ToFixed(resp.info.MoonDaysBegin, precision)
-	resp.CurrentState.MoonDays = ToFixed(resp.info.MoonDaysCurrent, precision)
-	resp.EndDay.MoonDays = ToFixed(resp.info.MoonDaysEnd, precision)
+	resp := MoonPhaseResponse{}
+	resp.BeginDay = new(MoonStat)
+	resp.CurrentState = new(MoonStat)
+	resp.EndDay = new(MoonStat)
 
-	resp.info.IlluminationCurrent, resp.info.IlluminationBeginDay, resp.info.IlluminationEndDay, resp.CurrentState.Phase, resp.BeginDay.Phase, resp.EndDay.Phase = phase.CurrentMoonPhase(tGiven, lang)
+	moonTable := moon.CreateMoonTable(tGiven)
 
-	resp.BeginDay.Illumination = ToFixed(resp.info.IlluminationBeginDay*100, precision)
-	resp.CurrentState.Illumination = ToFixed(resp.info.IlluminationCurrent*100, precision)
-	resp.EndDay.Illumination = ToFixed(resp.info.IlluminationEndDay*100, precision)
+	// moon days
+	day := moon.CurrentMoonDays(tGiven, loc, moonTable)
 
-	resp.ZodiacDetailed, resp.BeginDay.Zodiac, resp.CurrentState.Zodiac, resp.EndDay.Zodiac = zodiac.CurrentZodiacs(tGiven, loc, lang, timeFormat, s.moonCache.CreateMoonTable(tGiven).Elems)
+	resp.BeginDay.MoonDays = ToFixed(day.Begin.Minutes()/jt.Fminute, precision)
+	resp.CurrentState.MoonDays = ToFixed(day.Current.Minutes()/jt.Fminute, precision)
+	resp.EndDay.MoonDays = ToFixed(day.End.Minutes()/jt.Fminute, precision)
+
+	// phase && illum
+	phase := phase.CurrentMoonPhase(tGiven, lang)
+
+	resp.BeginDay.Illumination = ToFixed(phase.Illumination.BeginDay*100, precision)
+	resp.CurrentState.Illumination = ToFixed(phase.Illumination.Current*100, precision)
+	resp.EndDay.Illumination = ToFixed(phase.Illumination.EndDay*100, precision)
+
+	resp.BeginDay.Phase = phase.BeginDay
+	resp.CurrentState.Phase = phase.Current
+	resp.EndDay.Phase = phase.EndDay
+
+	// zodiac
+
+	resp.ZodiacDetailed, resp.BeginDay.Zodiac, resp.CurrentState.Zodiac, resp.EndDay.Zodiac = zodiac.CurrentZodiacs(tGiven, loc, lang, timeFormat, moonTable.Elems)
 
 	if locationCords.IsValid {
 		resp.MoonRiseAndSet, err = s.positionCache.GetRisesDay(tGiven.Year(), int(tGiven.Month()), tGiven.Day(), tGiven.Location(), precision, timeFormat, locationCords.Longitude, locationCords.Latitude)
 		if err != nil {
 			log.Error(err)
 		}
-		resp.MoonDaysDetailed = s.moonCache.MoonDetailed(tGiven, loc, lang, timeFormat, locationCords.Longitude, locationCords.Latitude)
+		resp.MoonDaysDetailed = moon.MoonDetailed(tGiven, loc, lang, timeFormat, locationCords.Longitude, locationCords.Latitude)
 
 		newT := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), 0, 0, 0, 0, tGiven.Location())
 		resp.BeginDay.Position, err = pos.GetMoonPosition(newT, newT.Location(), precision, timeFormat, locationCords.Longitude, locationCords.Latitude)

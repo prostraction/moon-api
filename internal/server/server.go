@@ -1,7 +1,6 @@
 package server
 
 import (
-	"moon/pkg/moon"
 	"moon/pkg/position"
 	"time"
 
@@ -10,7 +9,7 @@ import (
 )
 
 type Server struct {
-	moonCache     *moon.Cache
+	//moonCache     *moon.Cache
 	positionCache *position.Cache
 }
 
@@ -97,11 +96,11 @@ func (s *Server) NewRouter() *fiber.App {
 	app.Get("/v1/version", s.versionV1)
 	app.Get("/api/v1/version", s.versionV1)
 
-	s.moonCache = new(moon.Cache)
+	//s.moonCache = new(moon.Cache)
 	s.positionCache = new(position.Cache)
 	return app
 }
 
 func (s *Server) versionV1(c *fiber.Ctx) error {
-	return c.JSON("1.2.0")
+	return c.JSON("1.2.0rc8")
 }
