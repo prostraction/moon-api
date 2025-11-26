@@ -65,3 +65,18 @@ type NearestPhaseString struct {
 	FullMoon     string
 	LastQuarter  string
 }
+
+type SeachMoonDayResp struct {
+	From time.Time
+	To   time.Time
+}
+
+type SeachMoonDayRespTimestamp struct {
+	From int64
+	To   int64
+}
+
+type SeachMoonDayRespString struct {
+	From string
+	To   string
+}

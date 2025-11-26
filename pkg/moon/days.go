@@ -8,8 +8,6 @@ import (
 	il "moon/pkg/illumination"
 	jt "moon/pkg/julian-time"
 	phase "moon/pkg/phase"
-
-	"github.com/gofiber/fiber/v2/log"
 )
 
 // to do
@@ -159,11 +157,15 @@ func GetMoonDays(tGiven time.Time, table []*MoonTableElement) (MoonDaysInDay, ti
 			if i < len(table)-1 {
 				elem2 = table[i+1] // new next moon
 			} else {
-				log.Error("if i < len(table)-1 { // fix it, it is required")
-				elem2 = new(MoonTableElement) // new next moon approx (fix?) to do
-				elem2.NewMoon = elem.NewMoon.AddDate(0, 0, 29)
-				elem2.NewMoon = elem.NewMoon.Add(time.Hour * 12)
+				newTGiven := time.Date(tGiven.Year()+1, time.January, 1, 0, 0, 0, 0, tGiven.Location())
+				newT := CreateMoonTable(newTGiven)
+				if newT != nil && newT.Elems != nil && len(newT.Elems) > 0 {
+					return GetMoonDays(tGiven, newT.Elems)
+				} else {
+					/// return err
+				}
 			}
+
 			moonMonDays := elem2.NewMoon.Sub(elem.NewMoon) // moon month
 
 			eartbeg := tBegin.Add(-tGiven.Sub(elem.NewMoon))
@@ -178,6 +180,9 @@ func GetMoonDays(tGiven time.Time, table []*MoonTableElement) (MoonDaysInDay, ti
 				beginDay = beginDay.Add(day)
 				currentDay = currentDay.Add(day)
 			}
+			last := tBegin.Sub(beginDay)
+			beginDay = beginDay.Add(last)
+			currentDay = currentDay.Add(last)
 
 			currentDay = currentDay.Add(time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Hour()))))
 			currentDay = currentDay.Add(time.Minute * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Minute()))))

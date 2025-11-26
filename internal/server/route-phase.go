@@ -16,10 +16,10 @@ import (
 /*    MOON PHASE    */
 func (s *Server) moonPhaseCurrentV1(c *fiber.Ctx) error {
 	utc := c.Query("utc", "UTC:+0")
-	loc, _ := jt.SetTimezoneLocFromString(utc)
-	/*if err != nil {
-		log.Println(err)
-	}*/
+	loc, err := jt.SetTimezoneLocFromString(utc)
+	if err != nil {
+		log.Trace(err)
+	}
 	tGiven := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second(), 0, time.Local)
 	tGiven = tGiven.In(loc)
 	precision := StrToInt(c.Query("precision", "2"), 2, 0, 20)
@@ -35,19 +35,19 @@ func (s *Server) moonPhaseCurrentV1(c *fiber.Ctx) error {
 
 func (s *Server) moonPhaseTimestampV1(c *fiber.Ctx) error {
 	utc := c.Query("utc", "UTC:+0")
-	loc, _ := jt.SetTimezoneLocFromString(utc)
-	/*if err != nil {
-		log.Println(err)
-	}*/
+	loc, err := jt.SetTimezoneLocFromString(utc)
+	if err != nil {
+		log.Trace(err)
+	}
 
 	tStr := c.Query("timestamp", strconv.FormatInt(time.Now().Unix(), 10))
 	t, err := strconv.ParseInt(tStr, 10, 64)
 	if err != nil {
 		t = time.Now().Unix()
 	}
+
 	tm := time.Unix(t, 0)
-	tGiven := time.Date(tm.Year(), tm.Month(), tm.Day(), tm.Hour(), tm.Minute(), tm.Second(), 0, time.Local)
-	tGiven = tGiven.In(loc)
+	tGiven := time.Date(tm.Year(), tm.Month(), tm.Day(), tm.Hour(), tm.Minute(), tm.Second(), 0, time.Local).In(loc)
 
 	precision := StrToInt(c.Query("precision", "2"), 2, 0, 20)
 
@@ -62,10 +62,10 @@ func (s *Server) moonPhaseTimestampV1(c *fiber.Ctx) error {
 
 func (s *Server) moonPhaseDatetV1(c *fiber.Ctx) error {
 	utc := c.Query("utc", "UTC:+0")
-	loc, _ := jt.SetTimezoneLocFromString(utc)
-	/*if err != nil {
-		log.Println(err)
-	}*/
+	loc, err := jt.SetTimezoneLocFromString(utc)
+	if err != nil {
+		log.Trace(err)
+	}
 
 	tNow := time.Now()
 
@@ -73,7 +73,7 @@ func (s *Server) moonPhaseDatetV1(c *fiber.Ctx) error {
 	month := StrToInt(c.Query("month", strconv.Itoa(int(tNow.Month()))), int(tNow.Month()), 1, 12)
 	day := StrToInt(c.Query("day", strconv.Itoa(int(tNow.Day()))), int(tNow.Day()), 1, 31)
 
-	err := IsValidDate(year, month, day)
+	err = IsValidDate(year, month, day)
 	if err != nil {
 		c.Status(400)
 		errPrintable := ErrorPrintable{
@@ -136,8 +136,7 @@ func (s *Server) moonPhaseV1(c *fiber.Ctx, tGiven time.Time, precision int, loca
 	resp.CurrentState.Phase = phase.Current
 	resp.EndDay.Phase = phase.EndDay
 
-	// zodiac
-
+	// zodiac TO DO refactor
 	resp.ZodiacDetailed, resp.BeginDay.Zodiac, resp.CurrentState.Zodiac, resp.EndDay.Zodiac = zodiac.CurrentZodiacs(tGiven, loc, lang, timeFormat, moonTable.Elems)
 
 	if locationCords.IsValid {

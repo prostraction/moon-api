@@ -72,7 +72,9 @@ func (s *Server) NewRouter() *fiber.App {
 
 	// methods when?
 	app.Get("/v1/nextMoonPhase", s.moonNextMoonPhaseV1)
+	app.Get("/v1/nextMoonDay", s.moonNextMoonDayV1)
 	app.Get("/api/v1/nextMoonPhase", s.moonNextMoonPhaseV1)
+	app.Get("/api/v1/nextMoonDay", s.moonNextMoonDayV1)
 
 	//app.Get("/v1/nextMoonEclipse")
 	//app.Get("/v1/nextSunEclipse")
@@ -102,5 +104,5 @@ func (s *Server) NewRouter() *fiber.App {
 }
 
 func (s *Server) versionV1(c *fiber.Ctx) error {
-	return c.JSON("1.2.0rc7-hotfix")
+	return c.JSON("1.2.0rc7-hotfix-2")
 }
