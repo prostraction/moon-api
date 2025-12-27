@@ -17,6 +17,11 @@ pip install skyfield
 python addon/skyfield/server.py
 ```
 
+## Documentation
+
+- [Postman](https://www.postman.com/prostraction/moon-walker/overview)
+- [Apidog](https://moonwalker.apidog.io)
+
 ## Methods
 
 ### GET /api/v1/moonPhaseDate
