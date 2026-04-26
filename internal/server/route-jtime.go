@@ -19,7 +19,7 @@ func (s *Server) toJulianTimeByDateV1(c *fiber.Ctx) error {
 
 	year := StrToInt(c.Query("year", strconv.Itoa(tNow.Year())), tNow.Year(), 1, 9999)
 	month := StrToInt(c.Query("month", strconv.Itoa(int(tNow.Month()))), int(tNow.Month()), 1, 12)
-	day := StrToInt(c.Query("day", strconv.Itoa(int(tNow.Day()))), int(tNow.Day()), 1, 31)
+	day := StrToInt(c.Query("day", strconv.Itoa(tNow.Day())), tNow.Day(), 1, 31)
 
 	timeFormat := c.Query("timeFormat", "ISO")
 
@@ -33,13 +33,13 @@ func (s *Server) toJulianTimeByDateV1(c *fiber.Ctx) error {
 		return c.JSON(errPrintable)
 	}
 
-	hour := StrToInt(c.Query("hour", strconv.Itoa(int(tNow.Hour()))), int(tNow.Hour()), 0, 23)
-	minute := StrToInt(c.Query("minute", strconv.Itoa(int(tNow.Minute()))), int(tNow.Minute()), 0, 59)
-	second := StrToInt(c.Query("second", strconv.Itoa(int(tNow.Second()))), int(tNow.Second()), 0, 59)
+	hour := StrToInt(c.Query("hour", strconv.Itoa(tNow.Hour())), tNow.Hour(), 0, 23)
+	minute := StrToInt(c.Query("minute", strconv.Itoa(tNow.Minute())), tNow.Minute(), 0, 59)
+	second := StrToInt(c.Query("second", strconv.Itoa(tNow.Second())), tNow.Second(), 0, 59)
 
 	tGiven := time.Date(year, jt.GetMonth(month), day, hour, minute, second, 0, time.UTC)
 
-	resp := s.toJulianTimeV1(c, tGiven, timeFormat, precision)
+	resp := s.toJulianTimeV1(tGiven, timeFormat, precision)
 	return c.JSON(resp)
 }
 
@@ -57,11 +57,11 @@ func (s *Server) toJulianTimeByTimestampV1(c *fiber.Ctx) error {
 	tGiven := time.Date(tm.Year(), tm.Month(), tm.Day(), tm.Hour(), tm.Minute(), tm.Second(), 0, time.Local)
 	tGiven = tGiven.In(time.UTC)
 
-	resp := s.toJulianTimeV1(c, tGiven, timeFormat, precision)
+	resp := s.toJulianTimeV1(tGiven, timeFormat, precision)
 	return c.JSON(resp)
 }
 
-func (s *Server) toJulianTimeV1(c *fiber.Ctx, tGiven time.Time, timeFormat string, precision int) JulianTimeResp {
+func (s *Server) toJulianTimeV1(tGiven time.Time, timeFormat string, precision int) JulianTimeResp {
 	resp := JulianTimeResp{}
 
 	var t any

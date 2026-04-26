@@ -69,13 +69,13 @@ func MoonDetailed(tGiven time.Time, loc *time.Location, lang string, timeFormat 
 	return moonDaysDetailed
 }
 
-func SearchPhase(tGiven time.Time, moonTable *MoonTable, phase EnumPhase) (t time.Time, err error) {
+func SearchPhase(tGiven time.Time, moonTable *MoonTable, phase EnumPhase) (time.Time, error) {
 	if moonTable == nil {
-		err = errors.New("passed empty moonTable to SearchNewMoon")
+		err := errors.New("passed empty moonTable to SearchNewMoon")
 		log.Debug(err.Error())
-		return
+		return time.Time{}, err
 	}
-	err = errors.New("not found")
+	notFound := errors.New("not found")
 	for i := range moonTable.Elems {
 		elem := moonTable.Elems[i]
 		elemSearch1 := elem.NewMoon
@@ -190,7 +190,7 @@ func SearchPhase(tGiven time.Time, moonTable *MoonTable, phase EnumPhase) (t tim
 			}
 		}
 	}
-	return
+	return time.Time{}, notFound
 }
 
 func SearchMoonDay(tGiven time.Time, moonTable *MoonTable, moonDay int) (SeachMoonDayResp, error) {

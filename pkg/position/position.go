@@ -104,8 +104,8 @@ func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision i
 
 	h, m := 0, 0
 	if loc != nil {
-		jth, jtm, err := jt.GetTimeFromLocation(loc)
-		if err == nil {
+		jth, jtm, tzErr := jt.GetTimeFromLocation(loc)
+		if tzErr == nil {
 			h = jth
 			m = jtm
 		}
@@ -183,8 +183,8 @@ func GetRisesDay(year, month, day int, loc *time.Location, precision int, timeFo
 
 	h, m := 0, 0
 	if loc != nil {
-		jth, jtm, err := jt.GetTimeFromLocation(loc)
-		if err == nil {
+		jth, jtm, tzErr := jt.GetTimeFromLocation(loc)
+		if tzErr == nil {
 			h = jth
 			m = jtm
 		}
@@ -306,8 +306,8 @@ func GetMoonPosition(tGiven time.Time, loc *time.Location, precision int, timeFo
 	h, m := 0, 0
 	if loc != nil {
 		tGiven = tGiven.In(loc)
-		jth, jtm, err := jt.GetTimeFromLocation(loc)
-		if err == nil {
+		jth, jtm, tzErr := jt.GetTimeFromLocation(loc)
+		if tzErr == nil {
 			h = jth
 			m = jtm
 		}

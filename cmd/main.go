@@ -1,9 +1,15 @@
 package main
 
-import "moon/internal/server"
+import (
+	"log"
+
+	"moon/internal/server"
+)
 
 func main() {
 	s := server.Server{}
 	app := s.NewRouter()
-	app.Listen(":9998")
+	if err := app.Listen(":9998"); err != nil {
+		log.Fatalf("server stopped: %v", err)
+	}
 }

@@ -181,62 +181,62 @@ func GetTimeFromLocation(loc *time.Location) (hours int, minutes int, err error)
 			return 0, 0, fmt.Errorf("invalid timezone format: %s", utc)
 		}
 
-		hours, err := strconv.Atoi(parts[0])
-		if err != nil {
+		h, hErr := strconv.Atoi(parts[0])
+		if hErr != nil {
 			return 0, 0, fmt.Errorf("invalid hours: %s", parts[0])
 		}
 
-		minutes, err := strconv.Atoi(parts[1])
-		if err != nil || minutes < 0 || minutes >= 60 {
+		m, mErr := strconv.Atoi(parts[1])
+		if mErr != nil || m < 0 || m >= 60 {
 			return 0, 0, fmt.Errorf("invalid minutes: %s", parts[1])
 		}
 
-		return sign * hours, minutes, nil
+		return sign * h, m, nil
 	}
 
 	if len(normalized) <= 2 {
-		hours, err := strconv.Atoi(normalized)
-		if err != nil {
+		h, hErr := strconv.Atoi(normalized)
+		if hErr != nil {
 			return 0, 0, fmt.Errorf("invalid hours: %s", normalized)
 		}
-		return sign * hours, minutes, nil
+		return sign * h, 0, nil
 	}
 
 	if len(normalized) == 4 {
 		hoursStr := normalized[:2]
 		minutesStr := normalized[2:]
 
-		hours, err := strconv.Atoi(hoursStr)
-		if err != nil {
+		h, hErr := strconv.Atoi(hoursStr)
+		if hErr != nil {
 			return 0, 0, fmt.Errorf("invalid hours: %s", hoursStr)
 		}
 
-		minutes, err := strconv.Atoi(minutesStr)
-		if err != nil || minutes < 0 || minutes >= 60 {
+		m, mErr := strconv.Atoi(minutesStr)
+		if mErr != nil || m < 0 || m >= 60 {
 			return 0, 0, fmt.Errorf("invalid minutes: %s", minutesStr)
 		}
 
-		return sign * hours, minutes, nil
+		return sign * h, m, nil
 	}
 
 	if len(normalized) == 3 {
 		hoursStr := normalized[:1]
 		minutesStr := normalized[1:]
 
-		hours, err := strconv.Atoi(hoursStr)
-		if err != nil {
+		h, hErr := strconv.Atoi(hoursStr)
+		if hErr != nil {
 			return 0, 0, fmt.Errorf("invalid hours: %s", hoursStr)
 		}
 
-		minutes, err := strconv.Atoi(minutesStr)
-		if err != nil || minutes < 0 || minutes >= 60 {
+		m, mErr := strconv.Atoi(minutesStr)
+		if mErr != nil || m < 0 || m >= 60 {
 			return 0, 0, fmt.Errorf("invalid minutes: %s", minutesStr)
 		}
 
-		return sign * hours, minutes, nil
+		return sign * h, m, nil
 	}
 
-	return 0, 0, fmt.Errorf("invalid timezone format")
+	return 0, 0, errors.New("invalid timezone format")
 }
 
 // JYMD - Convert Julian time to year, months, and days

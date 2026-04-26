@@ -71,7 +71,7 @@ func (s *Server) moonPhaseDatetV1(c *fiber.Ctx) error {
 
 	year := StrToInt(c.Query("year", strconv.Itoa(tNow.Year())), tNow.Year(), 1, 9999)
 	month := StrToInt(c.Query("month", strconv.Itoa(int(tNow.Month()))), int(tNow.Month()), 1, 12)
-	day := StrToInt(c.Query("day", strconv.Itoa(int(tNow.Day()))), int(tNow.Day()), 1, 31)
+	day := StrToInt(c.Query("day", strconv.Itoa(tNow.Day())), tNow.Day(), 1, 31)
 
 	err = IsValidDate(year, month, day)
 	if err != nil {
@@ -83,9 +83,9 @@ func (s *Server) moonPhaseDatetV1(c *fiber.Ctx) error {
 		return c.JSON(errPrintable)
 	}
 
-	hour := StrToInt(c.Query("hour", strconv.Itoa(int(tNow.Hour()))), int(tNow.Hour()), 0, 23)
-	minute := StrToInt(c.Query("minute", strconv.Itoa(int(tNow.Minute()))), int(tNow.Minute()), 0, 59)
-	second := StrToInt(c.Query("second", strconv.Itoa(int(tNow.Second()))), int(tNow.Second()), 0, 59)
+	hour := StrToInt(c.Query("hour", strconv.Itoa(tNow.Hour())), tNow.Hour(), 0, 23)
+	minute := StrToInt(c.Query("minute", strconv.Itoa(tNow.Minute())), tNow.Minute(), 0, 59)
+	second := StrToInt(c.Query("second", strconv.Itoa(tNow.Second())), tNow.Second(), 0, 59)
 
 	precision := StrToInt(c.Query("precision", "2"), 2, 0, 20)
 

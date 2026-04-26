@@ -53,5 +53,11 @@ issues:
         - gosec
         - errcheck
         - unparam
+    # staticcheck SA5011 doesn't recognize that t.Fatal halts the goroutine,
+    # producing false-positive nil-deref warnings after `if x == nil { t.Fatal }`.
+    - path: _test\.go
+      text: "SA5011"
+      linters:
+        - staticcheck
   max-issues-per-linter: 0
   max-same-issues: 0
