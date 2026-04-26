@@ -137,7 +137,7 @@ jobs:
           pip install -r requirements-dev.txt
 
       - name: Cache JPL ephemeris (de421.bsp)
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: addon/skyfield/skyfield-data/de421.bsp
           key: skyfield-de421-v1
