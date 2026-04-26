@@ -1,5 +1,9 @@
 import CONFIG from './CONFIG.js';
+import { createMoonShape, updateMoonShape } from './moonShape.js';
+
 const resultDiv = document.getElementById('result');
+const moonHost = document.getElementById('moon');
+if (moonHost) createMoonShape(moonHost);
 
 // --- API ---
 async function getMoonData(date = new Date()) {
@@ -38,7 +42,7 @@ export async function showMoonDay(date, isCurrent) {
         let illumination = data.EndDay.Illumination;
         let phase = data.EndDay.Phase;
         let zodiac = data.EndDay.Zodiac;
-        
+
         if (isCurrent) {
             moonDay = Math.floor(data.CurrentState.MoonDays);
             illumination = data.CurrentState.Illumination;
@@ -60,6 +64,10 @@ export async function showMoonDay(date, isCurrent) {
                 <div class="detail-item"><span class="detail-label">Zodiac sign:</span><span class="detail-value">${zodiac.Name}</span></div>
             </div>
         `;
+
+        if (moonHost) {
+            updateMoonShape(moonHost, illumination / 100, !!phase.IsWaxing);
+        }
     } catch (err) {
         resultDiv.innerHTML = `
             <div class="error-title">Ошибка получения данных</div>
