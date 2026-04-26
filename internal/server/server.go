@@ -80,5 +80,5 @@ func (s *Server) RegisterRoutes(app *fiber.App) {
 }
 
 func (s *Server) versionV1(c *fiber.Ctx) error {
-	return c.JSON("1.2.1")
+	return c.JSON("1.2.2")
 }
