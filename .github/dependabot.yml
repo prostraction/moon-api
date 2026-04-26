@@ -1,9 +1,5 @@
 version: 2
 updates:
-  # Keep the workflow's actions up to date. After you pin actions to commit
-  # SHAs (recommended for self-hosted CI on a public repo — see SECURITY.md),
-  # Dependabot will open PRs that bump the SHA when a new release tag points
-  # to a different commit.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -16,7 +12,6 @@ updates:
       - "dependencies"
       - "github-actions"
 
-  # Go modules.
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
@@ -28,7 +23,6 @@ updates:
       - "dependencies"
       - "go"
 
-  # Python (skyfield + ruff).
   - package-ecosystem: "pip"
     directory: "/addon/skyfield"
     schedule:

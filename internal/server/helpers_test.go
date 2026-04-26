@@ -56,13 +56,13 @@ func TestStrToInt(t *testing.T) {
 		want     int
 	}{
 		{"5", 0, 0, 10, 5},
-		{"-3", 0, 0, 10, 0},          // below min, clamped to min
-		{"100", 0, 0, 10, 10},        // above max, clamped to max
-		{"abc", 7, 0, 10, 7},         // invalid → fallback (in range)
-		{"abc", 100, 0, 10, 10},      // invalid → fallback then clamp
-		{"abc", -5, 0, 10, 0},        // invalid → fallback then clamp
-		{"", 5, 0, 10, 5},            // empty → fallback
-		{"0", 0, 0, 0, 0},            // single value range
+		{"-3", 0, 0, 10, 0},     // below min, clamped to min
+		{"100", 0, 0, 10, 10},   // above max, clamped to max
+		{"abc", 7, 0, 10, 7},    // invalid → fallback (in range)
+		{"abc", 100, 0, 10, 10}, // invalid → fallback then clamp
+		{"abc", -5, 0, 10, 0},   // invalid → fallback then clamp
+		{"", 5, 0, 10, 5},       // empty → fallback
+		{"0", 0, 0, 0, 0},       // single value range
 		{"5", 0, -10, 10, 5},
 	}
 	for _, tt := range tests {

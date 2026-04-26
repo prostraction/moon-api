@@ -9,10 +9,10 @@ import (
 // the returned phase name must match the expected category.
 func TestCurrentMoonPhase_KnownEvents(t *testing.T) {
 	cases := []struct {
-		when         time.Time
-		wantName     string
-		wantWaxing   bool
-		checkWaxing  bool
+		when        time.Time
+		wantName    string
+		wantWaxing  bool
+		checkWaxing bool
 	}{
 		// Around full moons → "Full Moon"
 		{time.Date(2024, 1, 25, 17, 54, 0, 0, time.UTC), "Full Moon", false, false},

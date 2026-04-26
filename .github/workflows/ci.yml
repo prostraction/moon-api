@@ -26,9 +26,57 @@ env:
   GOCACHE: ${{ github.workspace }}/.go/cache
 
 jobs:
+  gate:
+    name: PR · access gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    outputs:
+      allow: ${{ steps.decide.outputs.allow }}
+    steps:
+      - id: decide
+        env:
+          EVENT: ${{ github.event_name }}
+          SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+          ACTOR: ${{ github.event.pull_request.user.login }}
+          ASSOC: ${{ github.event.pull_request.author_association }}
+        run: |
+          set -eu
+          if [[ "$EVENT" == "push" ]]; then
+            echo "allow=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::push event — CI allowed."
+            exit 0
+          fi
+
+          # Only PR path remains.
+          allow=false
+          reason="not a contributor"
+
+          if [[ "$SAME_REPO" != "true" ]]; then
+            reason="PR comes from a fork"
+          elif [[ "$ACTOR" == "dependabot[bot]" ]]; then
+            reason="Dependabot PRs do not run on the self-hosted runner"
+          else
+            case "$ASSOC" in
+              OWNER|COLLABORATOR|MEMBER|CONTRIBUTOR)
+                allow=true
+                ;;
+              *)
+                reason="author_association='$ASSOC' is not in {OWNER,COLLABORATOR,MEMBER,CONTRIBUTOR}"
+                ;;
+            esac
+          fi
+
+          echo "allow=$allow" >> "$GITHUB_OUTPUT"
+          if [[ "$allow" == "true" ]]; then
+            echo "::notice::PR allowed for self-hosted CI (actor=$ACTOR, assoc=$ASSOC)."
+          else
+            echo "::warning::Self-hosted CI skipped for this PR. Reason: $reason."
+          fi
+
   go-test:
     name: Go · test
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    needs: gate
+    if: needs.gate.outputs.allow == 'true'
     runs-on: [self-hosted, linux]
     timeout-minutes: 15
     permissions:
@@ -73,7 +121,8 @@ jobs:
 
   go-lint:
     name: Go · lint
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    needs: gate
+    if: needs.gate.outputs.allow == 'true'
     runs-on: [self-hosted, linux]
     timeout-minutes: 10
     permissions:
@@ -109,7 +158,8 @@ jobs:
 
   python-test:
     name: Python · test
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    needs: gate
+    if: needs.gate.outputs.allow == 'true'
     runs-on: [self-hosted, linux]
     timeout-minutes: 15
     permissions:
@@ -154,7 +204,8 @@ jobs:
 
   python-lint:
     name: Python · lint
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    needs: gate
+    if: needs.gate.outputs.allow == 'true'
     runs-on: [self-hosted, linux]
     timeout-minutes: 5
     permissions:
