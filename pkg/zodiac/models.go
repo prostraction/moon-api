@@ -1,13 +1,11 @@
 package zodiac
 
-import "time"
-
 type ZodiacDetailed struct {
 	Name          string
 	NameLocalized string
 	Emoji         string
-	Begin         time.Time
-	End           time.Time
+	Begin         *any
+	End           *any
 }
 
 type Zodiacs struct {

@@ -9,7 +9,8 @@ import (
 
 type illumFunc func(tGiven time.Time, loc *time.Location) float64
 
-func CurrentMoonPhase(tGiven time.Time, lang string) (float64, float64, float64, PhaseResp, PhaseResp, PhaseResp) {
+func CurrentMoonPhase(tGiven time.Time, lang string) *PhaseResp {
+	pr := new(PhaseResp)
 	newT := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), tGiven.Hour(), tGiven.Minute(), tGiven.Second(), 0, time.UTC)
 
 	currentMoonIllumination, currentMoonIlluminationBefore, currentMoonIlluminationAfter := currentMoonPhaseCalc(newT, time.FixedZone("UTC+12", -12*60*60), il.GetCurrentMoonIllumination)
@@ -38,10 +39,18 @@ func CurrentMoonPhase(tGiven time.Time, lang string) (float64, float64, float64,
 		moonPhaseEnd.IsWaxing = false
 	}
 
-	return currentMoonIllumination, dayBeginMoonIllumination, dayEndMoonIllumination, moonPhaseCurrent, moonPhaseBegin, moonPhaseEnd
+	pr.BeginDay = &moonPhaseBegin
+	pr.Current = &moonPhaseCurrent
+	pr.EndDay = &moonPhaseEnd
+
+	pr.Illumination.BeginDay = dayBeginMoonIllumination
+	pr.Illumination.Current = currentMoonIllumination
+	pr.Illumination.EndDay = dayEndMoonIllumination
+
+	return pr
 }
 
-func GetMoonPhase(before, current, after float64, lang string) PhaseResp {
+func GetMoonPhase(before, current, after float64, lang string) Phase {
 	phaseName, phangeNameLocalized, phaseEmoji := "", "", ""
 	switch {
 	case current > 0.05 && current < 0.45 && current < after:
@@ -69,7 +78,7 @@ func GetMoonPhase(before, current, after float64, lang string) PhaseResp {
 		phangeNameLocalized = getMoonPhasesLocalized(lang, 7)
 		phaseName, phaseEmoji = getMoonPhases(7)
 	}
-	return PhaseResp{Name: phaseName, NameLocalized: phangeNameLocalized, Emoji: phaseEmoji}
+	return Phase{Name: phaseName, NameLocalized: phangeNameLocalized, Emoji: phaseEmoji}
 }
 
 func getMoonPhases(position int) (string, string) {
@@ -113,6 +122,7 @@ func currentMoonPhaseCalc(tGiven time.Time, loc *time.Location, calcF illumFunc)
 
 func Truephase(k, phase float64) float64 {
 	var t, t2, t3, pt, m, mprime, f float64
+	// to do
 	SynMonth := 29.53058868 // Synodic month (mean time from new to next new Moon)
 
 	k += phase           // Add phase to new moon time

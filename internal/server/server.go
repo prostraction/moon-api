@@ -1,22 +1,29 @@
 package server
 
 import (
-	"moon/pkg/moon"
+	"moon/pkg/position"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 type Server struct {
-	moonCache *moon.Cache
+	//moonCache     *moon.Cache
+	positionCache *position.Cache
 }
 
 func (s *Server) NewRouter() *fiber.App {
 	app := fiber.New(fiber.Config{
-		Prefork:       true,
-		ServerHeader:  "Fiber",
-		CaseSensitive: false,
-		StrictRouting: true,
+		Prefork:                      true,
+		ServerHeader:                 "",
+		CaseSensitive:                false,
+		StrictRouting:                false,
+		ReadTimeout:                  60 * time.Second,
+		WriteTimeout:                 60 * time.Second,
+		DisableKeepalive:             true,
+		DisableStartupMessage:        true,
+		DisablePreParseMultipartForm: true,
 	})
 
 	app.Use(cors.New(cors.Config{
@@ -41,12 +48,7 @@ func (s *Server) NewRouter() *fiber.App {
 	// maybe rename moonPhase -> phase later
 
 	// moon phase for day:
-	// - begin, current, end of the day:
-	//	- moon days, illumintaion, phase, zodiac
-	// - moon days by time
-	// - zodiacs by time
-	// - rise, set and meridian:
-	//	- time, direction, azimuth, exists
+
 	app.Get("/v1/moonPhaseCurrent", s.moonPhaseCurrentV1)
 	app.Get("/v1/moonPhaseTimestamp", s.moonPhaseTimestampV1)
 	app.Get("/v1/moonPhaseDate", s.moonPhaseDatetV1)
@@ -54,12 +56,13 @@ func (s *Server) NewRouter() *fiber.App {
 	app.Get("/api/v1/moonPhaseTimestamp", s.moonPhaseTimestampV1)
 	app.Get("/api/v1/moonPhaseDate", s.moonPhaseDatetV1)
 
-	// maybe rename "moon*" -> "*"
 	// per month
+	app.Get("/v1/moonPositionMonthly", s.moonPositionMonthly)
+	app.Get("/api/v1/moonPositionMonthly", s.moonPositionMonthly)
 	//app.Get("/v1/moonRiseSetCalendar")
 	//app.Get("/v1/moonPhaseCalendar")
 	//app.Get("/v1/moonZodiacCalendar")
-	//app.Get("/v1/moonMonthCalendar") -- all combined? think more
+	//app.Get("/v1/moonMonthCalendar") -- all combined? think more....
 
 	// eclipses
 	//app.Get("/v1/moonEclipseYear")
@@ -68,11 +71,10 @@ func (s *Server) NewRouter() *fiber.App {
 	//app.Get("/v1/sunEclipseCalendar")
 
 	// methods when?
-	//app.Get("/v1/nextMoonPhase")
-	//app.Get("/v1/nextMoonPhaseFull")
-	//app.Get("/v1/nextMoonPhaseNew")
-	//app.Get("/v1/nextMoonPhaseFirst")
-	//app.Get("/v1/nextMoonPhaseThird")
+	app.Get("/v1/nextMoonPhase", s.moonNextMoonPhaseV1)
+	app.Get("/v1/nextMoonDay", s.moonNextMoonDayV1)
+	app.Get("/api/v1/nextMoonPhase", s.moonNextMoonPhaseV1)
+	app.Get("/api/v1/nextMoonDay", s.moonNextMoonDayV1)
 
 	//app.Get("/v1/nextMoonEclipse")
 	//app.Get("/v1/nextSunEclipse")
@@ -81,8 +83,13 @@ func (s *Server) NewRouter() *fiber.App {
 	//app.Get("/v1/nextMoonRise")
 
 	// jtime methods:
-	//app.Get("/v1/toJulianTime")
-	//app.Get("/v1/fromJulianTime")
+	app.Get("/v1/toJulianTimeByDate", s.toJulianTimeByDateV1)
+	app.Get("/v1/toJulianTimeByTimestamp", s.toJulianTimeByTimestampV1)
+	app.Get("/v1/fromJulianTime", s.fromJulianTimeV1)
+
+	app.Get("/api/v1/toJulianTimeByDate", s.toJulianTimeByDateV1)
+	app.Get("/api/v1/toJulianTimeByTimestamp", s.toJulianTimeByTimestampV1)
+	app.Get("/api/v1/fromJulianTime", s.fromJulianTimeV1)
 
 	// some kind of faq
 	//app.Get("/v1")
@@ -91,6 +98,11 @@ func (s *Server) NewRouter() *fiber.App {
 	app.Get("/v1/version", s.versionV1)
 	app.Get("/api/v1/version", s.versionV1)
 
-	s.moonCache = new(moon.Cache)
+	//s.moonCache = new(moon.Cache)
+	s.positionCache = new(position.Cache)
 	return app
+}
+
+func (s *Server) versionV1(c *fiber.Ctx) error {
+	return c.JSON("1.2.0rc7-hotfix-2")
 }

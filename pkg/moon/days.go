@@ -2,6 +2,7 @@ package moon
 
 import (
 	"math"
+	"strings"
 	"time"
 
 	il "moon/pkg/illumination"
@@ -9,12 +10,9 @@ import (
 	phase "moon/pkg/phase"
 )
 
-func (c *Cache) CreateMoonTable(timeGiven time.Time) []*MoonTableElement {
-	t := time.Date(timeGiven.Year(), 0, 0, 0, 0, 0, 0, timeGiven.Location())
-	if c.tables != nil && c.tables[t.String()] != nil {
-		return c.tables[t.String()]
-	}
-	moonTable := []*MoonTableElement{}
+// to do
+func CreateMoonTable(timeGiven time.Time) *MoonTable {
+	moonTable := new(MoonTable)
 
 	var l int
 	var k1, mtime float64
@@ -23,7 +21,7 @@ func (c *Cache) CreateMoonTable(timeGiven time.Time) []*MoonTableElement {
 
 	phaset = make([]float64, 0)
 
-	// Tabulate new and full moons surrounding the year
+	// tabulate new and full moons surrounding the year
 	k1 = math.Floor((float64(timeGiven.Year()) - 1900) * 12.3685)
 	minx = 0
 	isNext := true
@@ -56,15 +54,8 @@ func (c *Cache) CreateMoonTable(timeGiven time.Time) []*MoonTableElement {
 		mp := phaset[l]
 		if mp < 0 {
 			mp = -mp
-
-			elem.t1 = mp
-			elem.t2 = lastnew
-
 			lastnew = mp
 		}
-
-		elem.t1 = mp
-		elem.t2 = lastnew
 
 		firstQuarterTime := il.BinarySearchIllumination(lastnew, mp, timeGiven.Location(), true)
 		elem.FirstQuarter = jt.FromJulianDate(firstQuarterTime, timeGiven.Location())
@@ -75,58 +66,134 @@ func (c *Cache) CreateMoonTable(timeGiven time.Time) []*MoonTableElement {
 		elem.NewMoon = jt.FromJulianDate(lastnew, timeGiven.Location())
 		elem.FullMoon = jt.FromJulianDate(mp, timeGiven.Location())
 
-		if elem.t1 != elem.t2 {
-			moonTable = append(moonTable, elem)
+		if mp != lastnew {
+			moonTable.Elems = append(moonTable.Elems, elem)
 		}
 
 		if elem.LastQuarter.Year() > timeGiven.Year() {
 			break
 		}
 	}
-	if c.tables == nil {
-		c.tables = make(map[string][]*MoonTableElement)
-	}
-	if c.tables[t.String()] == nil {
-		c.tables[t.String()] = moonTable
-	}
+
 	return moonTable
 }
 
-func BeginMoonDayToEarthDay(tGiven time.Time, duration time.Duration, moonTable []*MoonTableElement) time.Time {
+// to do
+func BeginMoonDayToEarthDay(tGiven time.Time, duration time.Duration, timeFormat string, moonTable []*MoonTableElement) *any {
+	var tt any = time.Time{}
 	if len(moonTable) == 0 {
-		return time.Time{}
+		return &tt
 	}
 	for i := range moonTable {
 		elem := moonTable[i]
-		if elem.t1 != elem.t2 {
-			if tGiven.After(elem.NewMoon) && tGiven.Before(elem.LastQuarter) {
-				t := elem.NewMoon
-				t = t.Add(duration)
-				return t
+		if tGiven.After(elem.NewMoon) && tGiven.Before(elem.NewMoon.Add(time.Hour*24*32)) {
+			t := elem.NewMoon.Add(duration)
+			if strings.ToLower(timeFormat) == "timestamp" {
+				var tRet any = t.Unix()
+				return &tRet
 			}
-			if i < len(moonTable)-1 {
-				elem2 := moonTable[i+1]
-				if tGiven.After(elem.LastQuarter) && tGiven.Before(elem2.NewMoon) {
-					t := elem.NewMoon
-					t = t.Add(duration)
-					return t
+
+			if strings.ToLower(timeFormat) != "iso" {
+				var tRet any = t.Format(timeFormat)
+				return &tRet
+			}
+
+			var tRet any = t
+			return &tRet
+		}
+		if i < len(moonTable)-1 {
+			elem2 := moonTable[i+1]
+			if tGiven.After(elem.LastQuarter) && tGiven.Before(elem2.NewMoon) {
+				t := elem.NewMoon.Add(duration)
+
+				if strings.ToLower(timeFormat) == "timestamp" {
+					var tRet any = t.Unix()
+					return &tRet
 				}
+
+				if strings.ToLower(timeFormat) != "iso" {
+					var tRet any = t.Format(timeFormat)
+					return &tRet
+				}
+
+				var tRet any = t
+				return &tRet
 			}
 		}
 	}
-	return time.Time{}
+	return &tt
 }
 
-func GetMoonDays(tGiven time.Time, table []*MoonTableElement) time.Duration {
-	var moonDays time.Duration
+// to do
+func FindNearestPhase(tGiven time.Time, moonTable *MoonTable) NearestPhase {
+	if moonTable == nil {
+		return NearestPhase{}
+	}
+
+	var np NearestPhase
+
+	if val, err := SearchPhase(tGiven, moonTable, NewMoon); err == nil {
+		np.NewMoon = val
+	}
+	if val, err := SearchPhase(tGiven, moonTable, FirstQuarter); err == nil {
+		np.FirstQuarter = val
+	}
+	if val, err := SearchPhase(tGiven, moonTable, FullMoon); err == nil {
+		np.FullMoon = val
+	}
+	if val, err := SearchPhase(tGiven, moonTable, LastQuarter); err == nil {
+		np.LastQuarter = val
+	}
+
+	return np
+}
+
+func GetMoonDays(tGiven time.Time, table []*MoonTableElement) (MoonDaysInDay, time.Duration) {
+	tBegin := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), 0, 0, 0, 0, tGiven.Location())
 	for i := range table {
 		elem := table[i]
-
-		if elem.t1 != elem.t2 {
-			if tGiven.After(elem.NewMoon) /*&& tGiven.Before(elem.TFull)*/ {
-				moonDays = tGiven.Sub(elem.NewMoon)
+		if tBegin.After(elem.NewMoon) && tBegin.Before(elem.NewMoon.Add(time.Hour*24*32)) {
+			var elem2 *MoonTableElement
+			if i < len(table)-1 {
+				elem2 = table[i+1] // new next moon
+			} else {
+				newTGiven := time.Date(tGiven.Year()+1, time.January, 1, 0, 0, 0, 0, tGiven.Location())
+				newT := CreateMoonTable(newTGiven)
+				if newT != nil && newT.Elems != nil && len(newT.Elems) > 0 {
+					return GetMoonDays(tGiven, newT.Elems)
+				} else {
+					/// return err
+				}
 			}
+
+			moonMonDays := elem2.NewMoon.Sub(elem.NewMoon) // moon month
+
+			eartbeg := tBegin.Add(-tGiven.Sub(elem.NewMoon))
+			eartend := time.Date(eartbeg.Year(), eartbeg.Month()+1, eartbeg.Day(), eartbeg.Hour(), eartbeg.Minute(), eartbeg.Second(), 0, tBegin.Location())
+			eartMon := eartend.Unix() - eartbeg.Unix() // earth month
+
+			beginDay := elem.NewMoon
+			currentDay := elem.NewMoon
+			day := time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*24.))
+
+			for tBegin.Sub(beginDay) > day {
+				beginDay = beginDay.Add(day)
+				currentDay = currentDay.Add(day)
+			}
+			last := tBegin.Sub(beginDay)
+			beginDay = beginDay.Add(last)
+			currentDay = currentDay.Add(last)
+
+			currentDay = currentDay.Add(time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Hour()))))
+			currentDay = currentDay.Add(time.Minute * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Minute()))))
+
+			endDay := beginDay.Add(day)
+			return MoonDaysInDay{
+				Begin:   beginDay.Sub(elem.NewMoon) % moonMonDays,
+				Current: currentDay.Sub(elem.NewMoon) % moonMonDays,
+				End:     endDay.Sub(elem.NewMoon) % moonMonDays,
+			}, moonMonDays
 		}
 	}
-	return moonDays
+	return MoonDaysInDay{time.Duration(0), time.Duration(0), time.Duration(0)}, time.Duration(0)
 }

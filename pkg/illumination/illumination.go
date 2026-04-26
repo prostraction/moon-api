@@ -61,7 +61,6 @@ func BinarySearchIllumination(jdTimeBegin, jdTimeEnd float64, loc *time.Location
 	for it < 50 {
 		mid = low + (high-low)/2.0
 		illum = GetCurrentMoonIllumination(jt.FromJulianDate(mid, loc), loc)
-		//log.Printf("Direction: %v, Iteration %d: low=%.6f, high=%.6f, mid=%.6f, illum=%.6f", direction, it, low, high, mid, illum)
 		if math.Abs(illum-0.5) < 0.0001 {
 			return mid
 		}

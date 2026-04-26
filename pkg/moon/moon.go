@@ -1,27 +1,30 @@
 package moon
 
 import (
+	"errors"
 	pos "moon/pkg/position"
 	"time"
+
+	log "github.com/gofiber/fiber/v2/log"
 )
 
-func (c *Cache) CurrentMoonDays(tGiven time.Time, loc *time.Location) (time.Duration, time.Duration, time.Duration) {
+// to do
+func CurrentMoonDays(tGiven time.Time, loc *time.Location, moonTable *MoonTable) MoonDaysInDay {
+	var mday MoonDaysInDay
+	if moonTable == nil {
+		return mday
+	}
+
 	if loc == nil {
 		loc = time.UTC
 	}
+	currentDayTime := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), tGiven.Hour(), tGiven.Minute(), tGiven.Second(), tGiven.Nanosecond(), loc)
 
-	dayBeginTime := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), 0, 0, 0, 0, loc)
-	dayEndTime := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day()+1, 0, 0, 0, 0, loc)
-
-	moonTable := c.CreateMoonTable(tGiven)
-	beginMoonDays := GetMoonDays(dayBeginTime, moonTable)
-	currentMoonDays := GetMoonDays(tGiven, moonTable)
-	endMoonDays := GetMoonDays(dayEndTime, moonTable)
-
-	return beginMoonDays, currentMoonDays, endMoonDays
+	mday, _ = GetMoonDays(currentDayTime, moonTable.Elems)
+	return mday
 }
 
-func (c *Cache) MoonDetailed(tGiven time.Time, loc *time.Location, lang string, longitude float64, latitude float64) *MoonDaysDetailed {
+func MoonDetailed(tGiven time.Time, loc *time.Location, lang string, timeFormat string, longitude float64, latitude float64) *MoonDaysDetailed {
 	if loc == nil {
 		loc = time.UTC
 	}
@@ -34,31 +37,27 @@ func (c *Cache) MoonDetailed(tGiven time.Time, loc *time.Location, lang string, 
 	moonDaysDetailed.Day = make([]MoonDay, 2)
 	moonDaysDetailed.Count = 2
 
-	moonRiseYesterday, err1 := pos.GetRisesDay(dayYesterday.Year(), int(dayYesterday.Month()), dayYesterday.Day(), loc, 2, longitude, latitude)
-	moonRiseToday, err2 := pos.GetRisesDay(dayToday.Year(), int(dayToday.Month()), dayToday.Day(), loc, 2, longitude, latitude)
-	moonRiseTomorrow, err3 := pos.GetRisesDay(dayTomorrow.Year(), int(dayTomorrow.Month()), dayTomorrow.Day(), loc, 2, longitude, latitude)
+	moonRiseYesterday, err1 := pos.GetRisesDay(dayYesterday.Year(), int(dayYesterday.Month()), dayYesterday.Day(), loc, 2, timeFormat, longitude, latitude)
+	moonRiseToday, err2 := pos.GetRisesDay(dayToday.Year(), int(dayToday.Month()), dayToday.Day(), loc, 2, timeFormat, longitude, latitude)
+	moonRiseTomorrow, err3 := pos.GetRisesDay(dayTomorrow.Year(), int(dayTomorrow.Month()), dayTomorrow.Day(), loc, 2, timeFormat, longitude, latitude)
 
 	if err1 == nil && err2 == nil {
 		if moonRiseYesterday.IsMoonRise {
-			moonDaysDetailed.Day[0].Begin = new(time.Time)
-			*moonDaysDetailed.Day[0].Begin = moonRiseYesterday.Moonrise.TimeISO
+			moonDaysDetailed.Day[0].Begin = moonRiseYesterday.Moonrise.Time
 			moonDaysDetailed.Day[0].IsBeginExists = true
 		}
 		if moonRiseToday.IsMoonRise {
-			moonDaysDetailed.Day[0].End = new(time.Time)
-			*moonDaysDetailed.Day[0].End = moonRiseToday.Moonrise.TimeISO
+			moonDaysDetailed.Day[0].End = moonRiseToday.Moonrise.Time
 			moonDaysDetailed.Day[0].IsEndExists = true
 		}
 	}
 	if err2 == nil && err3 == nil {
 		if moonRiseToday.IsMoonRise {
-			moonDaysDetailed.Day[1].Begin = new(time.Time)
-			*moonDaysDetailed.Day[1].Begin = moonRiseToday.Moonrise.TimeISO
+			moonDaysDetailed.Day[1].Begin = moonRiseToday.Moonrise.Time
 			moonDaysDetailed.Day[1].IsBeginExists = true
 		}
 		if moonRiseTomorrow.IsMoonRise {
-			moonDaysDetailed.Day[1].End = new(time.Time)
-			*moonDaysDetailed.Day[1].End = moonRiseTomorrow.Moonrise.TimeISO
+			moonDaysDetailed.Day[1].End = moonRiseTomorrow.Moonrise.Time
 			moonDaysDetailed.Day[1].IsEndExists = true
 		}
 	}
@@ -70,6 +69,186 @@ func (c *Cache) MoonDetailed(tGiven time.Time, loc *time.Location, lang string, 
 	return moonDaysDetailed
 }
 
-func (c *Cache) GenerateMoonTable(tGiven time.Time) []*MoonTableElement {
-	return c.CreateMoonTable(tGiven)
+func SearchPhase(tGiven time.Time, moonTable *MoonTable, phase EnumPhase) (t time.Time, err error) {
+	if moonTable == nil {
+		err = errors.New("passed empty moonTable to SearchNewMoon")
+		log.Debug(err.Error())
+		return
+	}
+	err = errors.New("not found")
+	for i := range moonTable.Elems {
+		elem := moonTable.Elems[i]
+		elemSearch1 := elem.NewMoon
+		if tGiven.Before(elemSearch1) {
+			elemSearch1 = time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day()-1, 0, 0, 0, 0, tGiven.Location())
+		}
+		elemSearch2 := elem.LastQuarter
+
+		// range current phase:
+		if tGiven.After(elemSearch1) && tGiven.Before(elemSearch2) {
+			// found in current phase
+			switch phase {
+			case NewMoon:
+				if tGiven.Before(elem.NewMoon) {
+					return elem.NewMoon, nil
+				}
+			case FirstQuarter:
+				if tGiven.Before(elem.FirstQuarter) {
+					return elem.FirstQuarter, nil
+				}
+			case FullMoon:
+				if tGiven.Before(elem.FullMoon) {
+					return elem.FullMoon, nil
+				}
+			case LastQuarter:
+				if tGiven.Before(elem.LastQuarter) {
+					return elem.LastQuarter, nil
+				}
+			}
+			// found in next phase
+			if i < len(moonTable.Elems)-1 {
+				// use values if in table
+				switch phase {
+				case NewMoon:
+					return moonTable.Elems[i+1].NewMoon, nil
+				case FirstQuarter:
+					return moonTable.Elems[i+1].FirstQuarter, nil
+				case FullMoon:
+					return moonTable.Elems[i+1].FullMoon, nil
+				case LastQuarter:
+					return moonTable.Elems[i+1].LastQuarter, nil
+				}
+			} else {
+				// create table for next table
+				newT := time.Date(tGiven.Year()+1, 0, 0, 0, 0, 0, 0, tGiven.Location())
+				newMoonTable := CreateMoonTable(newT)
+
+				if newMoonTable != nil && newMoonTable.Elems != nil && len(newMoonTable.Elems) > 0 {
+					switch phase {
+					case NewMoon:
+						if tGiven.Before(newMoonTable.Elems[0].NewMoon) {
+							return newMoonTable.Elems[0].NewMoon, nil
+						}
+					case FirstQuarter:
+						if tGiven.Before(newMoonTable.Elems[0].FirstQuarter) {
+							return newMoonTable.Elems[0].FirstQuarter, nil
+						}
+					case FullMoon:
+						if tGiven.Before(newMoonTable.Elems[0].FullMoon) {
+							return newMoonTable.Elems[0].FullMoon, nil
+						}
+					case LastQuarter:
+						if tGiven.Before(newMoonTable.Elems[0].LastQuarter) {
+							return newMoonTable.Elems[0].LastQuarter, nil
+						}
+					}
+				}
+			}
+		}
+		// range next phase
+		if i < len(moonTable.Elems)-1 {
+			// try to find in current table
+			elem2 := moonTable.Elems[i+1]
+			elemSearch1 = elem.LastQuarter
+
+			switch phase {
+			case NewMoon:
+				elemSearch2 = elem2.NewMoon
+			case FirstQuarter:
+				elemSearch2 = elem2.FirstQuarter
+			case FullMoon:
+				elemSearch2 = elem2.FullMoon
+			case LastQuarter:
+				elemSearch2 = elem2.LastQuarter
+			}
+
+			if tGiven.After(elemSearch1) && tGiven.Before(elemSearch2) {
+				return elemSearch2, nil
+			}
+
+		} else {
+			// try to find in next table
+			newT := time.Date(tGiven.Year()+1, 0, 0, 0, 0, 0, 0, tGiven.Location())
+			newMoonTable := CreateMoonTable(newT)
+			if newMoonTable != nil && newMoonTable.Elems != nil && len(newMoonTable.Elems) > 0 {
+				elemSearch1 = elem.LastQuarter
+
+				switch phase {
+				case NewMoon:
+					elemSearch2 = newMoonTable.Elems[0].NewMoon
+				case FirstQuarter:
+					elemSearch2 = newMoonTable.Elems[0].FirstQuarter
+				case FullMoon:
+					elemSearch2 = newMoonTable.Elems[0].FullMoon
+				case LastQuarter:
+					elemSearch2 = newMoonTable.Elems[0].LastQuarter
+				}
+
+				if tGiven.After(elemSearch1) && tGiven.Before(elemSearch2) {
+					return elemSearch2, nil
+				}
+			}
+		}
+	}
+	return
+}
+
+func SearchMoonDay(tGiven time.Time, moonTable *MoonTable, moonDay int) (SeachMoonDayResp, error) {
+	t := tGiven
+	var resp SeachMoonDayResp
+	var err error
+	if moonTable == nil {
+		err = errors.New("passed empty moonTable to SearchNewMoon")
+		log.Error(err.Error())
+		return resp, err
+	}
+	err = errors.New("not found")
+	iters := 0
+	for i := range moonTable.Elems {
+		elem := moonTable.Elems[i]
+		if t.After(elem.NewMoon) && t.Before(elem.NewMoon.Add(time.Hour*24*32)) {
+			var elem2 *MoonTableElement
+			if i < len(moonTable.Elems)-1 {
+				elem2 = moonTable.Elems[i+1] // new next moon
+			} else {
+				newTGiven := time.Date(tGiven.Year()+1, time.January, 1, 0, 0, 0, 0, tGiven.Location())
+				newT := CreateMoonTable(newTGiven)
+				if newT != nil && newT.Elems != nil && len(newT.Elems) > 0 {
+					return SearchMoonDay(tGiven, newT, moonDay)
+				} else {
+					///// return err
+				}
+			}
+			moonMonDays := elem2.NewMoon.Sub(elem.NewMoon) // moon month
+			if moonDay > int(moonMonDays) {
+				break // to do
+			}
+			eartbeg := t.Add(-t.Sub(elem.NewMoon))
+			eartend := time.Date(eartbeg.Year(), eartbeg.Month()+1, eartbeg.Day(), eartbeg.Hour(), eartbeg.Minute(), eartbeg.Second(), 0, t.Location())
+			eartMon := eartend.Unix() - eartbeg.Unix() // earth month
+
+			beginDay := elem.NewMoon
+			//currentDay := elem.NewMoon
+			day := time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*24.))
+			//for t.Sub(beginDay) > day {
+			//	beginDay = beginDay.Add(day)
+			//	currentDay = currentDay.Add(day)
+			//}
+			log.Debug(beginDay)
+			beginDay = beginDay.Add(time.Duration(moonDay) * day)
+
+			//currentDay = currentDay.Add(time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Hour()))))
+			//currentDay = currentDay.Add(time.Minute * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Minute()))))
+
+			endDay := beginDay.Add(day)
+
+			resp.From = beginDay
+			resp.To = endDay
+			return resp, nil
+		}
+		t = time.Date(t.Year()+1, 0, 0, 0, 0, 0, 0, t.Location())
+		moonTable = CreateMoonTable(t)
+		iters++
+	}
+	return resp, err
 }

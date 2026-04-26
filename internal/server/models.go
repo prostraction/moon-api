@@ -8,14 +8,15 @@ import (
 	"time"
 )
 
-type MoonTable struct {
-	Table []*moon.MoonTableElement
+type ErrorPrintable struct {
+	Status  int
+	Message string
 }
 
 type MoonStat struct {
 	MoonDays     float64
 	Illumination float64
-	Phase        phase.PhaseResp
+	Phase        *phase.Phase
 	Zodiac       zodiac.Zodiac
 	Position     *pos.MoonPosition `json:"MoonPosition,omitempty"`
 }
@@ -36,20 +37,25 @@ type MoonDay struct {
 }
 
 type MoonPhaseResponse struct {
-	BeginDay     *MoonStat
-	CurrentState *MoonStat
-	EndDay       *MoonStat
+	BeginDay     *MoonStat `json:"BeginDay,omitempty"`
+	CurrentState *MoonStat `json:"CurrentState,omitempty"`
+	EndDay       *MoonStat `json:"EndDay,omitempty"`
 
 	MoonDaysDetailed *moon.MoonDaysDetailed `json:"MoonDaysDetailed,omitempty"`
 	ZodiacDetailed   *zodiac.Zodiacs
 
 	MoonRiseAndSet *pos.DayData `json:"MoonRiseAndSet,omitempty"`
 
-	info *FullInfo
+	//info *FullInfo
 }
 
 type Coordinates struct {
 	Latitude  float64
 	Longitude float64
 	IsValid   bool
+}
+
+type JulianTimeResp struct {
+	CivilDate  *any
+	JulianDate float64
 }
