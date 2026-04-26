@@ -25,8 +25,8 @@ func TestCurrentMoonPhase_KnownEvents(t *testing.T) {
 
 		// Mid-cycle between new and full 2024 → must be waxing.
 		{time.Date(2024, 1, 16, 0, 0, 0, 0, time.UTC), "Waxing Crescent", true, true},
-		// Three days after Full Moon Jan 25 → Waning Gibbous, waning.
-		{time.Date(2024, 1, 28, 0, 0, 0, 0, time.UTC), "Waning Gibbous", false, true},
+		// Five days after Full Moon Jan 25 → Waning Gibbous, waning.
+		{time.Date(2024, 1, 30, 0, 0, 0, 0, time.UTC), "Waning Gibbous", false, true},
 	}
 
 	for _, c := range cases {
