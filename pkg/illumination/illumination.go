@@ -1,4 +1,4 @@
-package illimination
+package illumination
 
 import (
 	"math"
@@ -9,26 +9,29 @@ import (
 
 const toRad = math.Pi / 180.
 
+// locOffsetSeconds returns the UTC offset (east-positive) for the given moment
+// in loc. Falls back to 0 when loc is nil. Using time.Time.Zone() guarantees a
+// signed offset and correct DST handling — unlike parsing loc.String().
+func locOffsetSeconds(t time.Time, loc *time.Location) int {
+	if loc == nil {
+		return 0
+	}
+	_, off := t.In(loc).Zone()
+	return off
+}
+
 func GetDailyMoonIllumination(tGiven time.Time, loc *time.Location) float64 {
 	dailyTime := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), 0, 0, 0, 0, time.UTC)
-	h, m, err := jt.GetTimeFromLocation(loc)
-	h = -h
-	m = -m
-	if err == nil {
-		dailyTime = dailyTime.Add(time.Hour*time.Duration(h) + time.Minute*time.Duration(m))
-	}
+	off := locOffsetSeconds(dailyTime, loc)
+	dailyTime = dailyTime.Add(-time.Duration(off) * time.Second)
 	return getIlluminatedFractionOfMoon(jt.ToJulianDate(dailyTime))
 }
 
 func GetCurrentMoonIllumination(tGiven time.Time, loc *time.Location) float64 {
-	tGiven = time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), tGiven.Hour(), tGiven.Minute(), tGiven.Second(), 0, time.UTC)
-	h, m, err := jt.GetTimeFromLocation(loc)
-	h = -h
-	m = -m
-	if err == nil {
-		tGiven = tGiven.Add(time.Hour*time.Duration(h) + time.Minute*time.Duration(m))
-	}
-	return getIlluminatedFractionOfMoon(jt.ToJulianDate(tGiven))
+	t := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), tGiven.Hour(), tGiven.Minute(), tGiven.Second(), 0, time.UTC)
+	off := locOffsetSeconds(t, loc)
+	t = t.Add(-time.Duration(off) * time.Second)
+	return getIlluminatedFractionOfMoon(jt.ToJulianDate(t))
 }
 
 func getIlluminatedFractionOfMoon(jd float64) float64 {

@@ -12,7 +12,7 @@ import (
 
 /*    MOON TABLE    */
 func (s *Server) moonTableCurrentV1(c *fiber.Ctx) error {
-	utc := c.Query("utc", "UTC:+0")
+	utc := c.Query("utc", "UTC+0")
 	loc, _ := jt.SetTimezoneLocFromString(utc)
 	/*if err != nil {
 		log.Println(err)
@@ -25,7 +25,7 @@ func (s *Server) moonTableCurrentV1(c *fiber.Ctx) error {
 }
 
 func (s *Server) moonTableYearV1(c *fiber.Ctx) error {
-	utc := c.Query("utc", "UTC:+0")
+	utc := c.Query("utc", "UTC+0")
 	loc, _ := jt.SetTimezoneLocFromString(utc)
 	/*if err != nil {
 		log.Println(err)
@@ -50,7 +50,7 @@ func (s *Server) moonTableV1(c *fiber.Ctx, timeFormat string, tGiven time.Time) 
 				NewMoon:      moonTable.Elems[i].NewMoon.Unix(),
 				FirstQuarter: moonTable.Elems[i].FirstQuarter.Unix(),
 				FullMoon:     moonTable.Elems[i].FullMoon.Unix(),
-				LastQuarter:  moonTable.Elems[i].FullMoon.Unix(),
+				LastQuarter:  moonTable.Elems[i].LastQuarter.Unix(),
 			})
 		}
 		return c.JSON(val)
@@ -61,7 +61,7 @@ func (s *Server) moonTableV1(c *fiber.Ctx, timeFormat string, tGiven time.Time) 
 				NewMoon:      moonTable.Elems[i].NewMoon.Format(timeFormat),
 				FirstQuarter: moonTable.Elems[i].FirstQuarter.Format(timeFormat),
 				FullMoon:     moonTable.Elems[i].FullMoon.Format(timeFormat),
-				LastQuarter:  moonTable.Elems[i].FullMoon.Format(timeFormat),
+				LastQuarter:  moonTable.Elems[i].LastQuarter.Format(timeFormat),
 			})
 		}
 		return c.JSON(val)

@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Server) moonPositionMonthly(c *fiber.Ctx) error {
-	utc := c.Query("utc", "UTC:+0")
+	utc := c.Query("utc", "UTC+0")
 	loc, _ := jt.SetTimezoneLocFromString(utc)
 
 	tNow := time.Now()
@@ -26,10 +26,8 @@ func (s *Server) moonPositionMonthly(c *fiber.Ctx) error {
 	timeFormat := c.Query("timeFormat", "ISO")
 
 	if !locationCords.IsValid {
-		e := ErrorPrintable{}
-		e.Status = 400
-		e.Message = "latitude and longitude are required for this method."
-		return c.JSON(e)
+		c.Status(400)
+		return c.JSON(ErrorPrintable{Status: 400, Message: "latitude and longitude are required for this method."})
 	}
 
 	if resp, err := s.positionCache.GetRisesMonthly(year, month, loc, precision, timeFormat, locationCords.Longitude, locationCords.Latitude); err == nil {

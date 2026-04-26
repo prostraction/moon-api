@@ -131,8 +131,9 @@ func SetTimezoneLocFromString(utc string) (*time.Location, error) {
 		}
 	}
 
-	if hours < 0 || hours > 23 {
-		return time.UTC, fmt.Errorf("hours out of range (0-23): %d", hours)
+	// IANA TZ offsets span UTC-12..UTC+14; allow up to 14 absolute hours.
+	if hours < 0 || hours > 14 {
+		return time.UTC, fmt.Errorf("hours out of range (0-14): %d", hours)
 	}
 
 	totalSeconds := sign * (hours*3600 + minutes*60)

@@ -1,0 +1,41 @@
+version: 2
+updates:
+  # Keep the workflow's actions up to date. After you pin actions to commit
+  # SHAs (recommended for self-hosted CI on a public repo — see SECURITY.md),
+  # Dependabot will open PRs that bump the SHA when a new release tag points
+  # to a different commit.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Go modules.
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "go"
+
+  # Python (skyfield + ruff).
+  - package-ecosystem: "pip"
+    directory: "/addon/skyfield"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "python"

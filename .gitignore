@@ -35,3 +35,16 @@ go.work.sum
 
 skyfield-data
 resources/vsop87
+
+.claude
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+
+# Go cache directories created by CI workflow
+.go/

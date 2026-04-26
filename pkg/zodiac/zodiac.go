@@ -13,6 +13,10 @@ func CurrentZodiacs(tGiven time.Time, loc *time.Location, lang string, timeForma
 	zodiacCurrent := Zodiac{}
 	zodiacEnd := Zodiac{}
 
+	if loc == nil {
+		loc = time.UTC
+	}
+
 	var day moon.MoonDaysInDay
 
 	dayBeginTime := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), 0, 0, 0, 0, loc)

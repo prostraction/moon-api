@@ -120,10 +120,10 @@ func SearchPhase(tGiven time.Time, moonTable *MoonTable, phase EnumPhase) (t tim
 				}
 			} else {
 				// create table for next table
-				newT := time.Date(tGiven.Year()+1, 0, 0, 0, 0, 0, 0, tGiven.Location())
+				newT := time.Date(tGiven.Year()+1, time.January, 1, 0, 0, 0, 0, tGiven.Location())
 				newMoonTable := CreateMoonTable(newT)
 
-				if newMoonTable != nil && newMoonTable.Elems != nil && len(newMoonTable.Elems) > 0 {
+				if newMoonTable != nil && len(newMoonTable.Elems) > 0 {
 					switch phase {
 					case NewMoon:
 						if tGiven.Before(newMoonTable.Elems[0].NewMoon) {
@@ -168,9 +168,9 @@ func SearchPhase(tGiven time.Time, moonTable *MoonTable, phase EnumPhase) (t tim
 
 		} else {
 			// try to find in next table
-			newT := time.Date(tGiven.Year()+1, 0, 0, 0, 0, 0, 0, tGiven.Location())
+			newT := time.Date(tGiven.Year()+1, time.January, 1, 0, 0, 0, 0, tGiven.Location())
 			newMoonTable := CreateMoonTable(newT)
-			if newMoonTable != nil && newMoonTable.Elems != nil && len(newMoonTable.Elems) > 0 {
+			if newMoonTable != nil && len(newMoonTable.Elems) > 0 {
 				elemSearch1 = elem.LastQuarter
 
 				switch phase {
@@ -194,61 +194,53 @@ func SearchPhase(tGiven time.Time, moonTable *MoonTable, phase EnumPhase) (t tim
 }
 
 func SearchMoonDay(tGiven time.Time, moonTable *MoonTable, moonDay int) (SeachMoonDayResp, error) {
-	t := tGiven
 	var resp SeachMoonDayResp
-	var err error
 	if moonTable == nil {
-		err = errors.New("passed empty moonTable to SearchNewMoon")
+		err := errors.New("passed empty moonTable to SearchNewMoon")
 		log.Error(err.Error())
 		return resp, err
 	}
-	err = errors.New("not found")
-	iters := 0
+
 	for i := range moonTable.Elems {
 		elem := moonTable.Elems[i]
-		if t.After(elem.NewMoon) && t.Before(elem.NewMoon.Add(time.Hour*24*32)) {
-			var elem2 *MoonTableElement
-			if i < len(moonTable.Elems)-1 {
-				elem2 = moonTable.Elems[i+1] // new next moon
-			} else {
-				newTGiven := time.Date(tGiven.Year()+1, time.January, 1, 0, 0, 0, 0, tGiven.Location())
-				newT := CreateMoonTable(newTGiven)
-				if newT != nil && newT.Elems != nil && len(newT.Elems) > 0 {
-					return SearchMoonDay(tGiven, newT, moonDay)
-				} else {
-					///// return err
-				}
-			}
-			moonMonDays := elem2.NewMoon.Sub(elem.NewMoon) // moon month
-			if moonDay > int(moonMonDays) {
-				break // to do
-			}
-			eartbeg := t.Add(-t.Sub(elem.NewMoon))
-			eartend := time.Date(eartbeg.Year(), eartbeg.Month()+1, eartbeg.Day(), eartbeg.Hour(), eartbeg.Minute(), eartbeg.Second(), 0, t.Location())
-			eartMon := eartend.Unix() - eartbeg.Unix() // earth month
-
-			beginDay := elem.NewMoon
-			//currentDay := elem.NewMoon
-			day := time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*24.))
-			//for t.Sub(beginDay) > day {
-			//	beginDay = beginDay.Add(day)
-			//	currentDay = currentDay.Add(day)
-			//}
-			log.Debug(beginDay)
-			beginDay = beginDay.Add(time.Duration(moonDay) * day)
-
-			//currentDay = currentDay.Add(time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Hour()))))
-			//currentDay = currentDay.Add(time.Minute * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Minute()))))
-
-			endDay := beginDay.Add(day)
-
-			resp.From = beginDay
-			resp.To = endDay
-			return resp, nil
+		if !(tGiven.After(elem.NewMoon) && tGiven.Before(elem.NewMoon.Add(time.Hour*24*32))) {
+			continue
 		}
-		t = time.Date(t.Year()+1, 0, 0, 0, 0, 0, 0, t.Location())
-		moonTable = CreateMoonTable(t)
-		iters++
+
+		var elem2 *MoonTableElement
+		if i < len(moonTable.Elems)-1 {
+			elem2 = moonTable.Elems[i+1] // new next moon
+		} else {
+			newTGiven := time.Date(tGiven.Year()+1, time.January, 1, 0, 0, 0, 0, tGiven.Location())
+			newT := CreateMoonTable(newTGiven)
+			if newT != nil && len(newT.Elems) > 0 {
+				return SearchMoonDay(tGiven, newT, moonDay)
+			}
+			return resp, errors.New("not found: cannot resolve next new moon")
+		}
+
+		moonMonDays := elem2.NewMoon.Sub(elem.NewMoon) // moon month
+		// rough sanity check: moonDay cannot exceed moon-month length in days
+		if moonDay > int(moonMonDays.Hours()/24)+1 {
+			return resp, errors.New("not found: requested moonDay exceeds moon month length")
+		}
+
+		eartbeg := tGiven.Add(-tGiven.Sub(elem.NewMoon))
+		eartend := time.Date(eartbeg.Year(), eartbeg.Month()+1, eartbeg.Day(), eartbeg.Hour(), eartbeg.Minute(), eartbeg.Second(), 0, tGiven.Location())
+		eartMon := eartend.Unix() - eartbeg.Unix() // earth month
+		if eartMon == 0 {
+			return resp, errors.New("not found: zero earth month duration")
+		}
+
+		beginDay := elem.NewMoon
+		day := time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*24.))
+		log.Debug(beginDay)
+		beginDay = beginDay.Add(time.Duration(moonDay) * day)
+		endDay := beginDay.Add(day)
+
+		resp.From = beginDay
+		resp.To = endDay
+		return resp, nil
 	}
-	return resp, err
+	return resp, errors.New("not found")
 }

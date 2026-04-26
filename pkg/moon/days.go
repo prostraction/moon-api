@@ -152,48 +152,58 @@ func GetMoonDays(tGiven time.Time, table []*MoonTableElement) (MoonDaysInDay, ti
 	tBegin := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), 0, 0, 0, 0, tGiven.Location())
 	for i := range table {
 		elem := table[i]
-		if tBegin.After(elem.NewMoon) && tBegin.Before(elem.NewMoon.Add(time.Hour*24*32)) {
-			var elem2 *MoonTableElement
-			if i < len(table)-1 {
-				elem2 = table[i+1] // new next moon
-			} else {
-				newTGiven := time.Date(tGiven.Year()+1, time.January, 1, 0, 0, 0, 0, tGiven.Location())
-				newT := CreateMoonTable(newTGiven)
-				if newT != nil && newT.Elems != nil && len(newT.Elems) > 0 {
-					return GetMoonDays(tGiven, newT.Elems)
-				} else {
-					/// return err
-				}
-			}
-
-			moonMonDays := elem2.NewMoon.Sub(elem.NewMoon) // moon month
-
-			eartbeg := tBegin.Add(-tGiven.Sub(elem.NewMoon))
-			eartend := time.Date(eartbeg.Year(), eartbeg.Month()+1, eartbeg.Day(), eartbeg.Hour(), eartbeg.Minute(), eartbeg.Second(), 0, tBegin.Location())
-			eartMon := eartend.Unix() - eartbeg.Unix() // earth month
-
-			beginDay := elem.NewMoon
-			currentDay := elem.NewMoon
-			day := time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*24.))
-
-			for tBegin.Sub(beginDay) > day {
-				beginDay = beginDay.Add(day)
-				currentDay = currentDay.Add(day)
-			}
-			last := tBegin.Sub(beginDay)
-			beginDay = beginDay.Add(last)
-			currentDay = currentDay.Add(last)
-
-			currentDay = currentDay.Add(time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Hour()))))
-			currentDay = currentDay.Add(time.Minute * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Minute()))))
-
-			endDay := beginDay.Add(day)
-			return MoonDaysInDay{
-				Begin:   beginDay.Sub(elem.NewMoon) % moonMonDays,
-				Current: currentDay.Sub(elem.NewMoon) % moonMonDays,
-				End:     endDay.Sub(elem.NewMoon) % moonMonDays,
-			}, moonMonDays
+		if !(tBegin.After(elem.NewMoon) && tBegin.Before(elem.NewMoon.Add(time.Hour*24*32))) {
+			continue
 		}
+
+		var elem2 *MoonTableElement
+		if i < len(table)-1 {
+			elem2 = table[i+1] // new next moon
+		} else {
+			newTGiven := time.Date(tGiven.Year()+1, time.January, 1, 0, 0, 0, 0, tGiven.Location())
+			newT := CreateMoonTable(newTGiven)
+			if newT != nil && len(newT.Elems) > 0 {
+				return GetMoonDays(tGiven, newT.Elems)
+			}
+			return MoonDaysInDay{}, 0
+		}
+
+		moonMonDays := elem2.NewMoon.Sub(elem.NewMoon) // moon month
+		if moonMonDays <= 0 {
+			return MoonDaysInDay{}, 0
+		}
+
+		eartbeg := tBegin.Add(-tGiven.Sub(elem.NewMoon))
+		eartend := time.Date(eartbeg.Year(), eartbeg.Month()+1, eartbeg.Day(), eartbeg.Hour(), eartbeg.Minute(), eartbeg.Second(), 0, tBegin.Location())
+		eartMon := eartend.Unix() - eartbeg.Unix() // earth month
+		if eartMon == 0 {
+			return MoonDaysInDay{}, 0
+		}
+
+		beginDay := elem.NewMoon
+		currentDay := elem.NewMoon
+		day := time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*24.))
+		if day <= 0 {
+			return MoonDaysInDay{}, 0
+		}
+
+		for tBegin.Sub(beginDay) > day {
+			beginDay = beginDay.Add(day)
+			currentDay = currentDay.Add(day)
+		}
+		last := tBegin.Sub(beginDay)
+		beginDay = beginDay.Add(last)
+		currentDay = currentDay.Add(last)
+
+		currentDay = currentDay.Add(time.Hour * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Hour()))))
+		currentDay = currentDay.Add(time.Minute * time.Duration(int64(moonMonDays.Seconds()/float64(eartMon)*float64(tGiven.Minute()))))
+
+		endDay := beginDay.Add(day)
+		return MoonDaysInDay{
+			Begin:   beginDay.Sub(elem.NewMoon) % moonMonDays,
+			Current: currentDay.Sub(elem.NewMoon) % moonMonDays,
+			End:     endDay.Sub(elem.NewMoon) % moonMonDays,
+		}, moonMonDays
 	}
-	return MoonDaysInDay{time.Duration(0), time.Duration(0), time.Duration(0)}, time.Duration(0)
+	return MoonDaysInDay{}, 0
 }

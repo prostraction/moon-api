@@ -1,0 +1,16 @@
+# Force LF line endings for source files so gofmt and other Unix-line tools
+# behave the same on Windows checkouts and on the CI runner.
+*.go        text eol=lf
+*.py        text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.toml      text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+*.sh        text eol=lf
+
+# Binaries
+*.bsp       binary
+*.png       binary
+*.jpg       binary
+*.ico       binary

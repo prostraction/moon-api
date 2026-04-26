@@ -1,0 +1,20 @@
+line-length = 120
+target-version = "py312"
+
+[lint]
+# Conservative rule set — start strict on bug-class checks, loose on style.
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "B",   # bugbear
+    "I",   # isort
+    "UP",  # pyupgrade
+    "SIM", # simplify
+]
+ignore = [
+    "E501",  # line too long — already covered by formatter
+    "B008",  # function calls in default args — common in tests
+]
+
+[lint.per-file-ignores]
+"test_*.py" = ["B011"]  # asserts inside tests are fine

@@ -10,10 +10,12 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
 type Cache struct {
+	mu           sync.RWMutex
 	CacheDaily   map[string]*DayData
 	CacheMonthly map[string]*[]DayData
 }
@@ -73,10 +75,6 @@ func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision i
 		return nil, err
 	}
 
-	if c.CacheMonthly == nil {
-		c.CacheMonthly = make(map[string]*[]DayData)
-	}
-
 	var strKey strings.Builder
 	strKey.WriteString(strconv.Itoa(year))
 	strKey.WriteString("-")
@@ -95,16 +93,21 @@ func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision i
 	strKey.WriteString(strconv.FormatFloat(lon, 'e', precision, 64))
 	strKey.WriteString("-")
 	strKey.WriteString(timeFormat)
+	key := strKey.String()
 
-	if c.CacheMonthly != nil && c.CacheMonthly[strKey.String()] != nil {
-		return c.CacheMonthly[strKey.String()], nil
+	c.mu.RLock()
+	if cached, ok := c.CacheMonthly[key]; ok && cached != nil {
+		c.mu.RUnlock()
+		return cached, nil
 	}
+	c.mu.RUnlock()
 
-	h := 0
+	h, m := 0, 0
 	if loc != nil {
-		jth, _, err := jt.GetTimeFromLocation(loc)
+		jth, jtm, err := jt.GetTimeFromLocation(loc)
 		if err == nil {
 			h = jth
+			m = jtm
 		}
 	}
 
@@ -112,26 +115,28 @@ func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision i
 	params.Add("lat", fmt.Sprintf("%.2f", lat))
 	params.Add("lon", fmt.Sprintf("%.2f", lon))
 	params.Add("utc", fmt.Sprintf("%d", h))
+	params.Add("utc_hours", fmt.Sprintf("%d", h))
+	params.Add("utc_minutes", fmt.Sprintf("%d", m))
 	params.Add("year", fmt.Sprintf("%d", year))
 	params.Add("month", fmt.Sprintf("%d", month))
 	params.Add("precision", fmt.Sprintf("%d", precision))
 
 	url := baseURL + "monthly?" + params.Encode()
-	client := &http.Client{Timeout: 69 * time.Second}
+	client := &http.Client{Timeout: httpClientTimeout}
 	resp, err := client.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("[%s] Failed to make request: %w", resp.Status, err)
+		return nil, fmt.Errorf("failed to make request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("[%s] Failed to read response: %w", resp.Status, err)
+		return nil, fmt.Errorf("[%s] failed to read response: %w", resp.Status, err)
 	}
 
 	var monthResponse MonthResponse
 	if err := json.Unmarshal(body, &monthResponse); err != nil {
-		return nil, fmt.Errorf("[%s] Failed to unmarshal response: %w", resp.Status, err)
+		return nil, fmt.Errorf("[%s] failed to unmarshal response: %w", resp.Status, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -149,7 +154,7 @@ func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision i
 			monthResponse.Data[i].Moonrise.Time = &t
 			monthResponse.Data[i].Moonrise.Timestamp = nil
 		}
-		if monthResponse.Data[i].Moonset != nil {
+		if monthResponse.Data[i].Moonset != nil && monthResponse.Data[i].Moonset.Timestamp != nil {
 			var t any = timestampToGoTime(monthResponse.Data[i].Moonset.Timestamp, timeFormat, loc)
 			monthResponse.Data[i].Moonset.Time = &t
 			monthResponse.Data[i].Moonset.Timestamp = nil
@@ -158,9 +163,14 @@ func (c *Cache) GetRisesMonthly(year, month int, loc *time.Location, precision i
 		monthResponse.Data[i].Day = &t
 	}
 
-	if c.CacheMonthly != nil && c.CacheMonthly[strKey.String()] == nil {
-		c.CacheMonthly[strKey.String()] = &monthResponse.Data
+	c.mu.Lock()
+	if c.CacheMonthly == nil {
+		c.CacheMonthly = make(map[string]*[]DayData)
 	}
+	if _, ok := c.CacheMonthly[key]; !ok {
+		c.CacheMonthly[key] = &monthResponse.Data
+	}
+	c.mu.Unlock()
 
 	return &monthResponse.Data, nil
 }
@@ -191,25 +201,28 @@ func GetRisesDay(year, month, day int, loc *time.Location, precision int, timeFo
 	params.Add("precision", fmt.Sprintf("%d", precision))
 
 	url := baseURL + "daily" + "?" + params.Encode()
-	client := &http.Client{Timeout: 69 * time.Second}
+	client := &http.Client{Timeout: httpClientTimeout}
 	resp, err := client.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to make request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("server returned status: %s", resp.Status)
-	}
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
+		return nil, fmt.Errorf("[%s] failed to read response: %w", resp.Status, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server returned status: %s (%s)", resp.Status, string(body))
 	}
 
 	var dayResponse DayResponse
 	if err := json.Unmarshal(body, &dayResponse); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+	if dayResponse.Data == nil {
+		return nil, errors.New("upstream returned empty Data")
 	}
 	if dayResponse.Data.Meridian != nil && dayResponse.Data.Meridian.Timestamp != nil {
 		var t any = timestampToGoTime(dayResponse.Data.Meridian.Timestamp, timeFormat, loc)
@@ -221,7 +234,7 @@ func GetRisesDay(year, month, day int, loc *time.Location, precision int, timeFo
 		dayResponse.Data.Moonrise.Time = &t
 		dayResponse.Data.Moonrise.Timestamp = nil
 	}
-	if dayResponse.Data.Moonset != nil {
+	if dayResponse.Data.Moonset != nil && dayResponse.Data.Moonset.Timestamp != nil {
 		var t any = timestampToGoTime(dayResponse.Data.Moonset.Timestamp, timeFormat, loc)
 		dayResponse.Data.Moonset.Time = &t
 		dayResponse.Data.Moonset.Timestamp = nil
@@ -234,10 +247,6 @@ func (c *Cache) GetRisesDay(year, month, day int, loc *time.Location, precision 
 	lat, lon, err := parseLocation(location)
 	if err != nil {
 		return nil, err
-	}
-
-	if c.CacheDaily == nil {
-		c.CacheDaily = make(map[string]*DayData)
 	}
 
 	var strKey strings.Builder
@@ -260,19 +269,28 @@ func (c *Cache) GetRisesDay(year, month, day int, loc *time.Location, precision 
 	strKey.WriteString(strconv.FormatFloat(lon, 'e', precision, 64))
 	strKey.WriteString("-")
 	strKey.WriteString(timeFormat)
+	key := strKey.String()
 
-	if c.CacheDaily != nil && c.CacheDaily[strKey.String()] != nil {
-		return c.CacheDaily[strKey.String()], nil
+	c.mu.RLock()
+	if cached, ok := c.CacheDaily[key]; ok && cached != nil {
+		c.mu.RUnlock()
+		return cached, nil
 	}
+	c.mu.RUnlock()
 
 	dayResponse, err := GetRisesDay(year, month, day, loc, precision, timeFormat, location...)
 	if err != nil {
 		return nil, err
 	}
 
-	if c.CacheDaily != nil && c.CacheDaily[strKey.String()] == nil {
-		c.CacheDaily[strKey.String()] = dayResponse
+	c.mu.Lock()
+	if c.CacheDaily == nil {
+		c.CacheDaily = make(map[string]*DayData)
 	}
+	if _, ok := c.CacheDaily[key]; !ok {
+		c.CacheDaily[key] = dayResponse
+	}
+	c.mu.Unlock()
 
 	return dayResponse, nil
 }
@@ -309,20 +327,20 @@ func GetMoonPosition(tGiven time.Time, loc *time.Location, precision int, timeFo
 	params.Add("precision", fmt.Sprintf("%d", precision))
 
 	url := baseURL + "position" + "?" + params.Encode()
-	client := &http.Client{Timeout: 69 * time.Second}
+	client := &http.Client{Timeout: httpClientTimeout}
 	resp, err := client.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to make request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("server returned status: %s (%s)", resp.Status, resp.Body)
-	}
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
+		return nil, fmt.Errorf("[%s] failed to read response: %w", resp.Status, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server returned status: %s (%s)", resp.Status, string(body))
 	}
 
 	var pos *MoonPosition

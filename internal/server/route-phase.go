@@ -15,7 +15,7 @@ import (
 
 /*    MOON PHASE    */
 func (s *Server) moonPhaseCurrentV1(c *fiber.Ctx) error {
-	utc := c.Query("utc", "UTC:+0")
+	utc := c.Query("utc", "UTC+0")
 	loc, err := jt.SetTimezoneLocFromString(utc)
 	if err != nil {
 		log.Trace(err)
@@ -34,7 +34,7 @@ func (s *Server) moonPhaseCurrentV1(c *fiber.Ctx) error {
 }
 
 func (s *Server) moonPhaseTimestampV1(c *fiber.Ctx) error {
-	utc := c.Query("utc", "UTC:+0")
+	utc := c.Query("utc", "UTC+0")
 	loc, err := jt.SetTimezoneLocFromString(utc)
 	if err != nil {
 		log.Trace(err)
@@ -61,7 +61,7 @@ func (s *Server) moonPhaseTimestampV1(c *fiber.Ctx) error {
 }
 
 func (s *Server) moonPhaseDatetV1(c *fiber.Ctx) error {
-	utc := c.Query("utc", "UTC:+0")
+	utc := c.Query("utc", "UTC+0")
 	loc, err := jt.SetTimezoneLocFromString(utc)
 	if err != nil {
 		log.Trace(err)
@@ -104,7 +104,7 @@ func (s *Server) moonPhaseV1(c *fiber.Ctx, tGiven time.Time, precision int, loca
 	var err error
 
 	lang := c.Query("lang", "en")
-	utc := c.Query("utc", "UTC:+0")
+	utc := c.Query("utc", "UTC+0")
 
 	loc, err := jt.SetTimezoneLocFromString(utc)
 	if err != nil {

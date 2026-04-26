@@ -79,7 +79,7 @@ func (s *Server) toJulianTimeV1(c *fiber.Ctx, tGiven time.Time, timeFormat strin
 }
 
 func (s *Server) fromJulianTimeV1(c *fiber.Ctx) error {
-	utc := c.Query("utc", "UTC:+0")
+	utc := c.Query("utc", "UTC+0")
 	loc, _ := jt.SetTimezoneLocFromString(utc)
 
 	jtStr := c.Query("jtime", "none")

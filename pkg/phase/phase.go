@@ -13,9 +13,9 @@ func CurrentMoonPhase(tGiven time.Time, lang string) *PhaseResp {
 	pr := new(PhaseResp)
 	newT := time.Date(tGiven.Year(), tGiven.Month(), tGiven.Day(), tGiven.Hour(), tGiven.Minute(), tGiven.Second(), 0, time.UTC)
 
-	currentMoonIllumination, currentMoonIlluminationBefore, currentMoonIlluminationAfter := currentMoonPhaseCalc(newT, time.FixedZone("UTC+12", -12*60*60), il.GetCurrentMoonIllumination)
-	dayBeginMoonIllumination, dayBeginMoonIlluminationBefore, dayBeginMoonIlluminationAfter := currentMoonPhaseCalc(newT, time.FixedZone("UTC+12", -12*60*60), il.GetDailyMoonIllumination)
-	dayEndMoonIllumination, dayEndMoonIlluminationBefore, dayEndMoonIlluminationAfter := currentMoonPhaseCalc(newT.AddDate(0, 0, 1), time.FixedZone("UTC+12", -12*60*60), il.GetDailyMoonIllumination)
+	currentMoonIllumination, currentMoonIlluminationBefore, currentMoonIlluminationAfter := currentMoonPhaseCalc(newT, time.FixedZone("UTC-12", -12*60*60), il.GetCurrentMoonIllumination)
+	dayBeginMoonIllumination, dayBeginMoonIlluminationBefore, dayBeginMoonIlluminationAfter := currentMoonPhaseCalc(newT, time.FixedZone("UTC-12", -12*60*60), il.GetDailyMoonIllumination)
+	dayEndMoonIllumination, dayEndMoonIlluminationBefore, dayEndMoonIlluminationAfter := currentMoonPhaseCalc(newT.AddDate(0, 0, 1), time.FixedZone("UTC-12", -12*60*60), il.GetDailyMoonIllumination)
 
 	moonPhaseCurrent := GetMoonPhase(currentMoonIlluminationBefore, currentMoonIllumination, currentMoonIlluminationAfter, lang)
 	moonPhaseBegin := GetMoonPhase(dayBeginMoonIlluminationBefore, dayBeginMoonIllumination, dayBeginMoonIlluminationAfter, lang)

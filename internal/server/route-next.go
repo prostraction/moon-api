@@ -12,7 +12,7 @@ import (
 )
 
 func (s *Server) moonNextMoonPhaseV1(c *fiber.Ctx) error {
-	utc := c.Query("utc", "UTC:+0")
+	utc := c.Query("utc", "UTC+0")
 	loc, _ := jt.SetTimezoneLocFromString(utc)
 	tGiven := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second(), time.Now().Nanosecond(), time.Local)
 	tGiven = tGiven.In(loc)
@@ -51,21 +51,21 @@ func (s *Server) moonNextMoonPhaseV1(c *fiber.Ctx) error {
 }
 
 func (s *Server) moonNextMoonDayV1(c *fiber.Ctx) error {
-	utc := c.Query("utc", "UTC:+0")
+	utc := c.Query("utc", "UTC+0")
 	loc, _ := jt.SetTimezoneLocFromString(utc)
 	day := c.Query("day", "not-set")
 	if day == "not-set" {
-		e := ErrorPrintable{Status: 400, Message: "day is required for this method."}
-		return c.JSON(e)
+		c.Status(400)
+		return c.JSON(ErrorPrintable{Status: 400, Message: "day is required for this method."})
 	}
 	dayInt, err := strconv.Atoi(day)
 	if err != nil {
-		e := ErrorPrintable{Status: 400, Message: "day is required to be int."}
-		return c.JSON(e)
+		c.Status(400)
+		return c.JSON(ErrorPrintable{Status: 400, Message: "day is required to be int."})
 	}
 	if dayInt < 0 || dayInt > 30 {
-		e := ErrorPrintable{Status: 400, Message: "day is required to be [0, 30]. No other days allowed!"}
-		return c.JSON(e)
+		c.Status(400)
+		return c.JSON(ErrorPrintable{Status: 400, Message: "day is required to be [0, 30]. No other days allowed!"})
 	}
 
 	tGiven := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second(), time.Now().Nanosecond(), time.Local)
@@ -75,8 +75,8 @@ func (s *Server) moonNextMoonDayV1(c *fiber.Ctx) error {
 	resp, err := moon.SearchMoonDay(tGiven, moonTable, dayInt)
 	if err != nil {
 		log.Error(err)
-		e := ErrorPrintable{Status: 500, Message: "bad things happen: " + err.Error()}
-		return c.JSON(e)
+		c.Status(500)
+		return c.JSON(ErrorPrintable{Status: 500, Message: "bad things happen: " + err.Error()})
 	}
 
 	format := c.Query("timeFormat", "ISO")

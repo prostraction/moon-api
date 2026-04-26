@@ -1,4 +1,4 @@
-package illimination
+package illumination
 
 import (
 	"math"

@@ -1,0 +1,57 @@
+# golangci-lint configuration.
+# Reference: https://golangci-lint.run/usage/configuration/
+
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  disable-all: true
+  enable:
+    # Critical / correctness
+    - errcheck      # unchecked errors
+    - govet         # standard go vet
+    - ineffassign   # ineffectual assignments
+    - staticcheck   # broad static analysis
+    - unused        # unused symbols
+    - gosec         # security issues
+    - bodyclose     # http.Response.Body must be closed
+    - rowserrcheck  # sql.Rows.Err()
+    - sqlclosecheck # sql.Rows/Stmt close
+    # Code quality
+    - gosimple      # simplifications
+    - gofmt         # formatting
+    - goimports     # imports formatting
+    - misspell      # English misspellings
+    - nakedret      # naked returns
+    - unconvert     # unnecessary type conversions
+    - unparam       # unused function parameters
+    - prealloc      # slice preallocation hints
+    - copyloopvar   # since Go 1.22, loop var capture is fine
+
+linters-settings:
+  errcheck:
+    check-type-assertions: false
+    check-blank: false
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment  # too noisy on struct layout
+  gosec:
+    excludes:
+      - G104   # errcheck handles unchecked returns
+      - G404   # math/rand allowed for non-crypto
+
+issues:
+  exclude-dirs:
+    - addon
+    - skyfield-data
+  exclude-rules:
+    # Tests can be more relaxed.
+    - path: _test\.go
+      linters:
+        - gosec
+        - errcheck
+        - unparam
+  max-issues-per-linter: 0
+  max-same-issues: 0

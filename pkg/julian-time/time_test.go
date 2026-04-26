@@ -325,9 +325,15 @@ func TestSetTimezoneLocFromString(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "UTC+23:59",
+			name:    "UTC+23:59 rejected (out of IANA range)",
 			input:   "UTC+23:59",
-			wantLoc: time.FixedZone("UTC+23:59", 23*3600+59*60),
+			wantErr: true,
+			errMsg:  "hours out of range",
+		},
+		{
+			name:    "UTC+14:00 (IANA max)",
+			input:   "UTC+14:00",
+			wantLoc: time.FixedZone("UTC+14", 14*3600),
 			wantErr: false,
 		},
 
@@ -446,13 +452,13 @@ func TestSetTimezoneLocFromString(t *testing.T) {
 		},
 		{
 			name:    "hours out of range positive",
-			input:   "UTC+24:00",
+			input:   "UTC+15:00",
 			wantErr: true,
 			errMsg:  "hours out of range",
 		},
 		{
 			name:    "hours out of range negative",
-			input:   "UTC-24:00",
+			input:   "UTC-15:00",
 			wantErr: true,
 			errMsg:  "hours out of range",
 		},
